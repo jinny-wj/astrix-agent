@@ -1,0 +1,90 @@
+/* Keep the workspace white; one neutral divider separates it from Figma. */
+.ai-panel {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0;
+  border-left: 1px solid #e2e3e7;
+  background: #fff;
+}
+
+.ai-panel-surface {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  background: #fff;
+}
+
+.ai-panel-header {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  min-height: 58px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #f0f0f2;
+  background: #fff;
+}
+
+.ai-panel-mark {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid #e9e9ed;
+  border-radius: 8px;
+  background: white;
+  color: #6c727e;
+}
+
+.ai-panel-new-chat {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1px solid #e9e9ed;
+  border-radius: 7px;
+  background: #fff;
+  color: #6c727e;
+}
+
+.ai-panel-new-chat:hover { background: #fff; color: #2856be; }
+.ai-panel-account { min-width: 0; max-width: 170px; flex: 1; }
+.ai-panel-account > div > button { width: 100%; max-width: 100%; }
+.ai-panel-new-chat:focus-visible { outline: 2px solid #4d72de; outline-offset: 2px; }
+.ai-panel-conversation { background: #fff; }
+.ai-panel-composer {
+  border-top: 1px solid #efeff2;
+  background: #fff;
+}
+
+/* Reference node 4581:28990. Only header and composer; welcome content is untouched. */
+.ai-panel-file-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 22px; color: #1b1b1b; }
+.ai-panel-header-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.ai-panel-header-actions button { display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 5px; background: transparent; }
+.ai-panel-header-actions img { width: 16px; height: 16px; }
+.ai-panel-header-actions button:hover { background: #f5f5f5; }
+.ai-panel-header-actions button:focus-visible, .ai-reference-tool:focus-visible, .ai-reference-send:focus-visible { outline: 2px solid #8ab4ec; outline-offset: 2px; }
+.ai-panel-session { position: absolute; right: 16px; top: 50px; width: min(300px, calc(100% - 32px)); padding: 14px; border: 1px solid #ebebeb; border-radius: 12px; box-shadow: 0 6px 20px #0000000d; background: #fff; font-size: 12px; }
+.ai-panel-session p { margin: 12px 0; max-height: 180px; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-panel-session span { color: #90959b; font-size: 11px; }
+.ai-panel-reopen { align-self: flex-start; padding: 12px; border-left: 1px solid #ebebeb; font-size: 12px; background: #fff; }
+.ai-reference-input { display: flex; flex-direction: column; min-height: 162px; margin: 0 -6px; padding: 16px; border: 1px solid #dfe9f0; border-radius: 20px; background: #fff; box-shadow: 0 3px 5px #0000000d; }
+.ai-reference-input:focus-within { border-color: #b9d1e5; }
+.ai-reference-textarea { width: 100%; flex: 1; min-height: 68px; resize: vertical; border: 0; background: transparent; font-size: 14px; line-height: 22px; color: #1b1b1b; outline: none; }
+.ai-reference-textarea::placeholder { color: #b9bec4; }
+.ai-reference-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 8px; }
+.ai-reference-tool-group { position: relative; display: flex; align-items: center; gap: 8px; }
+.ai-reference-tool { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: #fff; }
+.ai-reference-tool img { width: 16px; height: 16px; }
+.ai-reference-tool:first-of-type img { width: 18px; height: 18px; }
+.ai-reference-tool:hover, .ai-reference-tool[aria-expanded="true"] { background: #f4f5f6; }
+.ai-reference-send { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: #1b1b1b; color: #fff; }
+.ai-reference-send:disabled { background: #f0f0f0; cursor: not-allowed; }
+.ai-reference-send img { width: 32px; height: 32px; }

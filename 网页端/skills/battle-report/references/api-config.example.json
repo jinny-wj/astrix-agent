@@ -1,0 +1,49 @@
+{
+  "seedreamApi": {
+    "name": "Seedream",
+    "priority": 2,
+    "idcUrl": "http://wanqing.internal/api/gateway/v1/images/generations",
+    "defaultUrl": "https://wanqing-api.corp.kuaishou.com/api/gateway/v1/images/generations",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "requestBody": {
+      "model": "ep-kj99dc-1778316497132541960",
+      "prompt": "${PROMPT}",
+      "images": ["${IMAGE_URL}"],
+      "size": "4K",
+      "response_format": "url",
+      "watermark": false,
+      "stream": false
+    }
+  },
+  "geminiApi": {
+    "name": "Gemini 3 Pro",
+    "priority": 1,
+    "idcUrl": "http://llm-gateway-sgp.internal/ai-serve/v1/gemini-3-pro-image-preview:generateContent",
+    "defaultUrl": "https://llm-gateway-prod-sgp.corp.kuaishou.com/ai-serve/v1/gemini-3-pro-image-preview:generateContent",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "requestBody": {
+      "generationConfig": {
+        "imageConfig": { "imageSize": "2K" },
+        "responseModalities": ["Image"]
+      }
+    }
+  },
+  "templateData": {
+    "zhanbao": {
+      "thumbnail": "https://p5-sh.shwkwai.com/kcdn/cdn-kcdn111763/skills/zhanbao_suoluetu/zhanbao_slt.png",
+      "originalImageBaseUrl": "https://p5-sh.shwkwai.com/kcdn/cdn-kcdn111763/skills/zhanbao",
+      "validIds": ["3026", "3027", "3028", "3029", "3030", "3031", "3032", "3033", "3034", "3035", "3037", "3038"]
+    },
+    "haibao": {
+      "thumbnail": "https://p5-sh.shwkwai.com/kcdn/cdn-kcdn111763/skills/haibao_suoluetu/haibao-slt.png",
+      "originalImageBaseUrl": "https://p5-sh.shwkwai.com/kcdn/cdn-kcdn111763/skills/haibao",
+      "validIds": ["0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008"]
+    }
+  }
+}

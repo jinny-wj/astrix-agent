@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-lg-plus: 20px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-2xl-plus: 40px;
+  --space-3xl: 48px;
+  --space-4xl: 64px;
+  --home-bg: #f8f9fa;
+  --home-surface: rgba(255, 255, 255, 0.92);
+  --home-surface-soft: #f3f5f6;
+  --home-border: rgba(0, 0, 0, 0.05);
+  --home-text: #0f1419;
+  --home-muted: #72808a;
+  --home-accent: #00a1c2;
+  --home-accent-soft: #eaf7fa;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #fbfbfc;
+  color: #1d1d1f;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-surface {
+  background-color: var(--home-bg);
+}
+
+/* 隐藏滚动条但保留滚动能力，贴合原产品的无边框观感 */
+.scroll-clean {
+  scrollbar-width: none;
+}
+.scroll-clean::-webkit-scrollbar {
+  display: none;
+}

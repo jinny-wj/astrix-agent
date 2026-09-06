@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        margin: 0;
+        font: 12px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #1e1e1e;
+        background: #f5f5f5;
+        padding: 12px;
+      }
+      .title-row { display: flex; align-items: center; justify-content: space-between; }
+      .status { color: #777; }
+      .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+      button {
+        border: 0;
+        border-radius: 6px;
+        background: #0d99ff;
+        color: #fff;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+      button.secondary { background: #e6e6e6; color: #333; }
+      input {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid #d0d0d0;
+        border-radius: 6px;
+        padding: 6px 8px;
+      }
+      #log {
+        margin-top: 10px;
+        height: 158px;
+        overflow: auto;
+        background: #fff;
+        border: 1px solid #e4e4e4;
+        border-radius: 8px;
+        padding: 8px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="title-row">
+      <strong>Design Studio Bridge</strong>
+      <span id="selection" class="status">正在读取选区…</span>
+    </div>
+    <div class="row">
+      <input id="base" value="http://127.0.0.1:5273" />
+      <button id="toggle" class="secondary">停止轮询</button>
+    </div>
+    <div id="log">正在自动连接本地 Design Studio…</div>
+    <script>
+      const logEl = document.getElementById('log')
+      const baseEl = document.getElementById('base')
+      const toggleEl = document.getElementById('toggle')
+      const selectionEl = document.getElementById('selection')
+      let timer = null
+      let polling = true
+      let pullInFlight = false
+      let sessionId = ''
+      let selectionUpload = Promise.resolve()
+      let latestSnapshot = null
+      let lastSelectionUploadAt = 0
+
+      function log(line) {
+        const stamp = new Date().toLocaleTimeString()
+        logEl.textContent = '[' + stamp + '] ' + line + '\n' + logEl.textContent
+      }
+
+      function baseUrl() {
+        return baseEl.value.trim().replace(/\/$/, '')
+      }
+
+      async function readJson(response, action) {
+        let payload = null
+        try {
+          payload = await response.json()
+        } catch {
+          // The status is still useful when the bridge returned no JSON body.
+        }
+        if (!response.ok) {
+          const detail = payload && (payload.message || payload.error)
+          throw new Error(action + ' failed ' + response.status + (detail ? ': ' + detail : ''))
+        }
+        return payload || {}
+      }
+
+      async function postJson(path, body) {
+        const response = await fetch(baseUrl() + path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+        return readJson(response, path)
+      }
+
+      function uploadSelection(snapshot) {
+        latestSnapshot = snapshot
+        // Keep snapshots ordered so a slower old request cannot replace a newer
+        // selection revision in the local bridge.
+        selectionUpload = selectionUpload
+          .then(function () {
+            return postJson('/api/figma-bridge/selection', snapshot)
+          })
+          .then(function () {
+            lastSelectionUploadAt = Date.now()
+          })
+          .catch(function (error) {
+            log('选区同步失败：' + String(error.message || error))
+          })
+      }
+
+      function refreshSelectionConnection() {
+        if (
+          latestSnapshot
+          && Date.now() - lastSelectionUploadAt >= 5000
+        ) {
+          uploadSelection(latestSnapshot)
+        }
+      }
+
+      async function pullOnce() {
+        if (!polling || !sessionId || pullInFlight) return
+        pullInFlight = true
+        try {
+          const url = baseUrl()
+            + '/api/figma-bridge/pull?sessionId=' + encodeURIComponent(sessionId)
+          const response = await fetch(url)
+          const payload = await readJson(response, 'pull')
+          const commands = Array.isArray(payload.commands) ? payload.commands : []
+          if (commands.length === 0) return
+          log('收到 ' + commands.length + ' 条命令')
+          parent.postMessage({
+            pluginMessage: { type: 'apply-commands', commands: commands },
+          }, '*')
+        } finally {
+          pullInFlight = false
+        }
+      }
+
+      async function acknowledge(results) {
+        await postJson('/api/figma-bridge/ack', { results: results })
+        const ok = results.filter(function (item) { return item.ok }).length
+        log('已回写 ' + ok + '/' + results.length + ' 条结果')
+        results.forEach(function (result) {
+          const nodeResults = Array.isArray(result.nodeResults) ? result.nodeResults : []
+          if (nodeResults.length > 0) {
+            log((result.summary || '批量执行完成') + '（'
+              + Number(result.succeededCount || 0) + ' 成功 / '
+              + Number(result.failedCount || 0) + ' 失败）')
+          }
+          nodeResults.forEach(function (nodeResult) {
+            const label = nodeResult.nodeName || nodeResult.nodeId || '未知图层'
+            const state = nodeResult.ok ? '成功' : '失败'
+            const detail = nodeResult.message || nodeResult.summary || ''
+            log('· ' + label + '：' + state + (detail ? '（' + detail + '）' : ''))
+          })
+          if (!result.ok && nodeResults.length === 0 && result.message) {
+            log('执行失败：' + result.message)
+          }
+        })
+      }
+
+      window.onmessage = function (event) {
+        const msg = event.data && event.data.pluginMessage
+        if (!msg || typeof msg !== 'object') return
+
+        if (msg.type === 'selection-snapshot' && msg.snapshot) {
+          const snapshot = msg.snapshot
+          const previousSession = sessionId
+          sessionId = String(snapshot.sessionId || '')
+          const nodes = Array.isArray(snapshot.nodes) ? snapshot.nodes : []
+          selectionEl.textContent = nodes.length ? '已选 ' + nodes.length + ' 层' : '未选择图层'
+          if (!previousSession && sessionId) log('已连接 Figma 文件会话')
+          uploadSelection(snapshot)
+          pullOnce().catch(function (error) { log(String(error.message || error)) })
+          return
+        }
+
+        if (msg.type === 'ack-results') {
+          const results = Array.isArray(msg.results) ? msg.results : []
+          acknowledge(results).catch(function (error) {
+            log('结果回写失败：' + String(error.message || error))
+          })
+        }
+      }
+
+      function startPolling() {
+        polling = true
+        toggleEl.textContent = '停止轮询'
+        if (timer) clearInterval(timer)
+        timer = setInterval(function () {
+          pullOnce().catch(function (error) { log(String(error.message || error)) })
+          refreshSelectionConnection()
+        }, 1000)
+        log('自动轮询 ' + baseEl.value)
+        pullOnce().catch(function (error) { log(String(error.message || error)) })
+      }
+
+      function stopPolling() {
+        polling = false
+        toggleEl.textContent = '开始轮询'
+        if (timer) clearInterval(timer)
+        timer = null
+        log('已暂停轮询')
+      }
+
+      toggleEl.onclick = function () {
+        if (polling) stopPolling()
+        else startPolling()
+      }
+
+      baseEl.onchange = function () {
+        if (polling) startPolling()
+      }
+
+      window.addEventListener('beforeunload', function () {
+        if (timer) clearInterval(timer)
+      })
+
+      // Ask the main thread for the initial selection, then poll immediately.
+      parent.postMessage({ pluginMessage: { type: 'ui-ready' } }, '*')
+      startPolling()
+    </script>
+  </body>
+</html>

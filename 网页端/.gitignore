@@ -1,0 +1,42 @@
+# 依赖与构建产物
+node_modules
+.pnpm-store/
+dist
+dist-ssr
+*.local
+.vite
+tsconfig.tsbuildinfo
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 日志
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 环境变量（Figma token 等凭证一律不入库）
+.env
+.env.*
+!.env.example
+.design-studio/
+
+# 流水线产物
+pipeline/output/
+
+# 内部参考资料：含机密水印，仅供本地开发参考，禁止提交
+docs/reference/
+
+# 战报 skill 的真实密钥，只用 example 入库
+skills/battle-report/references/api-config.json

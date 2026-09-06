@@ -1,0 +1,45 @@
+.studio-main { padding-bottom: 24px; }
+.studio-header { min-height: 72px; }
+.studio-content [hidden] { display: none !important; }
+.studio-content #home-generate > section { padding-top: 36px; }
+.studio-content .project-section { margin-top: 64px; }
+.studio-main[data-section="assets"] .project-section { margin-top: 0; }
+.studio-main[data-section="assets"] .studio-content,
+.studio-main[data-section="creative"] .studio-content { padding-top: 32px; }
+.studio-main[data-section="creative"] #home-creative { margin-top: 0; }
+.project-grid { align-items: stretch; }
+.project-grid > * { align-self: stretch; }
+.project-create-card, .project-file-card {
+  border: 1px solid #e9ebef; border-radius: 20px; background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+.project-create-card { min-height: 240px; }
+.project-create-card:hover, .project-file-card:hover { border-color: #cdd4e5; box-shadow: 0 6px 20px #20242d06; }
+.project-cover { aspect-ratio: 1.8; border-radius: 19px 19px 0 0; }
+.project-cover img { object-fit: cover; }
+.project-card-info { height: 90px; padding: 16px 18px; }
+.project-card-menu { position: relative; flex-shrink: 0; }
+.project-card-menu summary { display: grid; place-items: center; height: 28px; width: 28px; border-radius: 8px; cursor: pointer; color: #677080; list-style: none; }
+.project-card-menu summary::-webkit-details-marker { display: none; }
+.project-card-menu summary:hover { background: #f4f5f7; }
+.project-menu-items { position: absolute; right: 0; top: 32px; z-index: 20; width: 170px; padding: 6px; border: 1px solid #e5e8ee; border-radius: 12px; background: #fff; box-shadow: 0 8px 24px #20242d15; }
+.project-menu-items button, .project-menu-items a { display: flex; width: 100%; align-items: center; gap: 8px; border-radius: 7px; padding: 9px; font-size: 12px; color: #4b5563; }
+.project-menu-items button:hover, .project-menu-items a:hover { background: #f4f6fa; }
+.new-project-thumbnail {
+  min-height: 240px;
+  background: #f8f9fa;
+}
+.studio-tool-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  min-height: 190px; padding: 28px; border: 1px solid #e7e9ee;
+  border-radius: 20px; background: #fff; color: #424c60; text-align: left;
+  transition: border-color .2s, box-shadow .2s;
+}
+.studio-tool-card:hover { border-color: #aebcf0; box-shadow: 0 8px 24px #24315108; }
+.studio-tool-card strong { font-size: 17px; color: #20242d; }
+.studio-tool-card span { font-size: 13px; color: #87909e; }
+@media (max-width: 640px) {
+  .studio-sidebar { width: 60px; }
+  .studio-header { padding: 12px; gap: 8px; }
+  .studio-content { padding-left: 16px; padding-right: 16px; }
+}

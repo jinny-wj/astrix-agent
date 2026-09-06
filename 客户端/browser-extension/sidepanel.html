@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Design Agent</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">M+</span>
+          <div>
+            <p class="eyebrow">FIGMA WORKSPACE</p>
+            <h1>Design Agent</h1>
+          </div>
+        </div>
+        <span
+          class="connection-status"
+          title="浏览器工作区连接状态"
+          data-connection-status
+        >
+          <span class="status-dot" aria-hidden="true"></span>
+          等待工作区
+        </span>
+      </header>
+
+      <nav class="tabs" aria-label="工作区">
+        <button
+          class="tab is-active"
+          type="button"
+          data-tab="agent"
+          aria-selected="true"
+        >
+          Agent
+        </button>
+        <button
+          class="tab"
+          type="button"
+          data-tab="skills"
+          aria-selected="false"
+        >
+          Skills
+        </button>
+      </nav>
+
+      <section class="panel is-active" data-panel="agent">
+        <div class="context-card">
+          <div class="context-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path
+                d="M12 3 4.5 7v10L12 21l7.5-4V7L12 3Zm0 2.2 5.2 2.8-5.2 2.8L6.8 8 12 5.2Zm-5.5 4.3 4.5 2.4v6.4l-4.5-2.4V9.5Zm6.5 8.8v-6.4l4.5-2.4v6.4L13 18.3Z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h2 data-context-title>当前 Figma 设计稿</h2>
+            <p data-context-description>
+              正在连接 Figma 选区，请在画布中选择要修改的图层。
+            </p>
+          </div>
+        </div>
+
+        <div class="conversation" aria-live="polite">
+          <article class="message message-agent">
+            <div class="avatar" aria-hidden="true">AI</div>
+            <div class="message-body">
+              <p>在 Figma 选中图层后，一键美化、资源位延展、人物战报会直接写回当前文件。</p>
+              <span>请先运行 Design Studio Bridge 插件，选区会显示在输入框上方。</span>
+            </div>
+          </article>
+        </div>
+
+        <section class="quick-skills" aria-labelledby="quick-skills-title">
+          <div class="section-title">
+            <h2 id="quick-skills-title">常用 Skills</h2>
+            <button class="text-button" type="button" data-show-all-skills>
+              查看全部
+            </button>
+          </div>
+          <div class="skill-grid">
+            <button class="skill-chip skill-chip-featured" type="button" data-skill="portrait-beautify">
+              <span aria-hidden="true">◎</span>
+              一键美化
+            </button>
+            <button class="skill-chip" type="button" data-skill="kv-resource-extension">
+              <span aria-hidden="true">▣</span>
+              资源位延展
+            </button>
+            <button class="skill-chip" type="button" data-skill="battle-report">
+              <span aria-hidden="true">✦</span>
+              人物战报
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel" data-panel="skills">
+        <div class="skills-heading">
+          <p class="eyebrow">SKILL LIBRARY</p>
+          <h2>选择设计能力</h2>
+          <p>选择后会带回 Agent 输入区。一键美化、资源位延展、人物战报会把结果写进当前 Figma 文件。</p>
+        </div>
+        <div class="skill-list">
+          <button class="skill-card" type="button" data-skill="portrait-beautify">
+            <span class="skill-card-icon" aria-hidden="true">◎</span>
+            <span>
+              <strong>一键美化</strong>
+              <small>把选中的主播人像复制进盛典竖版画板，保脸不改原图</small>
+            </span>
+          </button>
+          <button class="skill-card" type="button" data-skill="kv-resource-extension">
+            <span class="skill-card-icon" aria-hidden="true">▣</span>
+            <span>
+              <strong>资源位延展</strong>
+              <small>把选中 KV 复制到弹窗、直播封面、广场 banner 规格</small>
+            </span>
+          </button>
+          <button class="skill-card" type="button" data-skill="battle-report">
+            <span class="skill-card-icon" aria-hidden="true">✦</span>
+            <span>
+              <strong>人物战报</strong>
+              <small>选模板编号，把头像和文案落到可编辑战报画板</small>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <footer class="composer">
+        <section
+          class="selection-context"
+          data-selection-context
+          aria-live="polite"
+          aria-label="当前 Figma 选区"
+        >
+          <div class="selection-heading">
+            <strong data-selection-label>未选择图层</strong>
+            <span data-selection-page>等待 Figma</span>
+          </div>
+          <div class="selection-chips" data-selection-chips>
+            <span class="selection-empty">请先在 Figma 画布中选择图层</span>
+          </div>
+        </section>
+        <section class="batch-editor" data-batch-editor hidden>
+          <div class="batch-editor-heading">
+            <div>
+              <strong>多图层集中修改</strong>
+              <span data-batch-count>0 个目标</span>
+            </div>
+            <span class="batch-badge">批量</span>
+          </div>
+          <fieldset class="scope-switch" aria-label="图层修改方式">
+            <label class="scope-option is-active" data-scope-option="all">
+              <input type="radio" name="edit-scope" value="all" checked />
+              <span>
+                <strong>统一修改</strong>
+                <small>同一条指令应用到全部选中图层</small>
+              </span>
+            </label>
+            <label class="scope-option" data-scope-option="individual">
+              <input type="radio" name="edit-scope" value="individual" />
+              <span>
+                <strong>分别修改</strong>
+                <small>为每个图层补充不同要求</small>
+              </span>
+            </label>
+          </fieldset>
+          <p class="scope-hint" data-scope-hint>
+            下方主输入中的指令会同时作用于全部选中图层。
+          </p>
+          <div class="layer-instructions" data-layer-instructions hidden></div>
+        </section>
+        <div class="selected-skill" hidden>
+          <span aria-hidden="true">✦</span>
+          <span data-selected-skill-label></span>
+          <button
+            type="button"
+            data-clear-skill
+            aria-label="移除已选择的 Skill"
+          >
+            ×
+          </button>
+        </div>
+        <label class="sr-only" for="agent-prompt">给 Agent 的任务</label>
+        <textarea
+          id="agent-prompt"
+          rows="3"
+          maxlength="2000"
+          placeholder="选中图层后发送。一键美化 / 资源位延展 / 战报 3027，或直接说：文字改成「立即购买」"
+        ></textarea>
+        <div class="composer-actions">
+          <div class="secondary-actions">
+            <button type="button" aria-label="添加附件" title="添加附件">＋</button>
+            <button
+              type="button"
+              aria-label="选择 Skill"
+              title="选择 Skill"
+              data-open-skills
+            >
+              ◇
+            </button>
+          </div>
+          <button class="send-button" type="button" data-send aria-label="发送">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12 13-7-4.8 14-2.1-5.7L5 12Zm7.1-.5 1 2.6 1.8-5.3-4.8 2.6 2 .1Z" />
+            </svg>
+          </button>
+        </div>
+        <p class="composer-note" data-composer-note>
+          选择图层后输入指令，⌘/Ctrl + Enter 发送
+        </p>
+      </footer>
+    </main>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

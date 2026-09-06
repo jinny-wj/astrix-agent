@@ -1,0 +1,23 @@
+{
+  "name": "Design Studio Bridge",
+  "id": "design-studio-wj-bridge",
+  "api": "1.0.0",
+  "enablePrivatePluginApi": true,
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "relaunchButtons": [
+    {
+      "command": "relaunch",
+      "name": "Design Studio Bridge"
+    }
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "http://127.0.0.1:5273",
+      "http://localhost:5273"
+    ],
+    "reasoning": "Poll local Design Studio bridge queue to apply Agent write commands."
+  }
+}

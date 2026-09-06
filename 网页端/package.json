@@ -1,0 +1,35 @@
+{
+  "name": "design-studio-wj-web",
+  "description": "Design Studio WJ 网页端",
+  "author": "Design Studio WJ",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types --test server/*.test.ts server/agent/*.test.ts src/services/*.test.ts browser-extension/*.test.js",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "test:figma-bridge": "node --experimental-strip-types --test server/figmaBridgePlugin.test.ts server/figmaInstruction.test.ts server/webCapture.test.ts",
+    "test:figma-oauth-config": "node --experimental-strip-types --test server/figmaOAuthConfig.test.ts",
+    "test:figma-layer": "node --experimental-strip-types --test src/services/figmaLayer.test.ts",
+    "test:agent-composer": "node --experimental-strip-types --test server/agent/composer.test.ts server/agent/runtimePolicy.test.ts",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.220",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}
