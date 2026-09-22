@@ -8,6 +8,7 @@ Fallback: Claude Code SDK, then Hermes. The local demo shell is opt-in only.
 Read `skills/<name>/SKILL.md` before acting:
 
 - `portrait-beautify` — 一键美化，保脸
+- `person-poster-extension` — 单人海报延展，模板与图片/Excel 人物表，批量换人和完整昵称
 - `resource-extension` — 资源位延展
 - `battle-report` — 人物战报
 - `loop` — Codex official loop (`/loop 5m …`)

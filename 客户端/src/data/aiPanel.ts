@@ -41,6 +41,10 @@ export type QuickAction = {
 
 /** 输入框上方的能力标签组 */
 export const QUICK_ACTIONS: QuickAction[] = [
+  { label: '图片调整', glyph: 'image', accent: true },
+  { label: '资源位尺寸', glyph: 'spec', accent: true },
+  { label: 'H5 调整', glyph: 'component', accent: true },
+  { label: '单人海报延展', glyph: 'picture', accent: true },
   { label: '一键美化', glyph: 'sparkle', accent: true },
   { label: '资源位延展', glyph: 'zap', accent: true },
   { label: '批量生成', glyph: 'image' },

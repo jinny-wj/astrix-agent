@@ -12,6 +12,8 @@
 
 > **当前阶段：开发与本机验证。** 最新产品实现位于默认分支 [main](https://github.com/jinny-wj/astrix-agent/tree/main)，包含客户端、网页版、品牌素材和使用文档。仓库不提供已签名、公证的正式安装包。
 
+指定人员试用可使用客户端的 `pnpm desktop:dist:mac:private` 生成 DMG。适用范围、首次打开与账号配置见 [私发安装说明](客户端/docs/private-install.txt)。源码持续同步本仓库，安装包单独交付。
+
 ## 目录
 
 - [产品能力](#产品能力)

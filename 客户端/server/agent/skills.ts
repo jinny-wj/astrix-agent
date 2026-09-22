@@ -1,10 +1,13 @@
 export const SKILL_IDS = [
   'portrait-beautify',
+  'person-poster-extension',
   'kv-resource-extension',
   'battle-report',
   'visual-draft-generation',
   'code-from-figma',
   'layer-edit',
+  'image-adjust',
+  'h5-edit',
   'loop',
   'hermes',
 ] as const
@@ -45,7 +48,9 @@ export function parseBattleReportTemplateId(text: string): {
 export function pickSkill(message: string, preferred?: string): SkillId {
   const requested = preferred?.trim().toLowerCase() ?? ''
   if (requested) {
-    if (requested === 'portrait-beautify' || requested === 'person-poster-extension') {
+    if (requested === 'image-adjust' || requested === 'h5-edit') return requested
+    if (requested === 'person-poster-extension' || /(?:单人|人物|主播).*海报.*(?:延展|批量)/.test(requested)) return 'person-poster-extension'
+    if (requested === 'portrait-beautify') {
       return 'portrait-beautify'
     }
     if (requested === 'battle-report' || requested === 'local-life-material-maker') {
@@ -74,6 +79,9 @@ export function pickSkill(message: string, preferred?: string): SkillId {
   if (BATTLE_REPORT_IDS.some((id) => text.includes(id)) || /战报/.test(text)) {
     return 'battle-report'
   }
+  if (/(?:单人|人物|主播).*海报.*(?:延展|批量)|批量.*(?:换人|人物海报)|海报.*批量.*换人/.test(text)) return 'person-poster-extension'
+  if (/h5|移动端页面|落地页|自动布局|内边距|字号|行高/.test(text)) return 'h5-edit'
+  if (/图片.*(?:适应|填充|曝光|对比度|饱和度|色温)|图片调整/.test(text)) return 'image-adjust'
   if (/美化|修图|抠图|保脸/.test(text)) return 'portrait-beautify'
   if (/资源位|banner|封面|弹窗|延展/.test(text)) return 'kv-resource-extension'
   if (/海报|人像|主播|人脸/.test(text)) return 'portrait-beautify'
@@ -83,7 +91,25 @@ export function pickSkill(message: string, preferred?: string): SkillId {
 }
 
 export function skillBody(name: string) {
-  if (name === 'portrait-beautify' || name === 'person-poster-extension') {
+  if (name === 'image-adjust') return `## 图片调整
+
+- 针对当前选中的图片填充图层，支持图片适应、图片填充、曝光/对比度/饱和度/色温设为 -100% 到 100%。0% 为中性值，均为绝对值。
+- 例如：图片适应；图片曝光设为 15%；图片饱和度设为 -20%。
+- 保留原图内容，不把填充和调色描述为换脸、抠图或生成新图片。
+- 只有 Bridge 执行回执能证明已修改；未选图层时请用户先选择。`
+  if (name === 'h5-edit') return `## H5 设计稿调整
+
+- 当前支持 Figma 中的 H5 设计稿；已有 HTML 页面代码需要用户提供对应文件，不能声称已修改线上页面。
+- 文本图层：字号设为 24px；行高设为 36px；文字改成「立即参与」。
+- 圆角图层：圆角设为 16px。水平或垂直自动布局容器：间距设为 12px；内边距设为 24px；上内边距设为 32px。
+- 资源位画板：尺寸改为 375×812，或尺寸改为 H5首屏。修改画板尺寸不会自动设计或重排全部内容。
+- 未选中具体图层、缺少数值或存在歧义时先问清楚；不得把讨论和建议当作执行指令。
+- 执行以 Bridge 回执为准。`
+
+  if (name === 'person-poster-extension') {
+    return '先读 skills/person-poster-extension/SKILL.md 及其中引用的完整业务规则。模板与人物图片一一对应，默认仅换人物和完整昵称，每批最多10张。先确认真实图片生成服务和 Bridge 图片写入能力，未执行不得声称完成。'
+  }
+  if (name === 'portrait-beautify') {
     return `## 读取顺序
 
 - 先读 \`skills/portrait-beautify/SKILL.md\`。
@@ -167,7 +193,8 @@ export function skillBody(name: string) {
     return `## 读取顺序
 
 - 以当前 Figma 选区为准。
-- 只改文字、颜色、透明度、尺寸、位置、显隐或名称。
+- 支持文字、颜色、透明度、尺寸、位置、显隐、名称，以及图片适应/填充和调色、字号、行高、圆角、自动布局间距和内边距。
+- 常用规格可用：尺寸改为 直播广场banner / 直播封面 / 活动弹窗 / H5首屏。尺寸调整不是自动重排或生成新稿。
 
 ## 输入
 
@@ -187,7 +214,10 @@ export function skillBody(name: string) {
 }
 
 export function skillDisplayName(name: string) {
-  if (name === 'portrait-beautify' || name === 'person-poster-extension') return '一键美化'
+  if (name === 'image-adjust') return '图片调整'
+  if (name === 'h5-edit') return 'H5 调整'
+  if (name === 'person-poster-extension') return '单人海报延展'
+  if (name === 'portrait-beautify') return '一键美化'
   if (name === 'battle-report') return '人物战报'
   if (name === 'kv-resource-extension') return '资源位延展'
   if (name === 'visual-draft-generation') return '视觉稿生成'

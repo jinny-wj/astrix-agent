@@ -1,6 +1,6 @@
 import { Bell, Settings, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { startFigmaOAuth } from '../services/figmaAuth'
+import { onFigmaAuthSessionChange, startFigmaOAuth } from '../services/figmaAuth'
 import { importFigmaFile, importFigmaFileWithOAuth } from '../services/figmaApi'
 import { saveFigmaLibraryConfig } from '../services/figmaLibrary'
 import { loadStudioHealth, type StudioHealth } from '../services/studioHealth'
@@ -49,14 +49,16 @@ export function StudioHealthBanner() {
   const [health, setHealth] = useState<StudioHealth | null>(null)
 
   useEffect(() => {
-    void loadStudioHealth().then(setHealth).catch(() => setHealth(null))
+    const refresh = () => { void loadStudioHealth().then(setHealth).catch(() => setHealth(null)) }
+    refresh()
+    return onFigmaAuthSessionChange(refresh)
   }, [])
 
   if (!health) return null
   if (health.figma.authenticated) return null
   const detail = health.figma.configured
     ? '连接 Figma 后即可打开真实文件，团队页会自动记住，登录状态会保留到下次启动。'
-    : '先在当前应用目录配置 .env.local 里的 Figma OAuth，然后连接账号。'
+    : '此版本的 Figma 授权服务尚未就绪，需要应用维护者完成连接配置。'
 
   return (
     <div className="mx-auto mt-space-lg max-w-[1002px] rounded-[14px] border border-[#ead7b0] bg-[#fffaf0] px-space-lg py-space-md text-[13px] leading-6 text-[#6b4f1d]">
@@ -88,6 +90,7 @@ export function StudioSettingsDialog({
 
   useEffect(() => {
     void refresh().catch(() => {})
+    return onFigmaAuthSessionChange(() => { void refresh().catch(() => {}) })
   }, [])
 
   const saveTeams = async () => {
@@ -166,13 +169,11 @@ export function StudioSettingsDialog({
               health?.figma.authenticated
                 ? `已登录 ${health.figma.email ?? '当前账号'}，打开/新建文件将使用此账号。`
                 : health?.figma.configured
-                  ? 'OAuth 已配置，但当前浏览器会话未授权。'
-                  : '尚未配置 FIGMA_OAUTH_CLIENT_ID / SECRET。'
+                  ? '在浏览器中确认授权后，返回客户端即可继续。'
+                  : '授权服务尚未就绪，需要应用维护者完成连接配置。'
             }
             action={
-              health?.figma.configured
-                ? { label: health.figma.authenticated ? '切换账号' : '连接 Figma', onClick: () => startFigmaOAuth() }
-                : undefined
+              { label: health?.figma.authenticated ? '切换账号' : '连接 Figma', onClick: () => startFigmaOAuth() }
             }
           />
           <StatusRow

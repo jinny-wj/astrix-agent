@@ -27,6 +27,7 @@ type Middleware = (
 export type DesktopServer = {
   origin: string
   close: () => Promise<void>
+  configureFigmaOAuth: (options: FigmaOAuthPluginOptions) => void
 }
 
 export type DesktopServerOptions = {
@@ -35,6 +36,7 @@ export type DesktopServerOptions = {
   agentResourcesDirectory?: string
   host?: string
   port?: number
+  figmaOAuth?: FigmaOAuthPluginOptions
 }
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -282,11 +284,13 @@ export async function startDesktopServer({
   agentResourcesDirectory = appRoot,
   host = '127.0.0.1',
   port = 5273,
+  figmaOAuth,
 }: DesktopServerOptions): Promise<DesktopServer> {
   loadLocalEnvironment(appRoot)
   process.env.DESIGN_STUDIO_DATA_DIR = dataDirectory
   const agentWorkspace = prepareAgentWorkspace(dataDirectory, agentResourcesDirectory)
 
+  const activeOAuthOptions = figmaOAuth ?? oauthOptions()
   const middlewares: Middleware[] = [
     createDesktopStatusMiddleware(),
     createAgentMiddleware({
@@ -297,7 +301,7 @@ export async function startDesktopServer({
     }),
     createFigmaBridgeMiddleware(),
     createWebCaptureMiddleware(agentWorkspace),
-    createFigmaOAuthMiddleware(oauthOptions()),
+    createFigmaOAuthMiddleware(activeOAuthOptions),
     createFigmaRecentsMiddleware(),
     createStaticMiddleware(appRoot),
   ]
@@ -333,6 +337,7 @@ export async function startDesktopServer({
   if (address && typeof address === 'object') boundPort = address.port
   return {
     origin: `http://${host}:${boundPort}`,
+    configureFigmaOAuth: (options) => { Object.assign(activeOAuthOptions, options) },
     close: () =>
       new Promise<void>((resolvePromise, reject) => {
         server.close((error) => {

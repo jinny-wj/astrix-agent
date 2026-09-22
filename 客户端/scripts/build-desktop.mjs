@@ -15,7 +15,7 @@ const shared = {
 await build({
   ...shared,
   entryPoints: ['desktop/main.ts'],
-  external: ['electron', '@anthropic-ai/claude-agent-sdk'],
+  external: ['electron', '@anthropic-ai/claude-agent-sdk', 'exceljs'],
   format: 'esm',
   outfile: 'dist-electron/main.mjs',
 })
@@ -27,6 +27,7 @@ await build({
     shell: 'desktop/preload/shell.ts',
     home: 'desktop/preload/home.ts',
     agent: 'desktop/preload/agent.ts',
+    'oauth-setup': 'desktop/preload/oauth-setup.ts',
   },
   external: ['electron'],
   format: 'cjs',

@@ -2,6 +2,8 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve, sep } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import { readPeopleDocument, peopleDocumentText } from './peopleDocument.ts'
 import type {
   AgentAttachment,
   AgentAttachmentKind,
@@ -81,7 +83,7 @@ export function sanitizeAttachment(
   cwd: string,
 ): AgentAttachment | null {
   if (!isRecord(value) || typeof value.name !== 'string') return null
-  const name = safeFileName(value.name)
+  const name = value.name.split(/[/\\]/).pop()?.slice(0, 200) || 'file'
   const mime = typeof value.mime === 'string' && value.mime
     ? value.mime.slice(0, 120)
     : 'application/octet-stream'
@@ -121,7 +123,7 @@ export async function saveUploadedFiles(
   const saved: AgentAttachment[] = []
   for (const [index, file] of slice.entries()) {
     if (!isRecord(file) || typeof file.contentBase64 !== 'string') continue
-    const name = safeFileName(typeof file.name === 'string' ? file.name : `file-${index}`)
+    const name = (typeof file.name === 'string' ? file.name : `file-${index}`).split(/[/\\]/).pop()?.slice(0, 200) || 'file'
     const mime = typeof file.mime === 'string' && file.mime
       ? file.mime.slice(0, 120)
       : 'application/octet-stream'
@@ -132,8 +134,11 @@ export async function saveUploadedFiles(
       continue
     }
     if (buffer.length === 0 || buffer.length > MAX_ATTACHMENT_BYTES) continue
-    const id = `att-${Date.now().toString(36)}-${index}`
-    const dest = join(dir, `${id}-${name}`)
+    const id = `att-${randomUUID()}`
+    const dest = join(dir, `${id}-${safeFileName(name)}`)
+    const document = await readPeopleDocument(name, buffer, join(dir, `${id}-images`))
+    const parsed = document ? peopleDocumentText(document) : undefined
+    if (parsed && parsed.length > MAX_TEXT_CHARS) throw new Error('人物表格内容过多，请拆成较小的表格后上传，避免遗漏记录。')
     await writeFile(dest, buffer)
     const kind = inferAttachmentKind(name, mime)
     saved.push({
@@ -143,7 +148,7 @@ export async function saveUploadedFiles(
       size: buffer.length,
       kind,
       path: dest,
-      text: kind === 'text' ? buffer.toString('utf8').slice(0, MAX_TEXT_CHARS) : undefined,
+      text: parsed ?? (kind === 'text' ? buffer.toString('utf8').slice(0, MAX_TEXT_CHARS) : undefined),
     })
   }
   return saved
@@ -189,8 +194,8 @@ export function composerPromptBlock(input: {
       const shownPath = item.path && input.cwd
         ? relativeAttachmentPath(input.cwd, item.path)
         : item.path
-      if (item.kind === 'text' && item.text?.trim()) {
-        return `- ${item.name}（${item.mime}）内容：\n${item.text.trim()}`
+      if (item.text?.trim()) {
+        return `- ${item.name}（${item.mime}${shownPath ? `，本地路径 ${shownPath}` : ''}）内容：\n${item.text.trim()}`
       }
       if (shownPath) {
         return `- ${item.name}（${item.mime}，本地路径 ${shownPath}）。请用 Read 查看该文件。`

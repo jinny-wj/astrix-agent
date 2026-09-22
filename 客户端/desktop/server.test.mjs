@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
@@ -13,8 +13,8 @@ const built = await build({
   entryPoints: [join(appRoot, 'desktop/server.ts')], bundle: true, write: false,
   platform: 'node', format: 'esm', logLevel: 'silent',
   plugins: [{ name: 'external-sdk', setup(builder) {
-    builder.onResolve({ filter: /^@anthropic-ai\/claude-agent-sdk$/ }, () => ({
-      path: pathToFileURL(require.resolve('@anthropic-ai/claude-agent-sdk')).href, external: true,
+    builder.onResolve({ filter: /^(?:@anthropic-ai\/claude-agent-sdk|exceljs)$/ }, (args) => ({
+      path: pathToFileURL(require.resolve(args.path)).href, external: true,
     }))
   } }],
 })
@@ -46,6 +46,31 @@ function post(path, body) {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
   })
 }
+
+test('untrusted websites cannot trigger the local Agent or write attachments', async () => {
+  const attachments = join(dataDirectory, 'agent-workspace', '.design-studio', 'attachments')
+  const listing = () => { try { return readdirSync(attachments).sort() } catch { return [] } }
+  const beforeFiles = listing()
+  for (const origin of ['https://untrusted.example', 'null', 'http://127.0.0.1:5273.untrusted.example']) {
+    for (const path of ['/api/agent/attachments', '/api/agent/chat']) {
+      const response = await originalFetch(server.origin + path, {
+        method: 'POST', headers: { Origin: origin, 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ message: 'test', files: [{ name: 'cross-site.txt', mime: 'text/plain', contentBase64: 'dGVzdA==' }] }),
+      })
+      assert.equal(response.status, 403)
+      assert.equal(response.headers.get('Access-Control-Allow-Origin'), null)
+    }
+  }
+  assert.deepEqual(listing(), beforeFiles)
+  const simple = await originalFetch(server.origin + '/api/agent/attachments', {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: '{"files":[]}',
+  })
+  assert.equal(simple.status, 415)
+  const sameSite = await originalFetch(server.origin + '/api/agent/attachments', {
+    method: 'POST', headers: { Origin: 'http://127.0.0.1:5273', 'Content-Type': 'application/json' }, body: '{"files":[]}',
+  })
+  assert.equal(sameSite.status, 200)
+})
 
 const empty = {
   sessionId: 'empty-canvas-test', fileKey: 'empty_file123', pageId: '0:1',
@@ -95,6 +120,22 @@ test('a missing empty-canvas session cannot fall back to another open file', asy
   const events = await response.text()
   assert.match(events, /"status":"error"/)
   assert.doesNotMatch(events, /"status":"queued"/)
+})
+
+test('图片、资源位和 H5 聊天请求直达 Bridge 并等待执行回执', async () => {
+  const selected = { id: '1:1', name: '设计稿', type: 'TEXT', visible: true, locked: false, width: 100, height: 100,
+    supports: { text: true, fill: true, opacity: true, resize: true, move: true, visibility: true, rename: true } }
+  for (const [index, message, kinds] of [
+    [0, '图片填充；图片曝光设为 10%', ['set-image-mode', 'set-image-filter']],
+    [1, '尺寸改为 直播广场banner', ['resize']],
+    [2, '字号设为 24px；行高设为 36px', ['set-font-size', 'set-line-height']],
+    [3, '内边距设为 16px', Array(4).fill('set-layout-spacing')],
+  ]) {
+    const command = await queuedChat(message, { ...empty, sessionId: `adjust-${index}`, fileKey: `adjust_file${index}`, nodes: [selected] })
+    assert.equal(command.type, 'patch-nodes')
+    assert.equal(command.executionMode, 'atomic')
+    assert.deepEqual(command.targets[0].patches.map(p => p.kind), kinds)
+  }
 })
 
 test('desktop web capture serves its endpoint and stores images in the Agent workspace', async () => {

@@ -1,0 +1,25 @@
+:root { color-scheme: light dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1e293b; background: #f8fafc; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 520px; margin: 0 auto; padding: 32px; }
+.app-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: #fff; background: #5865f2; font-size: 26px; font-weight: 700; }
+h1 { font-size: 24px; margin: 20px 0 12px; }
+.intro { font-size: 14px; line-height: 1.75; color: #475569; margin: 0 0 24px; }
+label { display: block; font-size: 14px; font-weight: 600; margin: 18px 0 8px; }
+input { width: 100%; height: 44px; border: 1px solid #cbd5e1; border-radius: 9px; color: inherit; background: #fff; padding: 10px 12px; font-size: 15px; }
+input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 2px; }
+.storage-note { font-size: 12px; color: #64748b; line-height: 1.7; margin: 12px 0 4px; }
+#status { min-height: 24px; font-size: 13px; line-height: 1.7; margin: 10px 0; color: #475569; }
+#status[data-error="true"] { color: #b42318; }
+button { display: block; width: 100%; padding: 13px 18px; border: 0; border-radius: 10px; background: #4f46e5; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+button:disabled { opacity: .6; cursor: default; }
+.management-link { display: block; margin-top: 20px; text-align: center; color: #4f46e5; font-size: 13px; text-decoration: none; }
+.management-link:hover { text-decoration: underline; }
+@media (prefers-color-scheme: dark) {
+  :root { color: #e2e8f0; background: #171923; }
+  .intro, #status { color: #cbd5e1; }
+  input { background: #222634; border-color: #475569; }
+  .storage-note { color: #94a3b8; }
+  .management-link { color: #a5b4fc; }
+  #status[data-error="true"] { color: #fda29b; }
+}

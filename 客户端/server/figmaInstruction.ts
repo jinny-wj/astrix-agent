@@ -1,3 +1,4 @@
+import { DESIGN_ADJUSTMENT_KINDS, parseDesignAdjustment, validateDesignAdjustment } from './designAdjustments.ts'
 import type {
   FigmaEditIntent,
   FigmaSelectionSnapshot,
@@ -326,6 +327,18 @@ function parseClause(
 ): FigmaInstructionParseResult {
   const clause = normalizeClause(rawClause)
 
+  const adjustments = parseDesignAdjustment(clause)
+  if (adjustments) {
+    for (const patch of adjustments) {
+      if (patch.kind !== 'resize') {
+        const error = validateDesignAdjustment(patch)
+        if (error) return fail('INVALID_VALUE', error)
+      }
+    }
+    patches.push(...adjustments)
+    return { ok: true, patches, summary: '' }
+  }
+
   if (/^(?:取消隐藏|显示|设为显示|设置为显示|设为可见|设置为可见)$/.test(clause)) {
     patches.push({ kind: 'set-visible', value: true })
     return { ok: true, patches, summary: '' }
@@ -430,6 +443,12 @@ function formatColor(color: FigmaSolidColor) {
 function describePatches(patches: FigmaEditIntent[]) {
   return patches.map((patch) => {
     switch (patch.kind) {
+      case 'set-image-mode': return patch.value === 'FIT' ? '图片完整显示' : '图片铺满图层'
+      case 'set-image-filter': return `图片${({ exposure: '曝光', contrast: '对比度', saturation: '饱和度', temperature: '色温' })[patch.filter]}设为 ${Math.round(patch.value * 100)}%`
+      case 'set-corner-radius': return `圆角设为 ${patch.value}px`
+      case 'set-font-size': return `字号设为 ${patch.value}px`
+      case 'set-line-height': return `行高设为 ${patch.value}px`
+      case 'set-layout-spacing': return `${({ itemSpacing: '间距', paddingTop: '上内边距', paddingRight: '右内边距', paddingBottom: '下内边距', paddingLeft: '左内边距' })[patch.property]}设为 ${patch.value}px`
       case 'replace-text':
         return `文字改为“${patch.value.length > 20 ? `${patch.value.slice(0, 20)}…` : patch.value}”`
       case 'set-fill-color':
@@ -456,7 +475,13 @@ function validatePatches(
 ): FigmaInstructionParseResult | null {
   const supportFor = (patch: FigmaEditIntent) => {
     switch (patch.kind) {
+      case 'set-font-size':
+      case 'set-line-height':
       case 'replace-text': return 'text' as const
+      case 'set-image-mode':
+      case 'set-image-filter': return 'fill' as const
+      case 'set-corner-radius':
+      case 'set-layout-spacing': return 'resize' as const
       case 'set-fill-color': return 'fill' as const
       case 'set-opacity': return 'opacity' as const
       case 'resize': return 'resize' as const
@@ -468,6 +493,10 @@ function validatePatches(
   }
 
   for (const patch of patches) {
+    if ((DESIGN_ADJUSTMENT_KINDS as readonly string[]).includes(patch.kind)) {
+      const error = validateDesignAdjustment(patch)
+      if (error) return fail('INVALID_VALUE', error)
+    }
     const support = supportFor(patch)
     const unsupported = selection.nodes.filter((node) => !node.supports[support])
     if (unsupported.length > 0) {

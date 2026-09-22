@@ -26,10 +26,10 @@ import type { FigmaSelectedNode, FigmaSelectionSnapshot } from '../src/types/fig
 const AGENT_PREFIX = '/api/agent'
 
 function isAllowedOrigin(origin: string | undefined) {
-  if (!origin || origin === 'null') return true
+  if (!origin) return true
   if (origin === 'http://127.0.0.1:5273') return true
   if (origin === 'http://localhost:5273') return true
-  return origin.startsWith('chrome-extension://')
+  return /^chrome-extension:\/\/[a-p]{32}$/.test(origin)
 }
 
 function setCorsHeaders(request: IncomingMessage, response: ServerResponse) {
@@ -509,8 +509,20 @@ export function createAgentMiddleware(options: AgentPluginOptions) {
       return
     }
 
+    // CORS headers alone do not stop cross-site requests from executing locally.
+    if (!isAllowedOrigin(request.headers.origin)) {
+      sendJson(request, response, 403, { error: '不允许此来源访问本机 Agent' })
+      return
+    }
+
     if (request.method === 'OPTIONS') {
       sendJson(request, response, 204, {})
+      return
+    }
+
+    if (request.method === 'POST'
+      && request.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
+      sendJson(request, response, 415, { error: '请求必须使用 application/json' })
       return
     }
 
@@ -520,7 +532,7 @@ export function createAgentMiddleware(options: AgentPluginOptions) {
       request.method === 'GET'
       && requestUrl.pathname === `${AGENT_PREFIX}/status`
     ) {
-      void collectStatusSnapshot(runtime.meta).then((snapshot) => {
+      void collectStatusSnapshot(runtime.meta, options.cwd).then((snapshot) => {
         sendJson(request, response, 200, snapshot)
       }).catch((error: unknown) => {
         sendJson(request, response, 500, {

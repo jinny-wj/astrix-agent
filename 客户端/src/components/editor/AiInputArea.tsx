@@ -1,5 +1,9 @@
 import {
   CircleDashed,
+  Folder,
+  Laptop,
+  Cloud,
+  GitBranch,
   Image as ImageIcon,
   ArrowUp,
   X,
@@ -34,6 +38,8 @@ import type {
   AgentMcpService,
   AgentStatusSnapshot,
 } from '../../types/agentComposer'
+import PersonPosterDialog from './PersonPosterDialog'
+import DesignAdjustmentPanel, { type AdjustmentTab } from './DesignAdjustmentPanel'
 import ModelSwitcher from '../ModelSwitcher'
 import PlusComposerMenu, {
   type ComposerPanel,
@@ -106,6 +112,9 @@ function FigmaGlyph() {
 }
 
 const SKILL_CONTEXT: AgentContextItem[] = [
+  { id: 'skill:image-adjust', kind: 'skill', label: '图片调整', skill: 'image-adjust' },
+  { id: 'skill:h5-edit', kind: 'skill', label: 'H5 调整', skill: 'h5-edit' },
+  { id: 'skill:person-poster-extension', kind: 'skill', label: '单人海报延展', skill: 'person-poster-extension' },
   { id: 'skill:portrait-beautify', kind: 'skill', label: '一键美化', skill: 'portrait-beautify' },
   { id: 'skill:kv-resource-extension', kind: 'skill', label: '资源位延展', skill: 'kv-resource-extension' },
   { id: 'skill:visual-draft-generation', kind: 'skill', label: '视觉稿生成', skill: 'visual-draft-generation' },
@@ -147,10 +156,13 @@ export default function AiInputArea({
     () => readPreferredBackend(),
   )
   const [status, setStatus] = useState<AgentStatusSnapshot | null>(null)
+  const [statusLoading, setStatusLoading] = useState(true)
   const [recentFiles, setRecentFiles] = useState<AgentContextItem[]>([])
   const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const plusRef = useRef<HTMLDivElement>(null)
+  const [posterOpen, setPosterOpen] = useState(false)
+  const [adjustmentTab, setAdjustmentTab] = useState<AdjustmentTab | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => window.designStudioAgentHost?.onUiAction?.((action) => {
     setEmojiOpen(false)
@@ -257,8 +269,8 @@ export default function AiInputArea({
   }, [plusOpen, emojiOpen])
 
   useEffect(() => {
-    if (!plusOpen) return undefined
     let cancelled = false
+    setStatusLoading(true)
     void getAgentStatus()
       .then((snapshot) => {
         if (!cancelled) setStatus(snapshot)
@@ -266,6 +278,13 @@ export default function AiInputArea({
       .catch(() => {
         if (!cancelled) setStatus(null)
       })
+      .finally(() => { if (!cancelled) setStatusLoading(false) })
+    return () => { cancelled = true }
+  }, [plusOpen])
+
+  useEffect(() => {
+    if (!plusOpen) return undefined
+    let cancelled = false
     void requestRecentFigmaFiles(800).then((result) => {
       if (cancelled) return
       setRecentFiles(
@@ -291,13 +310,25 @@ export default function AiInputArea({
 
   const addFiles = async (list: FileList | null) => {
     if (!list || list.length === 0) return
+    // FileList is live: the input is reset by onChange before asynchronous reads finish.
+    const files = Array.from(list)
     setUploadError('')
-    const local = await readLocalFiles(list)
-    setAttachments((current) => [...current, ...local].slice(0, 8))
+    if (files.length + attachments.length > 8) {
+      setUploadError('最多添加 8 个附件；更多人物请放入 Excel 表格。')
+      return
+    }
+    if (files.some(file => file.size > 4 * 1024 * 1024 || file.size === 0)) {
+      setUploadError('请上传非空且不超过 4 MB 的文件。')
+      return
+    }
+    const local = await readLocalFiles(files)
+    setAttachments((current) => [...current, ...local])
     try {
-      const uploaded = await uploadAgentAttachments(await filesToUploadPayload(list))
+      const uploaded = await uploadAgentAttachments(await filesToUploadPayload(files))
+      if (uploaded.length !== local.length) throw new Error('部分附件未上传成功，请移除后重新上传。')
       setAttachments((current) => current.map((item) => {
-        const match = uploaded.find((file) => file.name === item.name)
+        const index = local.findIndex(file => file.id === item.id)
+        const match = index >= 0 ? uploaded[index] : undefined
         return match ? { ...item, ...match, previewUrl: item.previewUrl } : item
       }))
     } catch (error) {
@@ -339,7 +370,11 @@ export default function AiInputArea({
 
   const handleQuickAction = (action: QuickAction) => {
     if (disabled) return
+    const adjustment = ({ '图片调整': 'image', '资源位尺寸': 'resource', 'H5 调整': 'h5' } as const)[action.label as '图片调整' | '资源位尺寸' | 'H5 调整']
+    if (adjustment) { setAdjustmentTab(current => current === adjustment ? null : adjustment); return }
+    if (action.label === '单人海报延展') { setPosterOpen(true); return }
     const skillByLabel: Record<string, string> = {
+      单人海报延展: 'person-poster-extension',
       一键美化: 'portrait-beautify',
       资源位延展: 'kv-resource-extension',
       人物战报: 'battle-report',
@@ -474,6 +509,15 @@ export default function AiInputArea({
 
   return (
     <div className="px-[14px] pb-[12px] pt-[10px]">
+      {posterOpen && <PersonPosterDialog attachments={attachments} brief={value} uploadError={uploadError} onClose={() => setPosterOpen(false)} onAddFiles={pickFiles} onPrepare={(text) => {
+        const payload = buildPayload(text, 'person-poster-extension')
+        setPosterOpen(false)
+        setValue('')
+        attachments.forEach(revokeAttachmentPreview)
+        setAttachments([])
+        setContextRefs([])
+        onSend?.(payload.text, payload.skill, payload.extras)
+      }} />}
       <div className="flex flex-wrap gap-[7px] pb-[12px]">
         {QUICK_ACTIONS.map((action) => (
           <button
@@ -488,6 +532,28 @@ export default function AiInputArea({
         ))}
       </div>
 
+      {adjustmentTab && <DesignAdjustmentPanel key={adjustmentTab} tab={adjustmentTab} layerCount={layers.length} onClose={() => setAdjustmentTab(null)} onPrepare={instruction => {
+        setValue(current => current.trim() ? `${current.trim()}；${instruction}` : instruction)
+        setAdjustmentTab(null)
+        requestAnimationFrame(() => textareaRef.current?.focus())
+      }} />}
+      <div className="ai-reference-composer">
+      <div className="ai-reference-context" aria-label="当前工作上下文">
+        <span className="ai-reference-context-file" title={figmaDocument?.file.name || status?.workspace?.name || workspaceFileName || '当前工作区'}>
+          <Folder size={15} aria-hidden="true" />
+          <span>{figmaDocument?.file.name || status?.workspace?.name || workspaceFileName || '当前工作区'}</span>
+        </span>
+        <span className="ai-reference-context-location" title={status ? (status.mode === 'remote' ? '远程运行' : '本机运行') : (statusLoading ? '正在读取运行位置' : '暂时无法读取运行位置')}>
+          {status?.mode === 'remote' ? <Cloud size={15} aria-hidden="true" /> : <Laptop size={15} aria-hidden="true" />}
+          {status ? (status.mode === 'remote' ? 'Remote' : 'Local') : (statusLoading ? '读取中…' : '位置未知')}
+        </span>
+        {status?.workspace?.branch && (
+          <span className="ai-reference-context-branch" title={status.workspace.branch}>
+            <GitBranch size={15} aria-hidden="true" />
+            <span>{status.workspace.branch}</span>
+          </span>
+        )}
+      </div>
       <div className="ai-reference-input">
         {figmaActive && (
           <div className="mb-2 text-[11px] leading-5" role="status" aria-live="polite">
@@ -654,7 +720,7 @@ export default function AiInputArea({
               ref={fileInputRef}
               type="file"
               multiple
-              accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.svg,.pdf,.txt,.md,.json,.csv,.fig"
+              accept="image/*,.png,.jpg,.jpeg,.webp,.gif,.svg,.pdf,.txt,.md,.json,.csv,.tsv,.xlsx,.fig"
               className="hidden"
               onChange={(event) => {
                 void addFiles(event.target.files)
@@ -722,9 +788,8 @@ export default function AiInputArea({
             {canSend ? <ArrowUp size={18} strokeWidth={1.8} /> : <img src="/assets/agent-reference/send.svg" alt="" />}
           </button>
         </div>
-      </div>
 
-      <div className="mt-[9px] flex min-w-0 items-center justify-between gap-2 text-[11.5px]">
+      <div className="ai-reference-status">
         <div className="flex items-center gap-[13px] text-[#8a8a90]">
           <span className="flex items-center gap-[4px]">
             <CircleDashed size={11} strokeWidth={2} />0%
@@ -734,10 +799,12 @@ export default function AiInputArea({
             100%
           </span>
         </div>
-        <ModelSwitcher variant="plain" />
-        <span className="min-w-0 truncate text-[#3fa96a]" title={activeLayer?.name}>
+        <div className="ai-reference-model"><ModelSwitcher variant="plain" /></div>
+        <span className="ai-reference-target" title={activeLayer ? `已对准 ${activeLayer.name}` : '点选图层即可对准'}>
           {activeLayer ? `已对准 ${activeLayer.name}` : '点选图层即可对准'}
         </span>
+      </div>
+      </div>
       </div>
     </div>
   )

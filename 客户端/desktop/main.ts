@@ -5,6 +5,7 @@ import {
   ipcMain,
   Menu,
   session,
+  safeStorage,
   shell,
   WebContentsView,
   type Session,
@@ -19,7 +20,9 @@ import {
 import { randomUUID } from 'node:crypto'
 import { join } from 'node:path'
 import { startDesktopServer, type DesktopServer } from './server'
-import { canNavigateFigmaOAuth } from './oauthNavigation'
+import { readFigmaOAuthSettings, saveFigmaOAuthSettings } from './figmaOAuthSettings'
+import { prepareStartup } from './startup'
+import { canNavigateFigmaOAuth, canOpenFigmaAuthInBrowser, browserOAuthStartUrl } from './oauthNavigation'
 import {
   DESKTOP_APP_ID,
   DESKTOP_PROTOCOL_VERSION,
@@ -80,6 +83,8 @@ import { sanitizeChromeProfile } from './chromeProfile'
 
 let chromeProfile: ReturnType<typeof sanitizeChromeProfile> = null
 let mainWindow: BrowserWindow | null = null
+let startupWindow: BrowserWindow | null = null
+let startupComplete = false
 let homeView: WebContentsView | null = null
 let agentView: WebContentsView | null = null
 let activeTabId = HOME_TAB_ID
@@ -95,6 +100,10 @@ const visibleViews = new Set<WebContentsView>()
 const authWindows = new Set<BrowserWindow>()
 let pendingFigmaOpen: OpenFigmaPayload | null = null
 let finishingOAuth = false
+let activeOAuthWindow: BrowserWindow | null = null
+let activeOAuthTarget: string | null = null
+let oauthSetupWindow: BrowserWindow | null = null
+let oauthSetupReturnUrl = `${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`
 let continueOAuthInBrowser: (() => void) | null = null
 
 function figmaBrowserSession() {
@@ -148,15 +157,7 @@ async function appCookieHeader() {
   return cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ')
 }
 
-async function hasFigmaWebSession() {
-  const cookies = await figmaBrowserSession().cookies.get({ url: 'https://www.figma.com' })
-  return cookies.some((cookie) => {
-    const name = cookie.name.toLowerCase()
-    return name.includes('session') || name.includes('figma') || name.includes('auth')
-  })
-}
-
-async function fetchOAuthAuthenticated() {
+async function fetchOAuthState() {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 1_200)
   try {
@@ -166,11 +167,11 @@ async function fetchOAuthAuthenticated() {
       signal: controller.signal,
       headers: cookie ? { Cookie: cookie } : undefined,
     })
-    if (!response.ok) return false
-    const payload = (await response.json()) as { authenticated?: boolean }
-    return payload.authenticated === true
+    if (!response.ok) return null
+    const payload = (await response.json()) as { configured?: boolean; authenticated?: boolean }
+    return { configured: payload.configured === true, authenticated: payload.authenticated === true }
   } catch {
-    return false
+    return null
   } finally {
     clearTimeout(timeout)
   }
@@ -186,8 +187,10 @@ async function clearFigmaWebSession() {
 }
 
 async function ensureFigmaWebSession() {
-  if (await hasFigmaWebSession()) return true
-  if (!(await fetchOAuthAuthenticated())) return true
+  const state = await fetchOAuthState()
+  // API authorization returned from the system browser does not copy Figma web
+  // cookies into Electron. Requiring both would create an endless OAuth loop.
+  if (state?.authenticated) return true
   openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=${encodeURIComponent('/')}`)
   return false
 }
@@ -593,7 +596,7 @@ function isLocalAppUrl(value: string) {
 function isFigmaOAuthStartUrl(value: string) {
   try {
     const url = new URL(value)
-    return url.origin === SERVER_ORIGIN
+    return !url.username && !url.password && url.origin === SERVER_ORIGIN
       && url.pathname === '/api/auth/figma/start'
   } catch {
     return false
@@ -633,15 +636,49 @@ async function completeOAuthReturn(value: string, oauthWindow: BrowserWindow) {
         agentView.webContents.reload()
       }
     }
-    flushPendingFigmaOpen()
+    if (url.searchParams.get('figma_auth') === 'connected') {
+      flushPendingFigmaOpen()
+      mainWindow?.show()
+      mainWindow?.focus()
+    } else {
+      pendingFigmaOpen = null
+    }
   } finally {
     if (!oauthWindow.isDestroyed()) oauthWindow.close()
     finishingOAuth = false
   }
 }
 
-function openFigmaOAuthWindow(startUrl: string, browserOnly = false) {
+function openFigmaOAuthSetup(startUrl: string) {
+  oauthSetupReturnUrl = startUrl
+  if (oauthSetupWindow && !oauthSetupWindow.isDestroyed()) {
+    oauthSetupWindow.show()
+    oauthSetupWindow.focus()
+    return
+  }
+  oauthSetupWindow = new BrowserWindow({
+    parent: mainWindow ?? undefined, width: 580, height: 620, show: false,
+    title: '配置 Figma 连接',
+    webPreferences: { preload: preloadPath('preload-oauth-setup.cjs'), nodeIntegration: false, contextIsolation: true, sandbox: true, webSecurity: true },
+  })
+  const window = oauthSetupWindow
+  window.webContents.on('will-navigate', event => event.preventDefault())
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if (url === 'https://www.figma.com/developers/apps') void shell.openExternal(url)
+    return { action: 'deny' }
+  })
+  window.on('closed', () => { if (oauthSetupWindow === window) oauthSetupWindow = null })
+  window.once('ready-to-show', () => window.show())
+  void window.loadFile(join(appRoot(), 'desktop', 'renderer', 'figma-oauth-setup.html'))
+}
+
+function openFigmaOAuthWindow(startUrl: string, browserOnly = true) {
   if (!isFigmaOAuthStartUrl(startUrl)) return
+  if (activeOAuthWindow && !activeOAuthWindow.isDestroyed()) {
+    if (activeOAuthTarget) void shell.openExternal(activeOAuthTarget)
+    else { activeOAuthWindow.show(); activeOAuthWindow.focus() }
+    return
+  }
   const oauthWindow = new BrowserWindow({
     parent: mainWindow ?? undefined,
     width: 860,
@@ -655,15 +692,13 @@ function openFigmaOAuthWindow(startUrl: string, browserOnly = false) {
       ...FIGMA_WEB_PREFS,
     },
   })
+  activeOAuthWindow = oauthWindow
   let browserMode = browserOnly
   let fallbackPromptOpen = false
   const useBrowser = () => {
     if (oauthWindow.isDestroyed()) return
     browserMode = true
-    const handoffUrl = new URL(startUrl)
-    handoffUrl.searchParams.set('handoff', '1')
-    void oauthWindow.loadURL(handoffUrl.toString()).catch(() => {})
-    oauthWindow.show()
+    void oauthWindow.loadURL(browserOAuthStartUrl(startUrl, SERVER_ORIGIN)).catch(() => { oauthWindow.show() })
   }
   const offerBrowser = async () => {
     if (browserMode || fallbackPromptOpen || oauthWindow.isDestroyed()) return
@@ -684,10 +719,20 @@ function openFigmaOAuthWindow(startUrl: string, browserOnly = false) {
   authWindows.add(oauthWindow)
   oauthWindow.on('closed', () => {
     authWindows.delete(oauthWindow)
+    if (activeOAuthWindow === oauthWindow) { activeOAuthWindow = null; activeOAuthTarget = null }
+    if (!finishingOAuth) pendingFigmaOpen = null
     if (continueOAuthInBrowser === useBrowser) continueOAuthInBrowser = null
   })
 
   const allowOAuthNavigation = (event: Electron.Event, value: string) => {
+    try {
+      const target = new URL(value)
+      if (target.origin === SERVER_ORIGIN && target.pathname === '/api/auth/figma/setup') {
+        event.preventDefault()
+        openFigmaOAuthSetup(startUrl)
+        return
+      }
+    } catch { event.preventDefault(); return }
     if (browserMode ? isLocalAppUrl(value) : canNavigateFigmaOAuth(value, SERVER_ORIGIN)) return
     event.preventDefault()
     if (!browserMode) void offerBrowser()
@@ -696,8 +741,9 @@ function openFigmaOAuthWindow(startUrl: string, browserOnly = false) {
   oauthWindow.webContents.setWindowOpenHandler(({ url }) => {
     try {
       const target = new URL(url)
-      if (browserMode && target.origin === 'https://www.figma.com' && target.pathname === '/oauth') {
-        void shell.openExternal(url)
+      if (browserMode && canOpenFigmaAuthInBrowser(url)) {
+        activeOAuthTarget = url
+        void shell.openExternal(url).catch(() => { oauthWindow.show() })
       } else if (!browserMode && target.protocol === 'https:') {
         // Federated sign-in should use the system browser, never a spoofed user agent.
         void offerBrowser()
@@ -719,12 +765,18 @@ function openFigmaOAuthWindow(startUrl: string, browserOnly = false) {
     void completeOAuthReturn(oauthWindow.webContents.getURL(), oauthWindow)
   })
   oauthWindow.webContents.on('did-navigate', (_event, _url, statusCode) => {
-    if (statusCode >= 400) void offerBrowser()
+    if (statusCode >= 400) {
+      if (browserMode) oauthWindow.show()
+      else void offerBrowser()
+    }
   })
   oauthWindow.webContents.on('did-fail-load', (_event, errorCode, _description, _url, isMainFrame) => {
-    if (isMainFrame && errorCode !== -3) void offerBrowser()
+    if (isMainFrame && errorCode !== -3) {
+      if (browserMode) oauthWindow.show()
+      else void offerBrowser()
+    }
   })
-  oauthWindow.once('ready-to-show', () => oauthWindow.show())
+  oauthWindow.once('ready-to-show', () => { if (!browserMode) oauthWindow.show() })
   if (browserOnly) useBrowser()
   else {
     const nativeUrl = new URL(startUrl)
@@ -1107,6 +1159,31 @@ function destroyWorkspaceViews() {
 }
 
 function registerIpc() {
+  ipcMain.handle('desktop-oauth:save', async (event, payload: unknown) => {
+    if (!oauthSetupWindow || event.sender !== oauthSetupWindow.webContents) return { ok: false, message: '无法保存配置。' }
+    if (!ownedServer) return { ok: false, message: '请关闭其他 Astrix 实例，再重新打开客户端。' }
+    try {
+      const directory = join(app.getPath('userData'), 'data')
+      await saveFigmaOAuthSettings(directory, payload, safeStorage)
+      const settings = await readFigmaOAuthSettings(directory, safeStorage)
+      if (!settings) return { ok: false, message: '未能读取保存的配置。' }
+      ownedServer.configureFigmaOAuth(settings)
+      // Settings have no renderer-readable retrieval endpoint.
+      const nextUrl = oauthSetupReturnUrl
+      setTimeout(() => {
+        // Preserve the pending file while replacing the unavailable screen.
+        const pending = pendingFigmaOpen
+        activeOAuthWindow?.close()
+        pendingFigmaOpen = pending
+        oauthSetupWindow?.close()
+        homeView?.webContents.reload()
+        openFigmaOAuthWindow(nextUrl)
+      }, 150)
+      return { ok: true }
+    } catch {
+      return { ok: false, message: '无法保存配置，请检查两项内容并确认系统钥匙串可用。' }
+    }
+  })
   ipcMain.on('desktop-profile:update', (event, value: unknown) => {
     if (event.sender !== homeView?.webContents && event.sender !== agentView?.webContents) return
     chromeProfile = sanitizeChromeProfile(value)
@@ -1222,7 +1299,7 @@ function buildApplicationMenu() {
           click: revealBridgePlugin,
         },
         {
-          label: '连接 Figma（客户端窗口）',
+          label: '连接 Figma',
           click: () => openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`),
         },
         {
@@ -1239,6 +1316,10 @@ function buildApplicationMenu() {
           click: closeActiveTabOrWindow,
         },
       ],
+    },
+    {
+      label: '开发',
+      submenu: [{ label: 'Figma 应用配置', click: () => openFigmaOAuthSetup(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`) }],
     },
     { role: 'editMenu' },
     {
@@ -1344,6 +1425,7 @@ async function ensureDesktopServer() {
   }
   ownedServer = await startDesktopServer({
     appRoot: appRoot(),
+    figmaOAuth: await readFigmaOAuthSettings(join(app.getPath('userData'), 'data'), safeStorage) ?? undefined,
     dataDirectory: join(app.getPath('userData'), 'data'),
     agentResourcesDirectory: app.isPackaged
       ? join(process.resourcesPath, 'agent-resources')
@@ -1352,11 +1434,24 @@ async function ensureDesktopServer() {
   serverMode = 'embedded'
 }
 
+// Keep the original profile and instance lock when the packaged app is renamed.
+if (app.isPackaged) {
+  const profilePath = join(app.getPath('appData'), 'Design Studio')
+  mkdirSync(profilePath, { recursive: true })
+  app.setPath('userData', profilePath)
+  app.setPath('sessionData', profilePath)
+}
 const hasSingleInstanceLock = app.requestSingleInstanceLock()
 if (!hasSingleInstanceLock) {
   app.quit()
 } else {
   app.on('second-instance', () => {
+    if (startupWindow) {
+      startupWindow.restore()
+      startupWindow.show()
+      startupWindow.focus()
+      return
+    }
     if (!mainWindow) return
     if (mainWindow.isMinimized()) mainWindow.restore()
     mainWindow.show()
@@ -1374,6 +1469,10 @@ if (!hasSingleInstanceLock) {
   })
 
   app.on('activate', () => {
+    if (!startupComplete) {
+      startupWindow?.show()
+      return
+    }
     if (!mainWindow && !quitting) createWorkspaceWindow()
   })
 
@@ -1390,16 +1489,41 @@ if (!hasSingleInstanceLock) {
       .replace(/\sElectron\/[^\s]+/g, '')
       .replace(new RegExp(`\\s${APP_NAME.replace(/\s/g, '\\s')}\/[^\\s]+`, 'g'), '')
     try {
-      await ensureDesktopServer()
+      startupWindow = new BrowserWindow({
+        width: 520, height: 350, resizable: false, show: true,
+        title: `正在启动 · ${APP_NAME}`, backgroundColor: '#f7f8fa',
+        webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true },
+      })
+      startupWindow.on('closed', () => {
+        startupWindow = null
+        if (!startupComplete) app.quit()
+      })
+      startupWindow.webContents.on('will-navigate', (event) => event.preventDefault())
+      startupWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+      await startupWindow.loadFile(join(appRoot(), 'desktop', 'renderer', 'startup.html'))
+      const prepared = await prepareStartup(ensureDesktopServer, async (error) => {
+        if (!startupWindow || quitting) return false
+        const result = await dialog.showMessageBox(startupWindow, {
+          type: 'error', title: `${APP_NAME} 启动未完成`,
+          message: '未能完成启动，请处理下面的问题后重试。',
+          detail: error instanceof Error ? error.message : '本地服务暂时不可用。',
+          buttons: ['重试', '退出'], defaultId: 0, cancelId: 1,
+        })
+        return result.response === 0
+      }, () => quitting || !startupWindow)
+      if (!prepared) { app.quit(); return }
       configureFigmaSession()
       await copyPartitionCookies(
         figmaBrowserSession(),
         session.defaultSession,
         SERVER_ORIGIN,
       )
+      if (quitting) return
       registerIpc()
       buildApplicationMenu()
       createWorkspaceWindow()
+      startupComplete = true
+      startupWindow?.destroy()
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error)
       await dialog.showMessageBox({
@@ -1407,7 +1531,7 @@ if (!hasSingleInstanceLock) {
         title: `${APP_NAME} 无法启动`,
         message: '本地服务启动失败',
         detail:
-          `${detail}\n\n请确认 127.0.0.1:5273 没有被其他程序占用，然后重新打开应用。`,
+          `${detail}\n\n请处理上述问题后重新打开应用。`,
       })
       app.quit()
     }

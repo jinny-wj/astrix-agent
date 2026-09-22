@@ -1,0 +1,8 @@
+body { margin: 0; background: #f7f8fa; color: #283344; font: 15px/1.7 -apple-system, BlinkMacSystemFont, sans-serif; }
+main { padding: 44px; }
+h1 { font-size: 23px; margin: 18px 0 12px; }
+p { margin: 8px 0; }
+.hint { color: #788394; font-size: 12px; }
+.spinner { width: 24px; height: 24px; border: 3px solid #dfe6f5; border-top-color: #386deb; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }

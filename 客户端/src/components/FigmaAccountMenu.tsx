@@ -1,11 +1,9 @@
 import {
   Check,
   ChevronDown,
-  ExternalLink,
   LoaderCircle,
   LogOut,
   RefreshCw,
-  X,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import {
@@ -13,6 +11,7 @@ import {
   disconnectFigma,
   FIGMA_AUTH_RESULT_MESSAGES,
   getFigmaAuthSession,
+  onFigmaAuthSessionChange,
   startFigmaOAuth,
   type FigmaAuthSession,
 } from '../services/figmaAuth'
@@ -21,10 +20,6 @@ type LoadState =
   | { status: 'loading' }
   | { status: 'ready'; session: FigmaAuthSession }
   | { status: 'error'; message: string }
-
-const FIGMA_APPS_URL = 'https://www.figma.com/developers/apps'
-const CALLBACK_URL =
-  'http://127.0.0.1:5273/api/auth/figma/callback'
 
 function FigmaMark() {
   return (
@@ -38,108 +33,9 @@ function FigmaMark() {
   )
 }
 
-function OAuthSetupDialog({ onClose }: { onClose: () => void }) {
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="figma-oauth-title"
-      className="fixed inset-0 z-50 grid place-items-center bg-[#111827]/25 px-5 backdrop-blur-[2px]"
-      onMouseDown={(event) => {
-        if (event.currentTarget === event.target) onClose()
-      }}
-    >
-      <div className="w-full max-w-[520px] rounded-[20px] border border-white/80 bg-white p-6 shadow-[0_26px_90px_rgba(27,39,67,0.2)]">
-        <div className="flex items-start justify-between gap-5">
-          <div>
-            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#f3f5f9]">
-              <FigmaMark />
-            </div>
-            <h2
-              id="figma-oauth-title"
-              className="text-[19px] font-semibold tracking-[-0.02em] text-[#20242d]"
-            >
-              配置 Figma OAuth
-            </h2>
-            <p className="mt-2 text-[13px] leading-6 text-[#778092]">
-              授权页会像你截图里一样在浏览器顶层打开。Client Secret
-              只保存在本机服务端，不会进入前端构建。
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="关闭"
-            onClick={onClose}
-            className="rounded-full p-1.5 text-[#8c93a0] hover:bg-[#f2f4f8] hover:text-[#353a45]"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <ol className="mt-5 space-y-3">
-          {[
-            <>
-              在 Figma Developer Apps 新建一个 OAuth App，选择
-              <span className="font-medium text-[#313641]"> 私有应用 </span>
-              即可先在团队内测试。
-            </>,
-            <>
-              添加回调地址：
-              <code className="ml-1 break-all rounded bg-[#f3f5f8] px-1.5 py-1 text-[11px] text-[#3f4653]">
-                {CALLBACK_URL}
-              </code>
-            </>,
-            <>
-              将 Client ID / Secret 写入当前应用目录的
-              <code className="mx-1 rounded bg-[#f3f5f8] px-1.5 py-1 text-[11px] text-[#3f4653]">
-                .env.local
-              </code>
-              ，格式见
-              <code className="ml-1 rounded bg-[#f3f5f8] px-1.5 py-1 text-[11px] text-[#3f4653]">
-                .env.example
-              </code>
-              。改完后必须重启开发服务。
-            </>,
-          ].map((content, index) => (
-            <li
-              key={index}
-              className="flex gap-3 rounded-[12px] border border-[#e8ebf1] bg-[#fbfcfe] p-3.5 text-[12.5px] leading-6 text-[#5c6575]"
-            >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#eaf2ff] text-[11px] font-semibold text-[#2c6bed]">
-                {index + 1}
-              </span>
-              <span>{content}</span>
-            </li>
-          ))}
-        </ol>
-
-        <div className="mt-5 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-[10px] border border-[#e2e6ed] px-4 py-2.5 text-[13px] font-medium text-[#596273] hover:bg-[#f7f8fa]"
-          >
-            稍后配置
-          </button>
-          <a
-            href={FIGMA_APPS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 rounded-[10px] bg-[#2164ed] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#1858d7]"
-          >
-            打开 Figma Apps
-            <ExternalLink size={14} />
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: number }) {
   const [loadState, setLoadState] = useState<LoadState>({ status: 'loading' })
   const [menuOpen, setMenuOpen] = useState(false)
-  const [setupOpen, setSetupOpen] = useState(false)
   const [disconnecting, setDisconnecting] = useState(false)
   const [authMessage, setAuthMessage] = useState('')
   const rootRef = useRef<HTMLDivElement>(null)
@@ -159,8 +55,7 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
     if (!openRequest || handledOpenRequest.current === openRequest || loadState.status !== 'ready') return
     handledOpenRequest.current = openRequest
     if (loadState.session.authenticated) setMenuOpen(true)
-    else if (loadState.session.configured) startFigmaOAuth()
-    else setSetupOpen(true)
+    else startFigmaOAuth()
   }, [openRequest, loadState])
 
   const loadSession = async () => {
@@ -185,16 +80,14 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
       setAuthMessage(FIGMA_AUTH_RESULT_MESSAGES[result] ?? 'Figma 授权没有完成。')
     }
     void loadSession()
-    const onFocus = () => { void loadSession() }
+    const stopObservingSession = onFigmaAuthSessionChange(() => { void loadSession() })
     const onAuthResult = (event: MessageEvent) => {
       if (event.origin !== window.location.origin || event.data?.type !== 'design-studio:figma-auth') return
       setAuthMessage(event.data.result === 'connected' ? '' : FIGMA_AUTH_RESULT_MESSAGES[event.data.result] ?? 'Figma 授权没有完成。')
-      void loadSession()
     }
-    window.addEventListener('focus', onFocus)
     window.addEventListener('message', onAuthResult)
     return () => {
-      window.removeEventListener('focus', onFocus)
+      stopObservingSession()
       window.removeEventListener('message', onAuthResult)
     }
   }, [])
@@ -222,7 +115,7 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
   const switchAccount = async () => {
     setMenuOpen(false)
     await window.designStudioHost?.clearFigmaWebSession?.()
-    startFigmaOAuth()
+    startFigmaOAuth(undefined, true)
   }
 
   if (loadState.status === 'loading') {
@@ -256,10 +149,7 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
           <button
             type="button"
             title={authMessage || undefined}
-            onClick={() => {
-              if (session.configured) startFigmaOAuth()
-              else setSetupOpen(true)
-            }}
+            onClick={() => startFigmaOAuth()}
             className={`flex h-9 items-center gap-2 rounded-[11px] border bg-white/88 px-3 text-[12px] font-medium shadow-sm transition ${
               authMessage
                 ? 'border-[#f0d9d9] text-[#b85f5f] hover:bg-white'
@@ -267,11 +157,7 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
             }`}
           >
             <FigmaMark />
-            {session.configured
-              ? authMessage
-                ? '重新连接 Figma'
-                : '连接 Figma'
-              : '配置 Figma OAuth'}
+            {authMessage ? '重新连接 Figma' : '连接 Figma'}
           </button>
           {authMessage ? (
             <span className="max-w-[220px] truncate text-[11px] text-[#b85f5f]">
@@ -279,7 +165,6 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
             </span>
           ) : null}
         </div>
-        {setupOpen && <OAuthSetupDialog onClose={() => setSetupOpen(false)} />}
       </>
     )
   }
@@ -342,7 +227,7 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
           <button
             type="button"
             onClick={switchAccount}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-[10px] px-3 py-2.5 text-[12px] font-medium text-[#3c4656] hover:bg-[#f4f6fa]"
+            className="mt-2 flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2.5 text-[12px] font-medium text-[#3c4656] hover:bg-[#f4f6fa]"
           >
             <RefreshCw size={14} />
             切换账号
@@ -351,7 +236,7 @@ export default function FigmaAccountMenu({ openRequest = 0 }: { openRequest?: nu
             type="button"
             disabled={disconnecting}
             onClick={() => void disconnect()}
-            className="flex w-full items-center justify-center gap-2 rounded-[10px] px-3 py-2.5 text-[12px] font-medium text-[#d05f5f] hover:bg-[#fff5f5] disabled:opacity-50"
+            className="flex w-full items-center justify-start gap-2 rounded-[10px] px-3 py-2.5 text-[12px] font-medium text-[#d05f5f] hover:bg-[#fff5f5] disabled:opacity-50"
           >
             {disconnecting ? (
               <LoaderCircle size={14} className="animate-spin" />

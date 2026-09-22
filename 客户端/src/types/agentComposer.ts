@@ -58,6 +58,7 @@ export type AgentServerInfo = {
 }
 
 export type AgentStatusSnapshot = {
+  workspace?: { name: string; branch: string | null }
   configured: boolean
   mode: 'codex' | 'claude' | 'hermes' | 'local' | 'remote'
   model: string

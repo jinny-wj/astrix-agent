@@ -28,7 +28,7 @@ import {
   type RecentFigmaFile,
   useRecentFigmaFiles,
 } from '../hooks/useRecentFigmaFiles'
-import { getFigmaAuthSession, startFigmaOAuth } from '../services/figmaAuth'
+import { getFigmaAuthSession, onFigmaAuthSessionChange, startFigmaOAuth } from '../services/figmaAuth'
 import {
   getFigmaLibraryConfig,
   saveFigmaLibraryConfig,
@@ -339,9 +339,13 @@ export default function RecentFigma() {
   const [openingKey, setOpeningKey] = useState('')
 
   useEffect(() => {
-    void getFigmaAuthSession()
-      .then((session) => setConnected(Boolean(session.authenticated && session.user)))
-      .catch(() => setConnected(false))
+    const refreshSession = () => {
+      void getFigmaAuthSession()
+        .then((session) => setConnected(Boolean(session.authenticated && session.user)))
+        .catch(() => setConnected(false))
+    }
+    refreshSession()
+    return onFigmaAuthSessionChange(refreshSession)
   }, [])
 
   useEffect(() => {
@@ -404,11 +408,7 @@ export default function RecentFigma() {
     setLibraryHint('')
     try {
       const session = await getFigmaAuthSession()
-      if (!session.configured) {
-        setLibraryError('请先在 .env 配置 Figma OAuth Client。')
-        return
-      }
-      if (!session.authenticated) {
+      if (!session.configured || !session.authenticated) {
         startFigmaOAuth('/')
         return
       }

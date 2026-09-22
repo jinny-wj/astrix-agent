@@ -289,9 +289,10 @@ export async function requestRecentFigmaFiles(
     return { status: 'unavailable', files: [] }
   }
 
+  const desktop = Boolean(window.designStudioHost || window.designStudioAgentHost)
   const localFiles = readLocalRecentFigmaFiles()
   const [extension, persistedFiles] = await Promise.all([
-    requestExtensionRecentFigmaFiles(timeoutMs),
+    desktop ? Promise.resolve({ connected: false, files: [] }) : requestExtensionRecentFigmaFiles(timeoutMs),
     requestPersistedRecentFigmaFiles(),
   ])
   const mergedFiles = normalizeCapturedFiles([
@@ -300,7 +301,7 @@ export async function requestRecentFigmaFiles(
     ...localFiles,
   ])
 
-  if (mergedFiles.length > 0) {
+  if (desktop || mergedFiles.length > 0) {
     writeLocalRecentFigmaFiles(mergedFiles)
     return {
       status: 'available',

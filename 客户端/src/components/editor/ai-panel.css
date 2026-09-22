@@ -75,7 +75,18 @@
 .ai-panel-session p { margin: 12px 0; max-height: 180px; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
 .ai-panel-session span { color: #90959b; font-size: 11px; }
 .ai-panel-reopen { align-self: flex-start; padding: 12px; border-left: 1px solid #ebebeb; font-size: 12px; background: #fff; }
-.ai-reference-input { display: flex; flex-direction: column; min-height: 162px; margin: 0 -6px; padding: 16px; border: 1px solid #dfe9f0; border-radius: 20px; background: #fff; box-shadow: 0 3px 5px #0000000d; }
+.ai-reference-composer { margin: 0 -6px; min-width: 0; }
+.ai-reference-context { display: flex; align-items: center; gap: 16px; min-width: 0; margin: 0 10px -12px; padding: 10px 14px 22px; border-radius: 18px 18px 0 0; background: #f4f4f5; color: #34383e; font-size: 12px; line-height: 18px; }
+.ai-reference-context > span { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.ai-reference-context svg { flex-shrink: 0; }
+.ai-reference-context-file { flex: 1 1 auto; }
+.ai-reference-context-file > span, .ai-reference-context-branch > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-reference-context-location { flex: 0 0 auto; }
+.ai-reference-context-branch { flex: 0 1 30%; }
+.ai-reference-status { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; min-width: 0; margin-top: 10px; font-size: 11.5px; }
+.ai-reference-status > div:first-child { flex-shrink: 0; }
+.ai-reference-target { flex: 1 1 120px; min-width: 0; color: #3fa96a; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: right; }
+.ai-reference-input { position: relative; display: flex; flex-direction: column; min-height: 162px; margin: 0; padding: 16px; border: 1px solid #dfe9f0; border-radius: 20px; background: #fff; box-shadow: 0 3px 5px #0000000d; }
 .ai-reference-input:focus-within { border-color: #b9d1e5; }
 .ai-reference-textarea { width: 100%; flex: 1; min-height: 68px; resize: vertical; border: 0; background: transparent; font-size: 14px; line-height: 22px; color: #1b1b1b; outline: none; }
 .ai-reference-textarea::placeholder { color: #b9bec4; }
@@ -88,3 +99,6 @@
 .ai-reference-send { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: #1b1b1b; color: #fff; }
 .ai-reference-send:disabled { background: #f0f0f0; cursor: not-allowed; }
 .ai-reference-send img { width: 32px; height: 32px; }
+
+.ai-reference-model > div { position: static; }
+.ai-reference-model [role="menu"] { left: auto; right: 0; width: min(268px, 100%); max-height: min(420px, 60vh); overflow-y: auto; }

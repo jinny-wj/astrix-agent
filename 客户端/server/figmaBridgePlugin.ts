@@ -1,3 +1,4 @@
+import { DESIGN_ADJUSTMENT_KINDS, validateDesignAdjustment } from './designAdjustments.ts'
 import { randomUUID } from 'node:crypto'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
@@ -54,6 +55,7 @@ function isFiniteNumber(value: unknown): value is number {
 }
 
 const editIntentKinds = new Set<FigmaEditIntent['kind']>([
+  ...DESIGN_ADJUSTMENT_KINDS,
   'replace-text',
   'set-fill-color',
   'set-opacity',
@@ -297,6 +299,14 @@ function parseAdjustment(value: unknown) {
 function parseEditIntent(value: unknown): FigmaEditIntent {
   if (!isRecord(value) || typeof value.kind !== 'string') {
     throw new RequestError(400, '图层修改格式不正确。')
+  }
+  if ((DESIGN_ADJUSTMENT_KINDS as readonly string[]).includes(value.kind)) {
+    const error = validateDesignAdjustment(value)
+    if (error) throw new RequestError(400, error)
+    return { kind: value.kind, value: value.value,
+      ...(value.kind === 'set-image-filter' ? { filter: value.filter } : {}),
+      ...(value.kind === 'set-layout-spacing' ? { property: value.property } : {}),
+    } as FigmaEditIntent
   }
   switch (value.kind) {
     case 'replace-text':

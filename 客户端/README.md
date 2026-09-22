@@ -3,15 +3,29 @@
 macOS 应用。同一窗口内提供应用级标签、真实 Figma 工作区和右侧 Agent。
 网页端源码在上级目录的 `网页端/`。
 
-安装包已分开放置，但**现有 `.app` / ZIP / DMG 不能正式对外分发**：
+当前交付方式是**指定人员私发试用**：运行 `pnpm desktop:dist:mac:private` 生成
+`release/private/Astrix-0.1.0-arm64-private.dmg`，附带安装说明与 SHA-256 校验文件。
+接收者安装应用无需项目源码或 Node；使用 AI / Figma 仍需自己的账号和配置。
+详见 [安装与首次使用](docs/private-install.txt)。
 
-- `Design Studio.app` — 可本机双击打开（临时签名、仅 Apple Silicon）
-- `zip/` — ZIP 压缩包
-- `DMG/` — DMG 安装镜像
-
-正式分发必须同时具备：Apple Team ID、Developer ID Application 证书、公证凭证，并通过 Gatekeeper。没有这些凭证时，`pnpm desktop:dist:mac` 会直接失败，不会再产出看起来像发行包的临时签名文件。
+私发包适用于 Apple 芯片 / macOS 13+，使用临时签名，首次打开可能被系统拦截。
+正式可信分发仍需 Developer ID 签名、公证和 Gatekeeper 验收；`desktop:dist:mac` 保留这套严格检查。
 
 ## 快速开始
+
+### 单人海报延展（输入准备已接通）
+
+右侧输入框点击“单人海报延展”，上传干净的海报模板和人物图片，或 XLSX 人物表。
+选择模板、工作表，核对完整昵称、对应照片，并填写模板中的原昵称。
+默认只替换人物与昵称；需要替换赛事或赛道时，展开额外文案映射并明确模板原文。
+支持常规 XLSX 浮动内嵌图片、CSV/TSV 图片引用、docs-parse 导出 JSON；不直接连接企业在线文档。
+每次最多 8 个附件、每个不超过 4 MB；更多人物请使用表格。图片链接仍需在生成前检查可访问性。
+
+窗口可展开查看完整业务 Skill。当前完成输入解析和任务清单准备；图片生成服务、生成质量检查及
+真实 Figma 成图回填尚未接通，不能将准备任务当作生成完成。完整规则见
+[`skills/person-poster-extension/SKILL.md`](skills/person-poster-extension/SKILL.md)。
+
+### 启动开发环境
 
 在本目录执行：
 
@@ -19,7 +33,7 @@ macOS 应用。同一窗口内提供应用级标签、真实 Figma 工作区和�
 pnpm install
 pnpm desktop:dev          # 构建并运行 Mac 客户端
 pnpm desktop:pack:mac     # 生成并验收 Apple Silicon 本机调试 .app
-pnpm desktop:dist:mac:local # 生成临时签名的本机 DMG + ZIP，不可对外分发
+pnpm desktop:dist:mac:private # 生成私发 DMG、安装说明与校验文件（临时签名）
 pnpm desktop:dist:mac     # 预检、签名、公证并生成 universal 发行 DMG + ZIP
 ```
 
@@ -194,7 +208,7 @@ Client Secret 没有 `VITE_` 前缀，不会进入浏览器代码。本地 OAuth
 
 ## 二次开发要点
 
-**改品牌名/文案**：只动 `src/config/brand.ts`。所有对外展示文字从此处取值，不要在组件里硬写。
+**改品牌名/文案**：界面文案位于 `src/config/brand.ts`；macOS 应用名称由 `package.json` 的 `build.productName` 决定，修改时同步打包和签名脚本中的 `.app` 路径。验收脚本会核对应用名称、显示名称和可执行文件名称。已打包应用继续使用原有的本机数据目录，保留登录和工作区记录。
 
 **接真实 Agent**：默认 Codex CLI，见 [`docs/agent.md`](docs/agent.md)。前端 `ConversationFlow` 消费 `/api/agent/chat` SSE。
 
@@ -212,6 +226,10 @@ Client Secret 没有 `VITE_` 前缀，不会进入浏览器代码。本地 OAuth
 发行成功后会生成 arm64 + x86_64 的 universal 应用，并自动执行代码签名完整性、
 Gatekeeper 与公证票据验收。只想在本机调试时使用 `desktop:pack:mac` 或
 `desktop:dist:mac:local`。
+
+如果桌面或同步目录反复附加 Finder 元数据导致签名失败，可先将构建好的
+`Astrix.app` 复制到本机临时目录，再运行 `node scripts/sign-mac-local.mjs /绝对路径/Astrix.app`。
+验收时将同一路径传给 `verify-mac-release.mjs --mode=local --app=...`，生成安装镜像时也使用该路径作为 `--prepackaged`。
 
 **Figma 官方能力边界（产品已按此闭环，不是未完成项）**：
 
@@ -246,3 +264,9 @@ Gatekeeper 与公证票据验收。只想在本机调试时使用 `desktop:pack:
 - `HeroSection.tsx` 的标语立体字 —— 渐变裁切 + 投影模拟，可换为图片资产（标记 `data-slot="brand-mark"`）
 - `canvasDoc.ts` / `batchBoards.ts` 的画面 —— 全部为 CSS 拼的示意图形
 - 文件流缩略图 —— 手写 DOM 结构
+
+### 桌面端 Figma 浏览器授权
+
+桌面端“连接 Figma”默认使用系统浏览器完成官方 OAuth；本地交接窗口在后台保留自己的 HttpOnly 领取凭据（不展示额外确认页），收到回调后连接 Astrix 并继续待打开文件。取消或过期不会循环重开授权。浏览器 OAuth 会话不等于 Electron 内嵌 Figma 网站的登录状态。
+
+开发此应用时，仅需配置一次自己的 Figma OAuth 应用。开发维护人员可从应用菜单“开发 → Figma 应用配置”填写已有应用的连接配置；普通用户连接流程不展示开发表单。桌面端使用系统 safeStorage 加密保存到用户数据目录，更新安装包时仍保留；不把凭据写入仓库或安装包。配置保存后自动在系统浏览器继续授权。官方应用中需预先设置客户端固定回调地址及三个读取权限（current_user:read、file_content:read、file_metadata:read）。最终权限确认由用户在 Figma 官方页面完成。

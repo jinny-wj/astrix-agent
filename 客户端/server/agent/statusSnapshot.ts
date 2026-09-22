@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { basename } from 'node:path'
 import { readCodexMcpServers } from './composer'
 import type { AgentRuntimeMeta } from './types'
 import { childEnv, whichBin } from './whichBin'
@@ -118,8 +119,12 @@ export function getBackendProbes(): Promise<ProbeSet> {
 
 export async function collectStatusSnapshot(
   runtime: AgentRuntimeMeta,
+  cwd = process.cwd(),
 ): Promise<AgentStatusSnapshot> {
-  const probes = await getBackendProbes()
+  const [probes, git] = await Promise.all([
+    getBackendProbes(),
+    runCommand('git', ['-C', cwd, 'branch', '--show-current'], 1500),
+  ])
   const configured = Object.values(probes).some((probe) => probe.authenticated)
 
   const mcp: AgentMcpService[] = [
@@ -192,6 +197,7 @@ export async function collectStatusSnapshot(
 
   return {
     configured,
+    workspace: { name: basename(cwd), branch: git.code === 0 ? git.output.trim() || null : null },
     mode: runtime.mode,
     model: runtime.model,
     shell: runtime.shell,

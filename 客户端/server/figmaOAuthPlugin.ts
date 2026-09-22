@@ -1538,8 +1538,26 @@ async function handleStartRequest(
   options: FigmaOAuthPluginOptions,
   secureCookies: boolean,
 ) {
-  assertConfigured(options)
   const returnTo = normalizeReturnTo(requestUrl.searchParams.get('returnTo'))
+  if (!configured(options)) {
+    const retryQuery = new URLSearchParams({ returnTo })
+    if (requestUrl.searchParams.get('handoff') === '1') retryQuery.set('handoff', '1')
+    if (requestUrl.searchParams.get('select_account') === '1') retryQuery.set('select_account', '1')
+    const desktop = requestUrl.searchParams.get('desktop') === '1'
+    if (desktop) retryQuery.set('desktop', '1')
+    const retryUrl = `${AUTH_PREFIX}/start?${retryQuery}`.replace(/&/g, '&amp;')
+    response.statusCode = 503
+    setNoStore(response)
+    response.setHeader('Content-Type', 'text/html; charset=utf-8')
+    response.setHeader('Referrer-Policy', 'no-referrer')
+    response.setHeader('X-Content-Type-Options', 'nosniff')
+    response.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'")
+    response.end(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>连接 Figma</title>
+      <style>body{font:16px system-ui;padding:48px;color:#20242d}p{line-height:1.8}.retry{display:inline-block;margin-top:16px;padding:12px 20px;border-radius:10px;background:#2164ed;color:#fff;text-decoration:none}</style>
+      <h2>Figma 连接暂不可用</h2><p>Astrix 的连接服务尚未就绪。请稍后重试，或联系应用维护者。</p>
+      <a class="retry" href="${retryUrl}">重新连接 Figma</a></html>`)
+    return
+  }
   const state = randomUrlSafe(32)
   const verifier = randomUrlSafe(48)
   const handoffId = requestUrl.searchParams.get('handoff') === '1' ? randomUrlSafe(32) : undefined
@@ -1553,6 +1571,8 @@ async function handleStartRequest(
   persistPendingFlows()
 
   const authorizeUrl = figmaAuthorizeUrl(options, state, verifier)
+  const authorizationTarget = requestUrl.searchParams.get('select_account') === '1'
+    ? figmaAccountPickerUrl(authorizeUrl) : authorizeUrl
 
   if (handoffId) {
     handoffs.set(handoffId, { createdAt: Date.now(), returnTo })
@@ -1564,10 +1584,10 @@ async function handleStartRequest(
     response.setHeader('Referrer-Policy', 'no-referrer')
     const nonce = randomUrlSafe(24)
     response.setHeader('Content-Security-Policy', `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'`)
-    const target = JSON.stringify(authorizeUrl.toString()).replace(/</g, '\\u003c')
+    const target = JSON.stringify(authorizationTarget.toString()).replace(/</g, '\\u003c')
     response.end(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>连接 Figma</title>
       <style>body{font:16px system-ui;padding:48px;color:#20242d}a{color:#2164ed}p{line-height:1.8}</style>
-      <h2>请在浏览器中授权 Figma</h2><p id="status">授权页已打开。完成后，此窗口会自动关闭，应用将显示已连接。</p>
+      <h2>请在浏览器中授权 Figma</h2><p id="status">请在系统浏览器确认权限。授权成功后，此窗口会自动关闭，应用将显示已连接。</p>
       <a id="authorize" target="_blank" rel="noreferrer">重新打开授权页</a>
       <script nonce="${nonce}">
         const link = document.getElementById('authorize'); link.href = ${target};
@@ -1593,8 +1613,7 @@ async function handleStartRequest(
       secure: secureCookies,
     }),
   )
-  redirect(response, (requestUrl.searchParams.get('direct') === '1'
-    ? authorizeUrl : figmaAccountPickerUrl(authorizeUrl)).toString())
+  redirect(response, authorizationTarget.toString())
 }
 
 async function handleCallbackRequest(

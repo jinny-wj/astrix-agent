@@ -13,7 +13,7 @@ const options = new Map(
   }),
 )
 const mode = options.get('mode') ?? 'local'
-const applicationPath = resolve(options.get('app') ?? 'release/mac-arm64/Design Studio.app')
+const applicationPath = resolve(options.get('app') ?? 'release/mac-arm64/Astrix.app')
 
 if (!['local', 'distribution'].includes(mode)) {
   throw new Error(`未知验收模式：${mode}`)
@@ -42,7 +42,15 @@ if (detailsResult.status !== 0) {
   throw new Error(detailsResult.stderr || '无法读取代码签名信息。')
 }
 const signatureDetails = `${detailsResult.stdout}\n${detailsResult.stderr}`
-const executablePath = `${applicationPath}/Contents/MacOS/Design Studio`
+const { build: { productName } } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+const infoPlist = `${applicationPath}/Contents/Info.plist`
+for (const field of ['CFBundleName', 'CFBundleDisplayName', 'CFBundleExecutable']) {
+  const value = run('/usr/libexec/PlistBuddy', ['-c', `Print :${field}`, infoPlist])
+  if (value !== productName) {
+    throw new Error(`应用名称验收失败：${field} 应为 ${productName}，实际为 ${value}。`)
+  }
+}
+const executablePath = `${applicationPath}/Contents/MacOS/${productName}`
 const architectures = run('lipo', ['-archs', executablePath]).split(/\s+/).sort()
 
 // Verify the launch-time icon too, not just Electron's running Dock image.

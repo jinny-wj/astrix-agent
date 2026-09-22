@@ -1,6 +1,6 @@
 {
   "name": "design-studio-wj-desktop",
-  "description": "Design Studio WJ macOS 客户端",
+  "description": "星序 Astrix macOS 客户端",
   "author": "Design Studio WJ",
   "private": true,
   "version": "0.1.0",
@@ -20,15 +20,17 @@
     "desktop:dev": "pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && electron .",
     "desktop:sign:mac": "node scripts/sign-mac-local.mjs",
     "desktop:pack:mac": "pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --arm64 && pnpm run desktop:sign:mac && pnpm run desktop:verify:mac:local",
-    "desktop:dist:mac:local": "pnpm run desktop:pack:mac && electron-builder --mac dmg zip --arm64 --prepackaged 'release/mac-arm64/Design Studio.app'",
+    "desktop:dist:mac:local": "pnpm run desktop:dist:mac:private",
     "desktop:release:preflight": "node scripts/preflight-mac-release.mjs",
     "desktop:release:mac": "pnpm run desktop:release:preflight && pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && electron-builder --mac dmg zip --universal -c.forceCodeSigning=true -c.mac.notarize=true && pnpm run desktop:verify:mac:release",
     "desktop:dist:mac": "pnpm run desktop:release:mac",
-    "desktop:verify:mac:local": "node scripts/verify-mac-release.mjs --mode=local --app='release/mac-arm64/Design Studio.app'",
-    "desktop:verify:mac:release": "node scripts/verify-mac-release.mjs --mode=distribution --app='release/mac-universal/Design Studio.app'"
+    "desktop:verify:mac:local": "node scripts/verify-mac-release.mjs --mode=local --app='release/mac-arm64/Astrix.app'",
+    "desktop:verify:mac:release": "node scripts/verify-mac-release.mjs --mode=distribution --app='release/mac-universal/Astrix.app'",
+    "desktop:dist:mac:private": "node scripts/package-private-mac.mjs"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.220",
+    "exceljs": "4.4.0",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -49,7 +51,7 @@
   },
   "build": {
     "appId": "com.wj.designstudio",
-    "productName": "Design Studio",
+    "productName": "Astrix",
     "artifactName": "${productName}-${version}-${arch}.${ext}",
     "asar": true,
     "asarUnpack": [
@@ -73,7 +75,15 @@
       },
       {
         "from": "skills",
-        "to": "agent-resources/skills"
+        "to": "agent-resources/skills",
+        "filter": [
+          "**/*",
+          "!**/.env*",
+          "!**/api-config.json",
+          "!**/.DS_Store",
+          "!**/.design-studio/**",
+          "!**/node_modules/**"
+        ]
       },
       {
         "from": "AGENTS.md",

@@ -334,9 +334,54 @@ async function applyCloneIntoFrame(command) {
   })
 }
 
+// Paint edits preserve the image bytes, masks and unrelated fills.
+const IMAGE_FILTER_KEYS = ['exposure', 'contrast', 'saturation', 'temperature']
+const LAYOUT_SPACING_KEYS = ['itemSpacing', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']
+function validateDesignPatch(node, patch) {
+  const numeric = (min, max) => {
+    if (typeof patch.value !== 'number' || !Number.isFinite(patch.value) || patch.value < min || patch.value > max) {
+      throw new Error(`调整值必须在 ${min} 到 ${max} 之间`)
+    }
+  }
+  if (patch.kind === 'set-image-mode' || patch.kind === 'set-image-filter') {
+    if (!Array.isArray(node.fills) || !node.fills.some(paint => paint.type === 'IMAGE')) {
+      throw new Error(`图层“${node.name}”没有可修改的图片填充，请直接选择图片图层`)
+    }
+    if (patch.kind === 'set-image-mode') {
+      if (!['FIT', 'FILL'].includes(patch.value)) throw new Error('图片填充方式无效')
+    } else {
+      if (!IMAGE_FILTER_KEYS.includes(patch.filter)) throw new Error('图片调整属性无效')
+      numeric(-1, 1)
+    }
+    return true
+  }
+  if (patch.kind === 'set-font-size' || patch.kind === 'set-line-height') {
+    if (node.type !== 'TEXT') throw new Error(`图层“${node.name}”不是文本图层`)
+    numeric(1, 10000)
+    return true
+  }
+  if (patch.kind === 'set-corner-radius') {
+    if (!('cornerRadius' in node)) throw new Error(`图层“${node.name}”不支持圆角`)
+    numeric(0, 10000)
+    return true
+  }
+  if (patch.kind === 'set-layout-spacing') {
+    if (!['HORIZONTAL', 'VERTICAL'].includes(node.layoutMode) || !LAYOUT_SPACING_KEYS.includes(patch.property) || !(patch.property in node)) {
+      throw new Error(`请选中水平或垂直自动布局容器后调整间距和内边距`)
+    }
+    if (patch.property === 'itemSpacing' && node.primaryAxisAlignItems === 'SPACE_BETWEEN') {
+      throw new Error('当前容器使用自动间距，请先在 Figma 中切换为固定间距')
+    }
+    numeric(0, 10000)
+    return true
+  }
+  return false
+}
+
 function validatePatchForNode(node, patch) {
   if (!patch || typeof patch !== 'object') throw new Error('修改参数无效')
 
+  if (validateDesignPatch(node, patch)) return
   switch (patch.kind) {
     case 'replace-text':
       if (node.type !== 'TEXT') throw new Error(`图层“${node.name}”不是文本图层`)
@@ -604,7 +649,7 @@ async function preparePatchTarget(target, selectedIds, targetIds, requireSelecte
 async function loadPatchFonts(item) {
   if (
     item.node.type === 'TEXT'
-    && item.patches.some((patch) => patch.kind === 'replace-text')
+    && item.patches.some((patch) => ['replace-text', 'set-font-size', 'set-line-height'].includes(patch.kind))
   ) {
     await loadFontsForTextNode(item.node)
   }
@@ -615,7 +660,20 @@ function capturePatchState(item) {
   const kinds = new Set(item.patches.map((patch) => patch.kind))
   const state = {}
   if (kinds.has('replace-text')) state.characters = node.characters
-  if (kinds.has('set-fill-color')) state.fills = Array.isArray(node.fills) ? node.fills.slice() : node.fills
+  if (kinds.has('set-fill-color') || kinds.has('set-image-mode') || kinds.has('set-image-filter')) state.fills = Array.isArray(node.fills) ? node.fills.slice() : node.fills
+  if (kinds.has('set-font-size') || kinds.has('set-line-height')) {
+    const fields = ['fontSize', 'lineHeight'].filter(key => kinds.has(key === 'fontSize' ? 'set-font-size' : 'set-line-height'))
+    state.textStyles = { fields, values: Object.fromEntries(fields.map(key => [key, node[key]])),
+      segments: node.characters.length ? node.getStyledTextSegments(fields) : [] }
+  }
+  if (kinds.has('set-corner-radius')) {
+    state.corners = isMixed(node.cornerRadius)
+      ? { topLeftRadius: node.topLeftRadius, topRightRadius: node.topRightRadius, bottomLeftRadius: node.bottomLeftRadius, bottomRightRadius: node.bottomRightRadius }
+      : { cornerRadius: node.cornerRadius }
+  }
+  if (kinds.has('set-layout-spacing')) {
+    state.spacing = Object.fromEntries(item.patches.filter(patch => patch.kind === 'set-layout-spacing').map(patch => [patch.property, node[patch.property]]))
+  }
   if (kinds.has('set-opacity')) state.opacity = node.opacity
   if (kinds.has('resize') || kinds.has('scale')) {
     state.width = node.width
@@ -634,6 +692,18 @@ function restorePatchState(item, state) {
   const node = item.node
   if (Object.prototype.hasOwnProperty.call(state, 'characters')) node.characters = state.characters
   if (Object.prototype.hasOwnProperty.call(state, 'fills')) node.fills = state.fills
+  if (state.textStyles) {
+    for (const key of state.textStyles.fields) {
+      const value = state.textStyles.values[key]
+      if (!isMixed(value)) node[key] = value
+      else for (const segment of state.textStyles.segments) {
+        if (key === 'fontSize') node.setRangeFontSize(segment.start, segment.end, segment.fontSize)
+        else node.setRangeLineHeight(segment.start, segment.end, segment.lineHeight)
+      }
+    }
+  }
+  if (state.corners) Object.assign(node, state.corners)
+  if (state.spacing) Object.assign(node, state.spacing)
   if (
     Object.prototype.hasOwnProperty.call(state, 'width')
     && Object.prototype.hasOwnProperty.call(state, 'height')
@@ -651,6 +721,21 @@ function applyPreparedPatch(item) {
   const node = item.node
   for (const patch of item.patches) {
     switch (patch.kind) {
+      case 'set-image-mode':
+      case 'set-image-filter':
+        node.fills = node.fills.map(paint => {
+          if (paint.type !== 'IMAGE') return paint
+          if (patch.kind === 'set-image-filter') return { ...paint, filters: { ...paint.filters, [patch.filter]: patch.value } }
+          const updated = { ...paint, scaleMode: patch.value }
+          delete updated.imageTransform
+          delete updated.scalingFactor
+          return updated
+        })
+        break
+      case 'set-font-size': node.fontSize = patch.value; break
+      case 'set-line-height': node.lineHeight = { unit: 'PIXELS', value: patch.value }; break
+      case 'set-corner-radius': node.cornerRadius = patch.value; break
+      case 'set-layout-spacing': node[patch.property] = patch.value; break
       case 'replace-text':
         node.characters = patch.value
         break

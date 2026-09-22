@@ -49,6 +49,12 @@ export type FigmaSelectionSnapshot = {
 }
 
 export type FigmaEditIntent =
+  | { kind: 'set-image-mode'; value: 'FIT' | 'FILL' }
+  | { kind: 'set-image-filter'; filter: 'exposure' | 'contrast' | 'saturation' | 'temperature'; value: number }
+  | { kind: 'set-corner-radius'; value: number }
+  | { kind: 'set-font-size'; value: number }
+  | { kind: 'set-line-height'; value: number }
+  | { kind: 'set-layout-spacing'; property: 'itemSpacing' | 'paddingTop' | 'paddingRight' | 'paddingBottom' | 'paddingLeft'; value: number }
   | { kind: 'replace-text'; value: string }
   | { kind: 'set-fill-color'; color: FigmaSolidColor }
   | { kind: 'set-opacity'; value: number }
