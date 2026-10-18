@@ -47,6 +47,57 @@ function post(path, body) {
   })
 }
 
+test('模型 API 草稿不发请求，启用后 Auto 使用配置模型，失败不切换其他服务', async () => {
+  const requests = []
+  const fixture = { baseUrl: 'https://model-api.example.test/v1', model: 'vendor/model.v2', apiKey: 'mock-model-api-key', enabled: false }
+  let status = 200
+  globalThis.fetch = async (input, init) => {
+    if (String(input) !== fixture.baseUrl + '/chat/completions') return originalFetch(input, init)
+    requests.push(JSON.parse(init.body))
+    return status === 200
+      ? new Response(JSON.stringify({ choices: [{ message: { content: 'mock-model-response' } }] }))
+      : new Response('private-provider-error mock-model-api-key', { status })
+  }
+  try {
+    server.configureModelApi(fixture)
+    const disabled = await post('/api/agent/chat', { message: '只回复收到', backend: 'model-api' })
+    assert.match(await disabled.text(), /请先在设置中填写并启用/)
+    assert.equal(requests.length, 0)
+
+    server.configureModelApi({ ...fixture, enabled: true })
+    const result = await post('/api/agent/chat', { message: '只回复收到' })
+    const events = await result.text()
+    assert.match(events, /"backend":"model-api"/)
+    assert.match(events, /mock-model-response/)
+    assert.equal(requests[0].model, fixture.model)
+    assert.doesNotMatch(events, /mock-model-api-key/)
+
+    const snapshot = await (await originalFetch(server.origin + '/api/agent/status')).json()
+    assert.equal(snapshot.backend, 'model-api')
+    assert.equal(snapshot.configured, true)
+    assert.equal(snapshot.servers.find(item => item.id === 'model-api').active, true)
+    assert.doesNotMatch(JSON.stringify(snapshot), /mock-model-api-key/)
+
+    const manual = await post('/api/agent/chat', { message: '只回复收到', backend: 'shell' })
+    assert.match(await manual.text(), /"backend":"local-shell"/)
+    assert.equal(requests.length, 1)
+
+    status = 401
+    const failed = await post('/api/agent/chat', { message: '只回复收到' })
+    const failure = await failed.text()
+    assert.match(failure, /event: error/)
+    assert.doesNotMatch(failure, /已切换到|private-provider-error|mock-model-api-key/)
+
+    server.configureModelApi(null)
+    const cleared = await post('/api/agent/chat', { message: '只回复收到', backend: 'model-api' })
+    assert.match(await cleared.text(), /请先在设置中填写并启用/)
+    assert.equal(requests.length, 2)
+  } finally {
+    server.configureModelApi(null)
+    globalThis.fetch = originalFetch
+  }
+})
+
 test('untrusted websites cannot trigger the local Agent or write attachments', async () => {
   const attachments = join(dataDirectory, 'agent-workspace', '.design-studio', 'attachments')
   const listing = () => { try { return readdirSync(attachments).sort() } catch { return [] } }

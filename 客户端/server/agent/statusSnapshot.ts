@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import { basename } from 'node:path'
 import { readCodexMcpServers } from './composer'
 import type { AgentRuntimeMeta } from './types'
+import type { ModelApiSettings } from '../../src/types/modelApi'
 import { childEnv, whichBin } from './whichBin'
 import type {
   AgentMcpService,
@@ -120,12 +121,14 @@ export function getBackendProbes(): Promise<ProbeSet> {
 export async function collectStatusSnapshot(
   runtime: AgentRuntimeMeta,
   cwd = process.cwd(),
+  modelApi?: ModelApiSettings | null,
 ): Promise<AgentStatusSnapshot> {
   const [probes, git] = await Promise.all([
     getBackendProbes(),
     runCommand('git', ['-C', cwd, 'branch', '--show-current'], 1500),
   ])
-  const configured = Object.values(probes).some((probe) => probe.authenticated)
+  const apiConfigured = Boolean(modelApi?.enabled && modelApi.baseUrl && modelApi.model && modelApi.apiKey)
+  const configured = apiConfigured || Object.values(probes).some((probe) => probe.authenticated)
 
   const mcp: AgentMcpService[] = [
     {
@@ -166,6 +169,13 @@ export async function collectStatusSnapshot(
 
   const servers: AgentServerInfo[] = [
     {
+      id: 'model-api',
+      name: 'AI 模型 API',
+      online: apiConfigured,
+      detail: apiConfigured ? '已配置并启用；连接可用性请在设置中测试' : '可在工作台设置中填写并启用',
+      active: runtime.backend === 'model-api',
+    },
+    {
       id: 'codex',
       name: 'Codex CLI',
       online: probes.codex.authenticated,
@@ -202,7 +212,7 @@ export async function collectStatusSnapshot(
     model: runtime.model,
     shell: runtime.shell,
     backend: runtime.backend,
-    baseUrl: null,
+    baseUrl: runtime.backend === 'model-api' ? modelApi?.baseUrl ?? null : null,
     binaries: {
       codex: { available: probes.codex.installed, path: probes.codex.path },
       claude: { available: probes.claude.installed, path: probes.claude.path },

@@ -1,4 +1,4 @@
-export type AgentBackendKind = 'codex' | 'claude' | 'hermes' | 'shell'
+export type AgentBackendKind = 'codex' | 'claude' | 'hermes' | 'shell' | 'model-api'
 
 export type AgentAttachmentKind = 'image' | 'text' | 'binary'
 

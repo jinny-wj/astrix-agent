@@ -5,6 +5,8 @@ import { createClaudeRuntime } from './agent/claudeRuntime'
 import { createCodexRuntime } from './agent/codexRuntime'
 import { createHermesRuntime } from './agent/hermesRuntime'
 import { createShellRuntime } from './agent/shellRuntime'
+import { createModelApiRuntime } from './agent/modelApiRuntime'
+import type { ModelApiSettings } from '../src/types/modelApi'
 import type { AgentRuntime, AgentRunInput } from './agent/types'
 import { whichBin } from './agent/whichBin'
 import {
@@ -50,6 +52,8 @@ export type AgentPluginOptions = {
   model: string
   cwd?: string
   allowDemoFallback?: boolean
+  /** Desktop main-process configuration; never accept credentials from chat requests. */
+  getModelApiSettings?: () => ModelApiSettings | null
 }
 
 function sendJson(
@@ -181,7 +185,7 @@ function createRuntime(
   }
 }
 
-function createUnavailableRuntime(): AgentRuntime {
+function createUnavailableRuntime(message = '没有可用的真实 Agent。请在设置中配置 AI 模型 API，或登录本机 Agent。'): AgentRuntime {
   return {
     meta: {
       mode: 'local',
@@ -190,7 +194,7 @@ function createUnavailableRuntime(): AgentRuntime {
       backend: 'unavailable',
     },
     async *run() {
-      throw new Error('没有可用的真实 Agent。请先登录 Codex、Claude 或 Hermes。')
+      throw new Error(message)
     },
   }
 }
@@ -200,6 +204,16 @@ function runtimeChain(
   model?: string,
   preferred?: AgentRunInput['backend'],
 ): AgentRuntime[] {
+  const api = options.getModelApiSettings?.()
+  const useApi = preferred === 'model-api' || (
+    !preferred && options.backend === 'auto' && (!model || model === api?.model)
+    && api?.enabled
+  )
+  if (useApi) {
+    return api?.enabled && api.baseUrl && api.model && api.apiKey
+      ? [createModelApiRuntime(api)]
+      : [createUnavailableRuntime('请先在设置中填写并启用 AI 模型 API。')]
+  }
   if (process.env.AGENT_SHELL_ONLY === '1' || options.backend === 'shell' || preferred === 'shell') {
     return [createShellRuntime()]
   }
@@ -247,6 +261,7 @@ async function readyRuntimeChain(
   preferred?: AgentRunInput['backend'],
 ): Promise<AgentRuntime[]> {
   const chain = runtimeChain(options, model, preferred)
+  if (chain[0]?.meta.backend === 'model-api') return chain
   const probes = await getBackendProbes()
   const usable = chain.filter((runtime) => {
     const kind = backendKindOf(runtime)
@@ -532,7 +547,7 @@ export function createAgentMiddleware(options: AgentPluginOptions) {
       request.method === 'GET'
       && requestUrl.pathname === `${AGENT_PREFIX}/status`
     ) {
-      void collectStatusSnapshot(runtime.meta, options.cwd).then((snapshot) => {
+      void collectStatusSnapshot(runtime.meta, options.cwd, options.getModelApiSettings?.()).then((snapshot) => {
         sendJson(request, response, 200, snapshot)
       }).catch((error: unknown) => {
         sendJson(request, response, 500, {

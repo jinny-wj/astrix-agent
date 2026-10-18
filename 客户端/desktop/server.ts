@@ -17,6 +17,7 @@ import { createFigmaRecentsMiddleware } from '../server/figmaRecentsPlugin'
 import { createDesktopStatusMiddleware } from '../server/desktopStatusPlugin'
 import { prepareAgentWorkspace } from './agentWorkspace.ts'
 import { createWebCaptureMiddleware } from '../server/webCapturePlugin'
+import type { ModelApiSettings } from '../src/types/modelApi'
 
 type Middleware = (
   request: IncomingMessage,
@@ -28,6 +29,7 @@ export type DesktopServer = {
   origin: string
   close: () => Promise<void>
   configureFigmaOAuth: (options: FigmaOAuthPluginOptions) => void
+  configureModelApi: (settings: ModelApiSettings | null) => void
 }
 
 export type DesktopServerOptions = {
@@ -37,6 +39,7 @@ export type DesktopServerOptions = {
   host?: string
   port?: number
   figmaOAuth?: FigmaOAuthPluginOptions
+  modelApi?: ModelApiSettings
 }
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -285,12 +288,14 @@ export async function startDesktopServer({
   host = '127.0.0.1',
   port = 5273,
   figmaOAuth,
+  modelApi,
 }: DesktopServerOptions): Promise<DesktopServer> {
   loadLocalEnvironment(appRoot)
   process.env.DESIGN_STUDIO_DATA_DIR = dataDirectory
   const agentWorkspace = prepareAgentWorkspace(dataDirectory, agentResourcesDirectory)
 
   const activeOAuthOptions = figmaOAuth ?? oauthOptions()
+  let activeModelApi = modelApi ?? null
   const middlewares: Middleware[] = [
     createDesktopStatusMiddleware(),
     createAgentMiddleware({
@@ -298,6 +303,7 @@ export async function startDesktopServer({
       model: process.env.AGENT_MODEL?.trim() || 'auto',
       allowDemoFallback: process.env.AGENT_ALLOW_DEMO_FALLBACK === '1',
       cwd: agentWorkspace,
+      getModelApiSettings: () => activeModelApi,
     }),
     createFigmaBridgeMiddleware(),
     createWebCaptureMiddleware(agentWorkspace),
@@ -338,6 +344,7 @@ export async function startDesktopServer({
   return {
     origin: `http://${host}:${boundPort}`,
     configureFigmaOAuth: (options) => { Object.assign(activeOAuthOptions, options) },
+    configureModelApi: (settings) => { activeModelApi = settings },
     close: () =>
       new Promise<void>((resolvePromise, reject) => {
         server.close((error) => {

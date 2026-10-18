@@ -152,6 +152,8 @@ export default function ConversationFlow({
               ? '真实 Agent 不可用'
               : meta.backend === 'figma-bridge'
                 ? '正在写回 Figma'
+                : meta.backend === 'model-api'
+                  ? `API · ${meta.model}`
                 : meta.backend === 'local-shell' || meta.mode === 'local'
                   ? '演示说明（未调用真实 Agent）'
                   : meta.mode === 'codex'

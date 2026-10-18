@@ -54,10 +54,10 @@ export type AgentUiMessage =
     }
 
 export type AgentRuntimeMeta = {
-  mode: 'codex' | 'claude' | 'hermes' | 'local'
+  mode: 'codex' | 'claude' | 'hermes' | 'local' | 'remote'
   model: string
   shell: boolean
-  backend: 'codex-cli' | 'claude-agent-sdk' | 'hermes-agent' | 'local-shell' | 'unavailable'
+  backend: 'codex-cli' | 'claude-agent-sdk' | 'hermes-agent' | 'local-shell' | 'model-api' | 'unavailable'
 }
 
 export type AgentRunInput = {

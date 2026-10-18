@@ -22,6 +22,8 @@ import { join } from 'node:path'
 import { startDesktopServer, type DesktopServer } from './server'
 import { readFigmaOAuthSettings, saveFigmaOAuthSettings } from './figmaOAuthSettings'
 import { prepareStartup } from './startup'
+import { readModelApiSettings } from './modelApiSettings'
+import { registerModelApiIpc } from './modelApiIpc'
 import { canNavigateFigmaOAuth, canOpenFigmaAuthInBrowser, browserOAuthStartUrl } from './oauthNavigation'
 import {
   DESKTOP_APP_ID,
@@ -1159,6 +1161,12 @@ function destroyWorkspaceViews() {
 }
 
 function registerIpc() {
+  registerModelApiIpc(ipcMain, {
+    isTrusted: event => event.sender === homeView?.webContents && isLocalAppUrl(event.senderFrame?.url ?? ''),
+    dataDirectory: join(app.getPath('userData'), 'data'),
+    secureStorage: safeStorage,
+    getServer: () => ownedServer,
+  })
   ipcMain.handle('desktop-oauth:save', async (event, payload: unknown) => {
     if (!oauthSetupWindow || event.sender !== oauthSetupWindow.webContents) return { ok: false, message: '无法保存配置。' }
     if (!ownedServer) return { ok: false, message: '请关闭其他 Astrix 实例，再重新打开客户端。' }
@@ -1426,6 +1434,8 @@ async function ensureDesktopServer() {
   ownedServer = await startDesktopServer({
     appRoot: appRoot(),
     figmaOAuth: await readFigmaOAuthSettings(join(app.getPath('userData'), 'data'), safeStorage) ?? undefined,
+    // Optional model settings must not keep the user out of the repair/clear UI.
+    modelApi: await readModelApiSettings(join(app.getPath('userData'), 'data'), safeStorage).catch(() => null) ?? undefined,
     dataDirectory: join(app.getPath('userData'), 'data'),
     agentResourcesDirectory: app.isPackaged
       ? join(process.resourcesPath, 'agent-resources')

@@ -108,7 +108,7 @@ export function sanitizeAttachment(
 }
 
 export function sanitizeBackend(value: unknown): AgentBackendKind | undefined {
-  return value === 'codex' || value === 'claude' || value === 'hermes' || value === 'shell'
+  return value === 'codex' || value === 'claude' || value === 'hermes' || value === 'shell' || value === 'model-api'
     ? value
     : undefined
 }

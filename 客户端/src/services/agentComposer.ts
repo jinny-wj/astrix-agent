@@ -1,5 +1,6 @@
 import type {
   AgentAttachment,
+  AgentBackendKind,
   AgentInstruction,
 } from '../types/agentComposer'
 
@@ -78,10 +79,10 @@ export function writeActiveInstructionIds(ids: string[]) {
   localStorage.setItem(INSTRUCTION_ACTIVE_KEY, JSON.stringify(ids))
 }
 
-export function readPreferredBackend() {
+export function readPreferredBackend(): AgentBackendKind | undefined {
   try {
     const value = sessionStorage.getItem(BACKEND_KEY)
-    if (value === 'codex' || value === 'claude' || value === 'hermes' || value === 'shell') {
+    if (value === 'codex' || value === 'claude' || value === 'hermes' || value === 'shell' || value === 'model-api') {
       return value
     }
   } catch {
@@ -90,7 +91,7 @@ export function readPreferredBackend() {
   return undefined
 }
 
-export function writePreferredBackend(id: string | undefined) {
+export function writePreferredBackend(id: AgentBackendKind | undefined) {
   try {
     if (!id) sessionStorage.removeItem(BACKEND_KEY)
     else sessionStorage.setItem(BACKEND_KEY, id)

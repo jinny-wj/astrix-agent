@@ -4,6 +4,8 @@ import { onFigmaAuthSessionChange, startFigmaOAuth } from '../services/figmaAuth
 import { importFigmaFile, importFigmaFileWithOAuth } from '../services/figmaApi'
 import { saveFigmaLibraryConfig } from '../services/figmaLibrary'
 import { loadStudioHealth, type StudioHealth } from '../services/studioHealth'
+import { MODEL_API_SETTINGS_CHANGED } from '../services/modelApi'
+import { ModelApiSettings } from './ModelApiSettings'
 
 function StatusRow({
   ok,
@@ -90,7 +92,13 @@ export function StudioSettingsDialog({
 
   useEffect(() => {
     void refresh().catch(() => {})
-    return onFigmaAuthSessionChange(() => { void refresh().catch(() => {}) })
+    const refreshHealth = () => { void refresh().catch(() => {}) }
+    const unsubscribe = onFigmaAuthSessionChange(refreshHealth)
+    window.addEventListener(MODEL_API_SETTINGS_CHANGED, refreshHealth)
+    return () => {
+      unsubscribe()
+      window.removeEventListener(MODEL_API_SETTINGS_CHANGED, refreshHealth)
+    }
   }, [])
 
   const saveTeams = async () => {
@@ -152,14 +160,18 @@ export function StudioSettingsDialog({
           </button>
         </div>
 
+        <ModelApiSettings />
+
         <div className="mt-4 space-y-2.5">
           <StatusRow
             ok={Boolean(agentOnline)}
             title="真实 Agent"
             detail={
               agentOnline
-                ? `${agentOnline.name} 可用：${agentOnline.detail}`
-                : 'Codex / Claude / Hermes 都未登录或额度不可用。默认不会回退到演示壳伪造结果。'
+                ? agentOnline.id === 'model-api'
+                  ? `${agentOnline.name} 已启用，连接状态请在上方测试。`
+                  : `${agentOnline.name} 可用：${agentOnline.detail}`
+                : 'Codex / Claude / Hermes 都未登录或额度不可用。也可在上方填写并启用 AI 模型 API。'
             }
           />
           <StatusRow

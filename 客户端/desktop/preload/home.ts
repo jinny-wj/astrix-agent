@@ -24,5 +24,17 @@ contextBridge.exposeInMainWorld(
     clearFigmaWebSession() {
       return ipcRenderer.invoke('desktop-home:clear-figma-session') as Promise<boolean>
     },
+    getModelApiSettings() {
+      return ipcRenderer.invoke('desktop-model-api:get')
+    },
+    saveModelApiSettings(draft: unknown) {
+      return ipcRenderer.invoke('desktop-model-api:save', draft)
+    },
+    clearModelApiSettings() {
+      return ipcRenderer.invoke('desktop-model-api:clear')
+    },
+    testModelApiSettings(draft: unknown) {
+      return ipcRenderer.invoke('desktop-model-api:test', draft)
+    },
   }),
 )

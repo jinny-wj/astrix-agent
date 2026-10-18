@@ -1,4 +1,5 @@
 import type { FigmaWorkspaceIntent } from '../config/figma'
+import type { ModelApiConnectionResult, ModelApiDraft, ModelApiPublicSettings } from './modelApi'
 
 export type DesktopWorkspaceContext = {
   tabId: string
@@ -30,7 +31,11 @@ declare global {
       onChromeAction?: (listener: (action: string) => void) => () => void
       openFigmaLayer?: (payload: unknown) => void
       clearFigmaWebSession?: () => Promise<boolean>
-    onOpenStudio?: (
+      getModelApiSettings?: () => Promise<ModelApiPublicSettings>
+      saveModelApiSettings?: (draft: ModelApiDraft) => Promise<ModelApiPublicSettings>
+      clearModelApiSettings?: () => Promise<ModelApiPublicSettings>
+      testModelApiSettings?: (draft: ModelApiDraft) => Promise<ModelApiConnectionResult>
+      onOpenStudio?: (
         listener: (payload: {
           url?: string
           title?: string

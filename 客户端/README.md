@@ -170,6 +170,14 @@ Token 只在导入弹窗内存中使用。浏览器把它发送给本机 `/api/f
 代理，由代理转换为 Figma 要求的 `X-Figma-Token` 请求头；不会写入
 `localStorage` 或构建产物。
 
+## 配置 AI 模型 API
+
+客户端首页右上角「工作台设置」顶部提供「AI 模型 API」。可以先保存未启用的空白或部分草稿，稍后填写服务地址、API Key 和完整模型 ID。当前支持 OpenAI 兼容的文字对话接口；图像生成、工具执行等能力仍由相应 Agent / 工作流承担。
+
+配置完整并启用后，模型选「Auto」、服务器选「自动选择」时使用此 API；手动选择其他 Agent 时保留该选择。保存不会请求模型，「测试连接」需手动点击且会发送一个小型请求。配置通过桌面系统安全存储加密，仅保存在当前用户的电脑上，不进入仓库或安装包。
+
+详见 [模型 API 设置说明](docs/model-api-settings.md)。
+
 ## 配置 Figma OAuth
 
 1. 打开 [Figma Developer Apps](https://www.figma.com/developers/apps)，

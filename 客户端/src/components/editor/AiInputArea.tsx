@@ -473,7 +473,7 @@ export default function AiInputArea({
     }
   }
 
-  const pickBackend = (id: AgentBackendKind) => {
+  const pickBackend = (id: AgentBackendKind | undefined) => {
     setPreferredBackend(id)
     writePreferredBackend(id)
   }

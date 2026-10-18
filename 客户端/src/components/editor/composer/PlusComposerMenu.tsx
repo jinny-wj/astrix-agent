@@ -115,7 +115,7 @@ export default function PlusComposerMenu({
   enabledMcpIds: Set<string>
   onToggleMcp: (service: AgentMcpService) => void
   preferredBackend?: AgentBackendKind
-  onPickBackend: (id: AgentBackendKind) => void
+  onPickBackend: (id: AgentBackendKind | undefined) => void
 }) {
   const [draftTitle, setDraftTitle] = useState('')
   const [draftBody, setDraftBody] = useState('')
@@ -331,14 +331,28 @@ export default function PlusComposerMenu({
           <SubHeader title="服务器状态" onBack={() => onPanel('root')} />
           <div className="py-[4px]">
             <p className="px-[12px] pb-[4px] pt-[6px] text-[11px] text-[#8a8a90]">
-              当前生效：{status?.backend ?? '检测中'}
+              自动路由：{status?.backend ?? '检测中'}
               {status?.model ? ` · ${status.model}` : ''}
             </p>
+            <button
+              type="button"
+              role="menuitemradio"
+              aria-checked={!preferredBackend}
+              onClick={() => onPickBackend(undefined)}
+              className="flex w-full items-start gap-[8px] px-[12px] py-[8px] text-left hover:bg-[#f6f7f9]"
+            >
+              <Spline size={14} className="mt-[2px] shrink-0 text-[#5c5d64]" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[12.5px] text-[#2f3036]">自动选择</span>
+                <span className="block text-[11px] text-[#8a8a90]">按当前配置选择 API 或本机 Agent</span>
+              </span>
+              {!preferredBackend ? <Check size={14} className="mt-[2px] shrink-0 text-[#3b6fe0]" /> : null}
+            </button>
             {(status?.servers ?? []).map((server) => (
               <ServerRow
                 key={server.id}
                 server={server}
-                preferred={preferredBackend === server.id || (!preferredBackend && Boolean(server.active))}
+                preferred={preferredBackend === server.id}
                 onPick={() => onPickBackend(server.id)}
               />
             ))}
@@ -361,6 +375,8 @@ function ServerRow({
   return (
     <button
       type="button"
+      role="menuitemradio"
+      aria-checked={preferred}
       onClick={onPick}
       className="flex w-full items-start gap-[8px] px-[12px] py-[8px] text-left hover:bg-[#f6f7f9]"
     >
