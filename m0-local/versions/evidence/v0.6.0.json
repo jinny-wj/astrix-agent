@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "version": "0.6.0",
+  "recordedAt": "2026-10-23",
+  "recordType": "source-release",
+  "sourceSnapshotAvailable": true,
+  "summaryType": "allowlisted-validation-summary",
+  "validationBasis": "historically recorded results; this summary did not rerun tests",
+  "sources": [
+    {
+      "path": "diagnostics/figma-all-node-tests.log",
+      "bytes": 12983,
+      "sha256": "d53bb9a9b8796b06720c7d78baaafc1bd9c703c9b524ec5c3626eabd6b6046f2",
+      "distribution": "local-only"
+    },
+    {
+      "path": "diagnostics/figma-host-policy.log",
+      "bytes": 2055,
+      "sha256": "1bfec4f867f1db6cce6ef5d40518093ee445d10c484f3d9d09df580393954f3e",
+      "distribution": "local-only"
+    },
+    {
+      "path": "diagnostics/figma-release-summary.json",
+      "bytes": 1594,
+      "sha256": "5cfd87ad71fa506a14b8ecb0d5be9e42422731578502898cde8678fc1e45d809",
+      "distribution": "local-only"
+    },
+    {
+      "path": "docs/本地整合-0.6.0.md",
+      "bytes": 4520,
+      "sha256": "41d02ee61e4f20d253091d4b5aa39f59c742d34a08e0ccaa87c3c678aaa7b0cf",
+      "distribution": "repository"
+    }
+  ],
+  "validation": {
+    "nodeRegressionTests": {
+      "passed": 122,
+      "failed": 0
+    },
+    "hostPolicyAndLifecycleChecks": {
+      "passed": 17
+    },
+    "desktopChecks": {
+      "realOfficialWebsite": true,
+      "remoteIsolated": true,
+      "noBridgeInRemote": true,
+      "nativeBounds": true,
+      "modalHidesRemote": true,
+      "materializedPlugin": true,
+      "loginResumesAfterModal": true,
+      "realSelectionContext": true,
+      "manualMutationAcknowledged": true,
+      "secondMutationUsesOwnReceipt": true,
+      "realPluginExport": true,
+      "originalKrnFromPluginSchema": true,
+      "agentChatPreserved": true,
+      "originalEditorPreserved": true,
+      "exclusiveSurfaces": true,
+      "originalTerminalPreserved": true
+    },
+    "desktopCheckCount": 16,
+    "desktopPassed": true,
+    "pluginNodeEnvironment": "explicit-plugin-api-vm-fixture"
+  },
+  "limitations": [
+    "真实官方页面已打开，但没有登录用户 Figma 账号。",
+    "插件操作使用真实插件/UI脚本及 HTTP 队列，但节点由明确的 Plugin API VM 测试场景提供。",
+    "用户云端文件读写、云端协作与真实外部模型尚未完成端到端验收。",
+    "KRN 生成仍需要目标工程依赖；不保证恢复全部原云端功能。"
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "credentialsIncluded": false
+  }
+}

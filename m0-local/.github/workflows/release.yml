@@ -1,0 +1,32 @@
+name: Publish version notes
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+      COMMIT: ${{ github.sha }}
+    steps:
+      - name: Publish the exact tagged version
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]
+          gh api "repos/$GH_REPO/contents/versions/$TAG.md?ref=$COMMIT" --jq '.content' | base64 --decode > release-notes.md
+          python3 - <<'PY'
+          import os, pathlib, posixpath, re, urllib.parse
+          path = pathlib.Path('release-notes.md')
+          base = 'https://github.com/' + os.environ['GH_REPO'] + '/blob/' + urllib.parse.quote(os.environ['TAG'], safe='') + '/'
+          text = re.sub(r'\]\((?!https?:|#)([^)]+)\)', lambda match: '](' + base + posixpath.normpath('versions/' + match[1]) + ')', path.read_text())
+          path.write_text(text)
+          PY
+          if ! gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GH_REPO" --verify-tag --title "$TAG" --notes-file release-notes.md
+          fi

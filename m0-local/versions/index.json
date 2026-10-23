@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": null,
+  "currentVersion": "0.6.0",
   "recordedAt": "2026-10-23",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "history/v",
@@ -67,8 +67,19 @@
         "versions/evidence/v0.5.0.json",
         "docs/本地整合-0.5.0.md"
       ]
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-23",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "v0.6.0",
+      "record": "versions/v0.6.0.md",
+      "evidence": [
+        "versions/evidence/v0.6.0.json",
+        "docs/本地整合-0.6.0.md",
+        "versions/evidence/github-publication-v0.6.0.json"
+      ]
     }
-  ],
-  "recordedThroughVersion": "0.5.0",
-  "repositoryContent": "historical documentation only; no original source snapshot"
+  ]
 }

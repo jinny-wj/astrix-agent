@@ -1,0 +1,22 @@
+{
+  "name": "paper",
+  "version": "0.12.18",
+  "license": "MIT",
+  "sources": [
+    "https://registry.npmjs.org/paper/-/paper-0.12.18.tgz",
+    "https://github.com/paperjs/paper.js/tree/v0.12.18",
+    "https://paperjs.org/reference/pathitem/"
+  ],
+  "archiveSHA256": "5eeaf50b651e19d79a26d0b8202839ddc73b9241183b304c057c63377a6bb1cb",
+  "files": {
+    "LICENSE.txt": "f8833a38807922b4652421eb0cf29065400c55abd6f4832b9c3250dae87e1958",
+    "node/canvas.js": "0a60e01b55f4c5177a97f5a788a9c3feb400bf9536d5ee91c6b7711a293408c4",
+    "node/extend.js": "b09e2bfd406ee9c3085e2ece543eb5b9b484a5829a3ccc1cddc7c5f7f7e49f9e",
+    "node/self.js": "4be7c43d51d5c16379bc2e42c3f5c5e8b014af0554819a738e2338b81c4000da",
+    "node/xml.js": "95719941e42dc922b2e2a8dc59afba5edc3c094075995218f98dfffe2296b38e",
+    "package.json": "eb5f3182658b0282ad147e535c62d2b788d2baabc44448b74fe5dc1f66821fad",
+    "paper-core.browser.mjs": "87e82af609dfd3004353aa242d9a0d14fee7c4f42c9d072e27d10b3f220c38e0",
+    "paper-core.js": "3a8c73ecdf3929a7fe05f96b82e8146193ea449c5c3e889c5f4fe0184a30ed96"
+  },
+  "browserChange": "Append export default paper; to unmodified upstream minified core; no algorithms changed."
+}

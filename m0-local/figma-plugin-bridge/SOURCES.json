@@ -1,0 +1,32 @@
+{
+  "repository": "https://github.com/jinny-wj/astrix-agent",
+  "commit": "8da3e5b6bf8b3981f50a5e22b26d9484846795bf",
+  "files": [
+    {
+      "path": "客户端/figma-plugin-bridge/code.js",
+      "gitBlobSha": "cb62f48f133e542b48eca4154a60743649bfa4e4",
+      "url": "https://github.com/jinny-wj/astrix-agent/blob/8da3e5b6bf8b3981f50a5e22b26d9484846795bf/%E5%AE%A2%E6%88%B7%E7%AB%AF/figma-plugin-bridge/code.js"
+    },
+    {
+      "path": "客户端/figma-plugin-bridge/ui.html",
+      "gitBlobSha": "40a9940eacc023cc12c98c221f0e2d7cc7ecc91a",
+      "url": "https://github.com/jinny-wj/astrix-agent/blob/8da3e5b6bf8b3981f50a5e22b26d9484846795bf/%E5%AE%A2%E6%88%B7%E7%AB%AF/figma-plugin-bridge/ui.html"
+    },
+    {
+      "path": "客户端/figma-plugin-bridge/manifest.json",
+      "gitBlobSha": "5896d643ed659c8523f2126eba674ce54de4a4e0",
+      "url": "https://github.com/jinny-wj/astrix-agent/blob/8da3e5b6bf8b3981f50a5e22b26d9484846795bf/%E5%AE%A2%E6%88%B7%E7%AB%AF/figma-plugin-bridge/manifest.json"
+    },
+    {
+      "path": "客户端/figma-plugin-bridge/README.md",
+      "gitBlobSha": "80b074f7eea07281abfb28e4f7c7dbb8382d7140",
+      "url": "https://github.com/jinny-wj/astrix-agent/blob/8da3e5b6bf8b3981f50a5e22b26d9484846795bf/%E5%AE%A2%E6%88%B7%E7%AB%AF/figma-plugin-bridge/README.md"
+    }
+  ],
+  "adaptations": [
+    "Every command and plugin request binds fileKey, sessionId and paired bearer token.",
+    "Only explicit supported command types; removed legacy unbound setters.",
+    "Added read/export/schema commands and local project pairing."
+  ],
+  "license": "No root LICENSE file returned at the pinned commit. This source attribution does not assert redistribution rights."
+}
