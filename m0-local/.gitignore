@@ -1,0 +1,16 @@
+node_modules/
+/.local-data/
+/.data/
+/diagnostics/
+/.release-assets/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.mobileprovision
+*.log
+.DS_Store
+/plugins/verification-output/

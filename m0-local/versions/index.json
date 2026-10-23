@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "currentVersion": null,
+  "recordedAt": "2026-10-23",
+  "historyPolicy": {
+    "documentationOnlyTagPrefix": "history/v",
+    "sourceTagPrefix": "v",
+    "earliestCompleteSourceVersion": "0.6.0",
+    "notice": "0.1.0 through 0.5.0 are documentation-only historical records. Their original complete source snapshots were not retained. Historical tags do not identify runnable source versions."
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.1.0",
+      "record": "versions/v0.1.0.md",
+      "evidence": [
+        "versions/evidence/v0.1.0.json"
+      ]
+    }
+  ],
+  "recordedThroughVersion": "0.1.0",
+  "repositoryContent": "historical documentation only; no original source snapshot"
+}
