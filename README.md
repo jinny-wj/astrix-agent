@@ -120,7 +120,7 @@ npm run desktop:figma
 
 M0 默认服务为 `http://127.0.0.1:4317`，使用 **M0 Local Figma Bridge**。请按 [M0 说明](m0-local/README.md)、[资源与运行包说明](m0-local/docs/GitHub运行包.md)完成准备和配对。生成资源与原生组件以有权访问草稿的账号可获取的受限附件提供；公开 Git 保存适配源码与版本记录。
 
-M0 版本单独使用 `m0/vX.Y.Z`；0.1～0.5 仅有历史文档，标记为 `m0/history/vX.Y.Z`。整合发布从 `m0/v0.6.1` 继续，记录见 [M0 版本总表](m0-local/versions/index.json)与[变更记录](m0-local/CHANGELOG.md)。Astrix 原客户端、网页版及原预览版本保持自己的发布入口。
+M0 版本单独使用 `m0/vX.Y.Z`；0.1～0.5 仅有历史文档，标记为 `m0/history/vX.Y.Z`。整合发布从 `m0/v0.6.1` 继续，记录见 [M0 版本总表](m0-local/versions/index.json)与[变更记录](m0-local/CHANGELOG.md)。Astrix 原客户端、网页版及原预览版本保持自己的发布入口。客户端安装包请使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向 M0 源码记录。
 
 ## 连接 Figma
 

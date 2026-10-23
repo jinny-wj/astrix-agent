@@ -2,7 +2,7 @@
 
 该工程使用已恢复的 M0 AI 工作台前端构建，补上独立的本地服务与 Electron 桌面壳。准备运行资源后可在本机启动，项目、会话、模型配置均保存在项目目录中，不需要原公司的 SSO。
 
-正式位置：[jinny-wj/astrix-agent/m0-local](https://github.com/jinny-wj/astrix-agent/tree/main/m0-local)，当前为 **0.6.1**。[版本总表](versions/index.json)保留全部阶段；0.1～0.5 为文档记录，应用源码从 0.6.0 开始保存。M0 使用 `m0/history/v版本号` 和 `m0/v版本号`，旧引用对应关系见[历史导入映射](docs/历史导入映射.json)。后续按[发布流程](docs/版本发布.md)逐版保存准确源码，保留 Astrix 原有 preview/latest 发布入口。
+正式位置：[jinny-wj/astrix-agent/m0-local](https://github.com/jinny-wj/astrix-agent/tree/main/m0-local)，当前为 **0.6.1**。[版本总表](versions/index.json)保留全部阶段；0.1～0.5 为文档记录，应用源码从 0.6.0 开始保存。M0 使用 `m0/history/v版本号` 和 `m0/v版本号`，旧引用对应关系见[历史导入映射](docs/历史导入映射.json)。后续按[发布流程](docs/版本发布.md)逐版保存准确源码。Astrix 客户端安装包使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向 M0 源码记录，不代表新的 Astrix 安装包。
 
 公开 Git 和 `m0/v0.6.1` Release 保存源码与文档。生成的 `public/`、插件转换器、额外静态资源和图标不放入 Git；它们与原编辑器、原 OpenCode、原 LangGraph 和 Skills 通过受限草稿 `m0-runtime/v0.6.1` 单独提供。请先按[运行包说明](docs/GitHub运行包.md)准备对应资源；原引擎恢复目录为 `astrix-agent/M0-AI-recovered/`。`npm ci` 只安装项目依赖，不会取得这些资源、原公司服务或登录资料。
 
