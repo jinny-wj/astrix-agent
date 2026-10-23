@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "version": "0.4.0",
+  "recordedAt": "2026-10-23",
+  "recordType": "documentation-only",
+  "sourceSnapshotAvailable": false,
+  "summaryType": "allowlisted-validation-summary",
+  "validationBasis": "historically recorded results; this summary did not rerun tests",
+  "sources": [
+    {
+      "path": "diagnostics/integration-tests-0.4.0.log",
+      "bytes": 6080,
+      "sha256": "823e5bc2f5b1ae5cdadb60147192dd1b69a3b5ea2e54cb45fc82300cf75503f3",
+      "distribution": "local-only"
+    },
+    {
+      "path": "diagnostics/release-0.4.0.json",
+      "bytes": 1349,
+      "sha256": "015d98fe3466a3108c6e7ef12a998e86f68cb246ba3e3c183b93c357b42b9c16",
+      "distribution": "local-only"
+    },
+    {
+      "path": "docs/本地整合-0.4.0.md",
+      "bytes": 6098,
+      "sha256": "d37608a9d6a23888b2651314ea8a9432b5ef866f293c438a364209f0565b7d10",
+      "distribution": "repository"
+    }
+  ],
+  "validation": {
+    "nodeIntegrationTests": {
+      "passed": 48,
+      "failed": 0
+    },
+    "marketplacePolicyChecks": {
+      "passed": 3
+    },
+    "desktopNavigationChecks": {
+      "passed": 3
+    },
+    "guiChecks": {
+      "canvas-ui-verification": {
+        "passed": true,
+        "count": 14
+      },
+      "canvas-v2-ui-verification": {
+        "passed": true,
+        "count": 13
+      },
+      "canvas-workspace-scope": {
+        "passed": true,
+        "count": 5
+      },
+      "design-cloud-ui": {
+        "passed": true,
+        "count": 7
+      },
+      "design-prototype-ui": {
+        "passed": true,
+        "count": 6
+      },
+      "native-editor-marketplace": {
+        "passed": true,
+        "count": 11
+      },
+      "native-editor-marketplace-offline": {
+        "passed": true,
+        "count": 13
+      },
+      "native-editor-integration": {
+        "passed": true,
+        "count": 18
+      }
+    },
+    "clientErrors": 0,
+    "unhandledRouteCount": 0
+  },
+  "limitations": [
+    "完整旧版源码快照未保留。",
+    "设计版本、评论、分享与原型为本地替代。",
+    "未实现真实 Figma 云端编辑、实时多人编辑、完整高级矢量与 .fig 二进制解析。"
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "credentialsIncluded": false
+  }
+}
