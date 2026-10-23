@@ -19,8 +19,20 @@
       "evidence": [
         "versions/evidence/v0.1.0.json"
       ]
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.2.0",
+      "record": "versions/v0.2.0.md",
+      "evidence": [
+        "versions/evidence/v0.2.0.json",
+        "docs/本地整合-0.2.0.md"
+      ]
     }
   ],
-  "recordedThroughVersion": "0.1.0",
+  "recordedThroughVersion": "0.2.0",
   "repositoryContent": "historical documentation only; no original source snapshot"
 }
