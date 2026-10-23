@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "currentVersion": "0.6.0",
+  "recordedAt": "2026-10-23",
+  "historyPolicy": {
+    "documentationOnlyTagPrefix": "history/v",
+    "sourceTagPrefix": "v",
+    "earliestCompleteSourceVersion": "0.6.0",
+    "notice": "0.1.0 through 0.5.0 are documentation-only historical records. Their original complete source snapshots were not retained. Historical tags do not identify runnable source versions."
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.1.0",
+      "record": "versions/v0.1.0.md",
+      "evidence": [
+        "versions/evidence/v0.1.0.json"
+      ]
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.2.0",
+      "record": "versions/v0.2.0.md",
+      "evidence": [
+        "versions/evidence/v0.2.0.json",
+        "docs/本地整合-0.2.0.md"
+      ]
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.3.0",
+      "record": "versions/v0.3.0.md",
+      "evidence": [
+        "versions/evidence/v0.3.0.json",
+        "docs/本地整合-0.3.0.md"
+      ]
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.4.0",
+      "record": "versions/v0.4.0.md",
+      "evidence": [
+        "versions/evidence/v0.4.0.json",
+        "docs/本地整合-0.4.0.md"
+      ]
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "history/v0.5.0",
+      "record": "versions/v0.5.0.md",
+      "evidence": [
+        "versions/evidence/v0.5.0.json",
+        "docs/本地整合-0.5.0.md"
+      ]
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-23",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "v0.6.0",
+      "record": "versions/v0.6.0.md",
+      "evidence": [
+        "versions/evidence/v0.6.0.json",
+        "docs/本地整合-0.6.0.md",
+        "versions/evidence/github-publication-v0.6.0.json"
+      ]
+    }
+  ]
+}

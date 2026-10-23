@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.0",
+  "recordedAt": "2026-10-23",
+  "recordType": "documentation-only",
+  "sourceSnapshotAvailable": false,
+  "summaryType": "allowlisted-validation-summary",
+  "validationBasis": "historically recorded results; this summary did not rerun tests",
+  "sources": [
+    {
+      "path": "diagnostics/integration-tests-0.2.0.log",
+      "bytes": 3972,
+      "sha256": "2a36138b5f56a4b0bc93c2ec7d600322e379b67b1e91e886b0f5554c810b9c97",
+      "distribution": "local-only"
+    },
+    {
+      "path": "docs/本地整合-0.2.0.md",
+      "bytes": 5859,
+      "sha256": "842ab8bf369f405aea18cae236673aeb2c247f34044506fdab4996e2ffb0d70c",
+      "distribution": "repository"
+    }
+  ],
+  "validation": {
+    "nodeIntegrationTests": {
+      "passed": 17,
+      "failed": 0
+    },
+    "originalGeneratorChecks": {
+      "passed": 5
+    },
+    "modelVerification": "local-test-model"
+  },
+  "limitations": [
+    "完整旧版源码快照未保留。",
+    "终端、扩展宿主、真实 Figma 和完整企业多 Agent 业务图当时未接通。",
+    "原 OpenCode 验证使用本机测试模型；未验证用户真实外部模型。"
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "credentialsIncluded": false
+  }
+}

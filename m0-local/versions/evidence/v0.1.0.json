@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "recordedAt": "2026-10-23",
+  "recordType": "documentation-only",
+  "sourceSnapshotAvailable": false,
+  "summaryType": "allowlisted-validation-summary",
+  "validationBasis": "historically recorded results; this summary did not rerun tests",
+  "sources": [
+    {
+      "path": "diagnostics/validation-summary.json",
+      "bytes": 769,
+      "sha256": "127be52ba4409c52adaca89fa66cf961312e0e4284874f35eb6dad20e7ccdcb0",
+      "distribution": "local-only"
+    }
+  ],
+  "validation": {
+    "nodeIntegrationTests": {
+      "passed": 5,
+      "failed": 0
+    },
+    "desktopAutostartVerified": true,
+    "ui": {
+      "passed": true,
+      "assertionCount": 5,
+      "consoleErrors": 0
+    },
+    "liveClientErrors": 0,
+    "unhandledRouteCount": 0,
+    "modelMode": "demo"
+  },
+  "limitations": [
+    "完整旧版源码快照未保留。",
+    "当时未接入真实 Figma、原 KSCode 和原多 Agent 引擎。",
+    "演示模式没有验证真实外部模型。"
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "credentialsIncluded": false
+  }
+}

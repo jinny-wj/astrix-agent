@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "version": "0.6.0",
+  "kind": "github-publication-validation",
+  "repository": "https://github.com/jinny-wj/m0-local",
+  "visibility": "private",
+  "runtime": {
+    "asset": "M0-AI-recovered-runtime-v0.6.0.tar.gz",
+    "bytes": 94865962,
+    "sha256": "20f97e13b425221633b9073c1b206f5da4818e4dd351be1cbf791218e5b4a92b",
+    "files": 6286,
+    "packages": 33,
+    "independentExtractionVerified": true,
+    "fileDigestsAndPermissionsVerified": true,
+    "originalRecoveryModified": false,
+    "embeddedCredentialsRemoved": true,
+    "editorPostinstallRemoved": true
+  },
+  "validation": {
+    "isolatedSourceWithRuntimeBundle": true,
+    "installedNpmDependenciesReused": true,
+    "node": {
+      "passed": 127,
+      "failed": 0,
+      "skipped": 0
+    },
+    "figmaHostPolicy": {
+      "passed": 17,
+      "failed": 0
+    },
+    "marketplacePolicy": {
+      "passed": 3,
+      "failed": 0
+    },
+    "navigationPolicy": {
+      "passed": 3,
+      "failed": 0
+    },
+    "originalGeneratorsPassed": true,
+    "legacyCanvasChecksPassed": true,
+    "previousDesktopAssertions": 16
+  },
+  "boundaries": [
+    "Plugin edits were tested with an explicit Plugin API VM fixture, not the user cloud document.",
+    "No real external AI model or user account Figma document was claimed as verified.",
+    "Historical tags 0.1.0 through 0.5.0 contain documentation only."
+  ]
+}

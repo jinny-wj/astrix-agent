@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "version": "0.3.0",
+  "recordedAt": "2026-10-23",
+  "recordType": "documentation-only",
+  "sourceSnapshotAvailable": false,
+  "summaryType": "allowlisted-validation-summary",
+  "validationBasis": "historically recorded results; this summary did not rerun tests",
+  "sources": [
+    {
+      "path": "diagnostics/integration-tests-0.3.0.log",
+      "bytes": 8994,
+      "sha256": "0eec37771590150cd7a19ce316776c9d89c0851154c592f1139e4f6a6f5fc5b9",
+      "distribution": "local-only"
+    },
+    {
+      "path": "docs/本地整合-0.3.0.md",
+      "bytes": 6633,
+      "sha256": "8bd5fb7a95858eff902bb1e0e452f89bdcfb0c8133d05c01037a015dcf2f7cb1",
+      "distribution": "repository"
+    }
+  ],
+  "validation": {
+    "nodeIntegrationTests": {
+      "passed": 38,
+      "failed": 0
+    },
+    "gui": {
+      "originalEditorChecks": 16,
+      "terminalAndExtensionsChecks": 13,
+      "canvasChecks": 14
+    },
+    "modelVerification": "local-test-model"
+  },
+  "limitations": [
+    "完整旧版源码快照未保留。",
+    "本地画布和调度图为新增适配，不等同于原 Figma 引擎和完整企业业务图。",
+    "当时扩展市场远程下载未接通；工作流使用本机测试模型验收。",
+    "界面检查数量摘自当时阶段文档，同名原始界面诊断文件可能在后续继续更新。"
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "credentialsIncluded": false
+  }
+}

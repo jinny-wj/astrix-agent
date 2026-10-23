@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "version": "0.5.0",
+  "recordedAt": "2026-10-23",
+  "recordType": "documentation-only",
+  "sourceSnapshotAvailable": false,
+  "summaryType": "allowlisted-validation-summary",
+  "validationBasis": "historically recorded results; this summary did not rerun tests",
+  "sources": [
+    {
+      "path": "diagnostics/integration-tests-0.5.0.log",
+      "bytes": 11138,
+      "sha256": "6761821d398e60700280f7192563a6f3da1007a61a8e1de83f43a5d20afe7ea8",
+      "distribution": "local-only"
+    },
+    {
+      "path": "diagnostics/release-0.5.0.json",
+      "bytes": 2138,
+      "sha256": "508eaabdfa41343bf5ea0f2bc87afc7149c32c46e6116d6a8ae602862b4bc1c4",
+      "distribution": "local-only"
+    },
+    {
+      "path": "docs/本地整合-0.5.0.md",
+      "bytes": 4718,
+      "sha256": "88021955ab4fd84a057d4b5dca39192a1e5938a41ccbb01a91781826d09ee08d",
+      "distribution": "repository"
+    }
+  ],
+  "validation": {
+    "guiChecks": {
+      "canvas-ui-verification": {
+        "passed": true,
+        "count": 14
+      },
+      "canvas-v2-ui-verification": {
+        "passed": true,
+        "count": 13
+      },
+      "canvas-vector-ui-verification": {
+        "passed": true,
+        "count": 12
+      },
+      "canvas-collaboration-ui": {
+        "passed": true,
+        "count": 14
+      },
+      "canvas-desktop-windows": {
+        "passed": true,
+        "count": 6
+      }
+    },
+    "clientErrors": 0,
+    "unhandledRouteCount": 0,
+    "nodeTests": {
+      "passed": 95,
+      "failed": 0
+    },
+    "additionalPolicyAndNavigationChecks": {
+      "passed": 6
+    },
+    "originalGeneratorAndCanvasChecks": true,
+    "guiTotal": 59
+  },
+  "limitations": [
+    "完整旧版源码快照未保留。",
+    "高级矢量和实时协作属于本地新增实现，不等于完整 Figma 云端引擎。",
+    "同字段协作冲突需要处理，不宣称完整 Figma CRDT 或逐字文本协同。"
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "credentialsIncluded": false
+  }
+}

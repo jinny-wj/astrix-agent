@@ -1,0 +1,1269 @@
+{
+  "generatedBy": "prepare-frontend.mjs",
+  "source": "../M0-AI-recovered/web-assets/cache-recovered",
+  "entry": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-8tYpB-jE.js",
+  "assets": [
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/abap-BrgZPUOV.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/abap-BrgZPUOV.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/aicode-v2-apply-CSdzN7KL.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/aicode-v2-apply-CSdzN7KL.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-access-CMtDVBRh.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-access-CMtDVBRh.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/asset-empty-folder-ip-D1bOWHek.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/asset-empty-folder-ip-D1bOWHek.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/apex-DyP6w7ZV.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/apex-DyP6w7ZV.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/bat-CFOPXBzS.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/bat-CFOPXBzS.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cameligo-BFG1Mk7z.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cameligo-BFG1Mk7z.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/bicep-BfEKNvv3.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/bicep-BfEKNvv3.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/azcli-BaLxmfj-.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/azcli-BaLxmfj-.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/codicon-DCmgc-ay.ttf",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/codicon-DCmgc-ay.ttf"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/clojure-DTECt2xU.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/clojure-DTECt2xU.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/coffee-CDGzqUPQ.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/coffee-CDGzqUPQ.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/chat-share-Cdp8SzHc.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/chat-share-Cdp8SzHc.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/csharp-dUCx_-0o.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/csharp-dUCx_-0o.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/css-D3h14YRZ.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/css-D3h14YRZ.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cpp-CLLBncYj.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cpp-CLLBncYj.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cssMode-QQF2T0Bw.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cssMode-QQF2T0Bw.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/csp-5Rap-vPy.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/csp-5Rap-vPy.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-assets-DBCqpeeZ.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-assets-DBCqpeeZ.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dart-CFKIUWau.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dart-CFKIUWau.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cypher-DrQuvNYM.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/cypher-DrQuvNYM.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dashboard-Brwxex7x.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dashboard-Brwxex7x.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/css.worker-Le5Gc6Sr.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/css.worker-Le5Gc6Sr.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-figma-BKW-oHFy.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-figma-BKW-oHFy.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-library-C9kp56ct.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-library-C9kp56ct.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dockerfile-Zznr-cwX.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dockerfile-Zznr-cwX.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-motion-DldT_Cbn.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-feature-motion-DldT_Cbn.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-share-BjFi0A_o.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-share-BjFi0A_o.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ecl-Ce3n6wWz.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ecl-Ce3n6wWz.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-placeholder-poster-CBcpq5mI.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-placeholder-poster-CBcpq5mI.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/editor.worker-B5MuPpPK.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/editor.worker-B5MuPpPK.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/download-B1fpHVbg.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/download-B1fpHVbg.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/elixir-deUWdS0T.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/elixir-deUWdS0T.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/element-icons-_lZGOqcG.ttf",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/element-icons-_lZGOqcG.ttf"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/element-icons-B-tDfklg.woff",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/element-icons-B-tDfklg.woff"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/figma-auth-callback-DKMRy5CT.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/figma-auth-callback-DKMRy5CT.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/freemarker2-BCkANqNg.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/freemarker2-BCkANqNg.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/flow9-i9-g7ZhI.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/flow9-i9-g7ZhI.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/go-Cphgjts3.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/go-Cphgjts3.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/font-generate-BCXpjwPF.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/font-generate-BCXpjwPF.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/fsharp-CzKuDChf.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/fsharp-CzKuDChf.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/graphql-Cg7bfA9N.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/graphql-Cg7bfA9N.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/hcl-0cvrggvQ.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/hcl-0cvrggvQ.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/html-g18N_9ur.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/html-g18N_9ur.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/gitlab-auth-callback-DLlYwUVi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/gitlab-auth-callback-DLlYwUVi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/handlebars-C66_6f5l.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/handlebars-C66_6f5l.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/htmlMode-C_-uQfrF.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/htmlMode-C_-uQfrF.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-tab-aicode-B2ABjWUM.svg",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-tab-aicode-B2ABjWUM.svg"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-animation-5S4sZj5v.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-animation-5S4sZj5v.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/iconfont-C7QLd4nF.ttf",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/iconfont-C7QLd4nF.ttf"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/iconfont-DwXA9hqH.woff",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/iconfont-DwXA9hqH.woff"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/html.worker-2BrG_omW.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/html.worker-2BrG_omW.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ini-Drc7WvVn.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ini-Drc7WvVn.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-B4aWKldh.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-B4aWKldh.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ip-result-0-CMi3hUWD.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ip-result-0-CMi3hUWD.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DwMx524y.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DwMx524y.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ip-result-DlkOS_AS.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ip-result-DlkOS_AS.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DDtdPWM7.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DDtdPWM7.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/java-B_fMsGYe.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/java-B_fMsGYe.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsx-C23bzOSk.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsx-C23bzOSk.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsonMode-gOBrvirL.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsonMode-gOBrvirL.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/json.worker-CRj_graF.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/json.worker-CRj_graF.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsx-F9TclA47.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsx-F9TclA47.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/javascript-BatuVLr6.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/javascript-BatuVLr6.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsx-CnNQ7Y6H.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/jsx-CnNQ7Y6H.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/julia-Bqgm2twL.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/julia-Bqgm2twL.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kotlin-BSkB5QuD.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kotlin-BSkB5QuD.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/less-BsTHnhdd.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/less-BsTHnhdd.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/lua-nf6ki56Z.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/lua-nf6ki56Z.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/liquid-2PmQiSi_.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/liquid-2PmQiSi_.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/lexon-YWi4-JPR.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/lexon-YWi4-JPR.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-DrwncfUz.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-DrwncfUz.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m3-Cpb6xl2v.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m3-Cpb6xl2v.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/mdx-CqgpTiKO.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/mdx-CqgpTiKO.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/markdown-DSZPf7rp.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/markdown-DSZPf7rp.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-restore-ffGiD31c.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-restore-ffGiD31c.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/mips-B_c3zf-v.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/mips-B_c3zf-v.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/msdax-rUNN04Wq.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/msdax-rUNN04Wq.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/mysql-DDwshQtU.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/mysql-DDwshQtU.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/objective-c-B5zXfXm9.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/objective-c-B5zXfXm9.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/perl-CwNk8-XU.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/perl-CwNk8-XU.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pascaligo-Bc-ZgV77.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pascaligo-Bc-ZgV77.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/new-welcome-BkS9w5QF.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/new-welcome-BkS9w5QF.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pascal-CXOwvkN_.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pascal-CXOwvkN_.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pla-B03wrqEc.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pla-B03wrqEc.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pgsql-tGk8EFnU.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pgsql-tGk8EFnU.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/php-CpIb_Oan.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/php-CpIb_Oan.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/powerquery-Bhzvs7bI.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/powerquery-Bhzvs7bI.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/project-select-logo-DNNjKM3T.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/project-select-logo-DNNjKM3T.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/postiats-BKlk5iyT.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/postiats-BKlk5iyT.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/powershell-Dd3NCNK9.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/powershell-Dd3NCNK9.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pug-BaJupSGV.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/pug-BaJupSGV.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/protobuf-COyEY5Pt.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/protobuf-COyEY5Pt.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-4k-B9l53s8Y.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-4k-B9l53s8Y.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/python-7gOmSTwH.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/python-7gOmSTwH.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/qsharp-DXyYeYxl.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/qsharp-DXyYeYxl.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/razor-3DYraqoR.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/razor-3DYraqoR.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/r-CdQndTaG.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/r-CdQndTaG.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/redis-CVwtpugi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/redis-CVwtpugi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/restructuredtext-DfzH4Xui.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/restructuredtext-DfzH4Xui.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/redshift-25W9uPmb.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/redshift-25W9uPmb.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/rust-D5C2fndG.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/rust-D5C2fndG.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/scala-BoFRg7Ot.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/scala-BoFRg7Ot.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ruby-Cp1zYvxS.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ruby-Cp1zYvxS.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sb-CDntyWJ8.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sb-CDntyWJ8.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/scss-4Ik7cdeQ.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/scss-4Ik7cdeQ.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/scheme-Bio4gycK.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/scheme-Bio4gycK.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/shell-CX-rkNHf.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/shell-CX-rkNHf.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/skills-BkJotfP4.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/skills-BkJotfP4.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/solidity-Tw7wswEv.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/solidity-Tw7wswEv.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sophia-C5WLch3f.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sophia-C5WLch3f.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sparql-DHaeiCBh.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sparql-DHaeiCBh.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/st-pnP8ivHi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/st-pnP8ivHi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sql-CCSDG5nI.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sql-CCSDG5nI.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/swift-DwJ7jVG9.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/swift-DwJ7jVG9.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/systemverilog-B9Xyijhd.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/systemverilog-B9Xyijhd.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/tcl-DnHyzjbg.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/tcl-DnHyzjbg.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/twig-CPajHgWi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/twig-CPajHgWi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/tsMode-BKDllYNC.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/tsMode-BKDllYNC.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/typespec-D-MeaMDU.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/typespec-D-MeaMDU.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/typescript-CgxUPkpB.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/typescript-CgxUPkpB.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vb-DgyLZaXg.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vb-DgyLZaXg.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/welcome-logo-KJPPjtPo.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/welcome-logo-KJPPjtPo.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/xml-3FOb5MU7.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/xml-3FOb5MU7.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/yaml-B3Ex-4qT.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/yaml-B3Ex-4qT.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/wgsl-BIv9DU6q.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/wgsl-BIv9DU6q.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vue.worker-B1xD3yKo.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vue.worker-B1xD3yKo.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ts.worker-BoRV8-B4.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ts.worker-BoRV8-B4.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/agent-analysis-fU671BZA.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/agent-analysis-fU671BZA.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-dXCURd9p.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-dXCURd9p.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/d2c-BpeO447s.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/d2c-BpeO447s.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/img-BHRwmIxK.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/img-BHRwmIxK.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-guide-BZycqInM.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-guide-BZycqInM.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-tool-BV3BN28_.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-tool-BV3BN28_.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/inspect-BV5hKrc8.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/inspect-BV5hKrc8.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-q2mEUE5r.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-q2mEUE5r.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/linklocal-B59LHu54.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/linklocal-B59LHu54.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/logo-nFT4vI4U.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/logo-nFT4vI4U.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/perfectpx-B6122coj.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/perfectpx-B6122coj.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/shared.esm-bundler-BoUIPlQ4.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/shared.esm-bundler-BoUIPlQ4.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/skill-mascot-DdwnV9vI.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/skill-mascot-DdwnV9vI.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CXoUn5Om.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CXoUn5Om.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vue.worker-BaeXeo6Z.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vue.worker-BaeXeo6Z.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vue.worker-iY02ckBz.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/vue.worker-iY02ckBz.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-dashboard-mascot-C3xxuRWR.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-dashboard-mascot-C3xxuRWR.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-date-range-BzyVCEIN.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-date-range-BzyVCEIN.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-access-JiknVkiz.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-access-JiknVkiz.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/agent-analysis-7UM9qEUK.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/agent-analysis-7UM9qEUK.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/aicode-v2-apply-B-i3YQDu.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/aicode-v2-apply-B-i3YQDu.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/chat-share-lg--uWy7.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/chat-share-lg--uWy7.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-CPpQz9rt.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-CPpQz9rt.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-date-range-xCsOPkx_.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/analytics-date-range-xCsOPkx_.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-share-DELYE5AN.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-share-DELYE5AN.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dashboard-DZSGVu0B.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/dashboard-DZSGVu0B.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/figma-auth-callback-DGxqbnee.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/figma-auth-callback-DGxqbnee.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/gitlab-auth-callback-DTigvpx1.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/gitlab-auth-callback-DTigvpx1.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DeIWakHc.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DeIWakHc.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Bn5Pz3f0.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Bn5Pz3f0.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/left-pure-CKCZ-SI3.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/left-pure-CKCZ-SI3.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/new-welcome-_8FwKfAU.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/new-welcome-_8FwKfAU.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/skills-BY9Ci7g1.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/skills-BY9Ci7g1.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/font-generate-CKGPIrIY.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/font-generate-CKGPIrIY.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/Region-Applicationtoolbar-BUwlw9wd.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/Region-Applicationtoolbar-BUwlw9wd.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-code-R70T4569.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-code-R70T4569.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/gitlab-link-m0-C1JVMacR.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/gitlab-link-m0-C1JVMacR.png"
+    },
+    {
+      "url": "https://p5-live.wskwai.com/kcdn/cdn-kcdn112803/figma-api-inside/index.iife.1789527401890.js",
+      "local": "/vendor/p5-live.wskwai.com/kcdn/cdn-kcdn112803/figma-api-inside/index.iife.1789527401890.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DJLNUQYJ.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DJLNUQYJ.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CeqV1VT8.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CeqV1VT8.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-H9cTgx4t.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-H9cTgx4t.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kconf-store-BfoY3jWz.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kconf-store-BfoY3jWz.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/home-Dq22ywRR.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/home-Dq22ywRR.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-8tYpB-jE.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-8tYpB-jE.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-dJffjmhH.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-dJffjmhH.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-yGd4K9Mi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-yGd4K9Mi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DUavl_ol.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DUavl_ol.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-header-logo-DpRP-W92.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-header-logo-DpRP-W92.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BQPgUgtX.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BQPgUgtX.js"
+    },
+    {
+      "url": "https://s1-12172.kwimgs.com/kos/nlav12172/margin0/figma-inject-ipc.js",
+      "local": "/vendor/s1-12172.kwimgs.com/kos/nlav12172/margin0/figma-inject-ipc.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/upload-image-to-kcdn-B23AK6KL.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/upload-image-to-kcdn-B23AK6KL.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-tab-aicode-eglaY_uL.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-tab-aicode-eglaY_uL.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/compiler-dom.esm-bundler-BiAE9ITz.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/compiler-dom.esm-bundler-BiAE9ITz.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DNU0Hh6F.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DNU0Hh6F.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-lysx0qk5.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-lysx0qk5.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/canvas-content.vue_vue_type_style_index_0_lang-DjEWpRc6.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/canvas-content.vue_vue_type_style_index_0_lang-DjEWpRc6.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/canvas-immersive-layout-CNBj5M1G.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/canvas-immersive-layout-CNBj5M1G.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-D1IYtM_X.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-D1IYtM_X.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-B8hu-vk0.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-B8hu-vk0.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-74MVtcfd.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-74MVtcfd.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BpdlXisW.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BpdlXisW.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BzCqrYKX.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BzCqrYKX.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/virtual-list-whOw80Bi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/virtual-list-whOw80Bi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-zocx1YBy.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-zocx1YBy.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-C-KTHgGp.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-C-KTHgGp.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/m0-logo.svg",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/m0-logo.svg"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BbRLIAC1.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BbRLIAC1.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DaAG1_Mz.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DaAG1_Mz.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DW2KEF3R.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DW2KEF3R.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-D0Qad7rx.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-D0Qad7rx.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0_tired-CfxFTRKd.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0_tired-CfxFTRKd.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BFdlVAz1.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BFdlVAz1.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sider-container-fooed5eQ.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sider-container-fooed5eQ.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index.es-BW_FzNZC.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index.es-BW_FzNZC.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BNqEkO20.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BNqEkO20.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-B8rqs2eF.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-B8rqs2eF.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-container-CWxcyYgS.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-container-CWxcyYgS.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-logo-cn-Cxk5wUPj.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-logo-cn-Cxk5wUPj.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/CodeBox-CxJIB-Bf.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/CodeBox-CxJIB-Bf.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Dwi24rkD.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Dwi24rkD.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-observer-BpKpzar8.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-observer-BpKpzar8.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/theme-default-DjrIs5xU.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/theme-default-DjrIs5xU.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/thread-environment-CQjepyp7.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/thread-environment-CQjepyp7.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CwrY0UTZ.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CwrY0UTZ.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CA5w8ZA4.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CA5w8ZA4.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Dob5JK4V.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Dob5JK4V.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DgUKY7pS.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DgUKY7pS.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DaRgdQQH.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DaRgdQQH.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/editorSimpleWorker-2EOsb57h.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/editorSimpleWorker-2EOsb57h.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DomVTRpY.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DomVTRpY.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-header-logo-BFzQHSKZ.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-header-logo-BFzQHSKZ.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-container-DqN_b625.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-container-DqN_b625.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/zh-cn-BucQa1KB.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/zh-cn-BucQa1KB.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Cekifspa.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Cekifspa.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DWAO1Itf.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DWAO1Itf.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/font-production-DlTA67uB.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/font-production-DlTA67uB.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-v2-BGt4TMzj.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-v2-BGt4TMzj.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ModelSelector-CZB3ujLE.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ModelSelector-CZB3ujLE.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-x2CgsEXS.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-x2CgsEXS.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CxEShKqm.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CxEShKqm.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/use-ide-proxy-CqUAfgox.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/use-ide-proxy-CqUAfgox.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-v2-CWeknPNr.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-v2-CWeknPNr.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/use-history-DI0uIcHX.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/use-history-DI0uIcHX.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BWWCKgmt.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BWWCKgmt.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-wXTG5CZK.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-wXTG5CZK.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DV7BBq9B.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DV7BBq9B.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-IQAFIkSy.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-IQAFIkSy.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kim@4x-t17S6u6Z.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kim@4x-t17S6u6Z.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/use-children-components-g3hpHw0U.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/use-children-components-g3hpHw0U.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/home-DtxeR8R8.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/home-DtxeR8R8.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-RV_IB1Xa.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-RV_IB1Xa.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Dk2dKQM5.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Dk2dKQM5.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DOw9vQdi.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DOw9vQdi.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BmTUyiwj.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BmTUyiwj.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/update-entry-CMe7v6bl.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/update-entry-CMe7v6bl.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DSI9UF28.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DSI9UF28.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sider-container-BRHSL1Gb.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/sider-container-BRHSL1Gb.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-C7xsxTcX.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-C7xsxTcX.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Ccq1aAZO.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-Ccq1aAZO.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DpfEpus3.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DpfEpus3.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CfNKt-fL.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CfNKt-fL.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/window-animation.vue_vue_type_style_index_0_lang-ChQT1u3y.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/window-animation.vue_vue_type_style_index_0_lang-ChQT1u3y.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DSZfoguq.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-DSZfoguq.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CtLQeOnd.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-CtLQeOnd.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-BCu0N696.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-ip-design-BCu0N696.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/canvas-content-CwQ7AMss.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/canvas-content-CwQ7AMss.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BGrAs1xl.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BGrAs1xl.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BKYWIZdH.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-BKYWIZdH.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-empty@2x-BVEL91g0.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/ic-empty@2x-BVEL91g0.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/shared.esm-bundler-SA8h8oo6.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/shared.esm-bundler-SA8h8oo6.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-u-MUjY2U.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-u-MUjY2U.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/update-entry-CaDVJOP1.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/update-entry-CaDVJOP1.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/CodeBox-Cp42agYE.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/CodeBox-Cp42agYE.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/theme-default-BsATA8Dj.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/theme-default-BsATA8Dj.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-_8f32e2E.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-_8f32e2E.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/thread-environment-D3zsnhqb.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/thread-environment-D3zsnhqb.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-assets-search-11JRddt5.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/design-assets-search-11JRddt5.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/___vite-browser-external_commonjs-proxy-CjnlalqG.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/___vite-browser-external_commonjs-proxy-CjnlalqG.js"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-spark-slogen-BPEzGKou.png",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/m0-spark-slogen-BPEzGKou.png"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/window-animation-xWY1bGBS.css",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/window-animation-xWY1bGBS.css"
+    },
+    {
+      "url": "https://s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-l3CyfUsw.js",
+      "local": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-l3CyfUsw.js"
+    }
+  ],
+  "credentialLiteralsRemoved": {
+    "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kconf-store-BfoY3jWz.js": 1,
+    "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js": 2
+  },
+  "patches": [
+    {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/home-Dq22ywRR.js",
+      "purpose": "Guard four calls to absent optional material/skill icon cleanup functions so leaving home does not throw.",
+      "matchCount": 4
+    },
+    {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js",
+      "purpose": "Open the recovered workbench at localhost root without activating the unreconstructed Electron branches.",
+      "matchCount": 1
+    },
+    {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js",
+      "purpose": "Skip automatic corporate plugin loading when the local registry is empty; explicit plugin imports require a same-origin registry entry.",
+      "matchCount": 3
+    },
+    {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js",
+      "purpose": "Do not seed the independent local project list with the original embedded cloud Figma demos.",
+      "matchCount": 2
+    },
+    {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-container-CWxcyYgS.js",
+      "purpose": "Mount the project-bound real Figma workspace. Its empty host is covered by an isolated desktop WebContentsView; browser users open Figma normally and connect the Plugin Bridge. Preserve Code and chat.",
+      "matchCount": 2
+    },
+    {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-v2-BGt4TMzj.js",
+      "purpose": "Use the recovered native KSCode host with browser fallback in Code, honor persisted Code mode, skip cloud demos, and make the local Design pane available without a Figma file.",
+      "matchCount": 5
+    }
+  ],
+  "extraAssets": [
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/chrome-plugin-upload/2025-08-18/1755517109444.106904ad0c482713.ttf",
+      "local": "/extra-assets/c52096bf8d73ea54e7fb.ttf",
+      "sha256": "c52096bf8d73ea54e7fb930e68f2202f5284ceadf9caec9ccd013c24248b81fc",
+      "size": 2091392
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/Frame1912054493.png",
+      "local": "/extra-assets/f40c1298df40feb7ae27.png",
+      "sha256": "f40c1298df40feb7ae27e43037089362b2a41350e92978f84f7fefe77e77f05a",
+      "size": 208146
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-12/1755008487612.ace8607e328eb6ea.png",
+      "local": "/extra-assets/877987fdb2d6c24dd201.png",
+      "sha256": "877987fdb2d6c24dd201fe85512a108afac568eb688e13461344a226c0e58460",
+      "size": 7668
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755070904832.deb21b4f4f96e1b7.png",
+      "local": "/extra-assets/c313ad61b22b464aa652.png",
+      "sha256": "c313ad61b22b464aa652afc5cfb477ba1a172a73e831574d06533b513d9d6637",
+      "size": 669419
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/m0_design.png",
+      "local": "/extra-assets/43e40e7d8fe3d9c6daa4.png",
+      "sha256": "43e40e7d8fe3d9c6daa4d8afca2b7ba59e5ed460c60a6b5100575a6db04b4b8f",
+      "size": 968862
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/m0_coding.0f7ba255a2eb1571.png",
+      "local": "/extra-assets/de600a6323d962255599.png",
+      "sha256": "de600a6323d962255599dd25a3f2bc004842526141316b32d98b110e567a5306",
+      "size": 964831
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/m0_main.f0b5620f7f98c5fc.png",
+      "local": "/extra-assets/ba99c0b8b5221c152bd5.png",
+      "sha256": "ba99c0b8b5221c152bd5083ae22c78563fb0dde838067e465fe48ad3aff56578",
+      "size": 849264
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755068040839.c6e218a180abcd63.png",
+      "local": "/extra-assets/70e3873d83e0d4c33439.png",
+      "sha256": "70e3873d83e0d4c334399a28bbec088aebaa96c447befe08071cb9a5597d9c12",
+      "size": 27375
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755070753470.eeaad36024587475.png",
+      "local": "/extra-assets/c3f2e84b0d7b45d1aa10.png",
+      "sha256": "c3f2e84b0d7b45d1aa10dd182ce1d45d67ec8ceffac7baac21a3394cc9658ca7",
+      "size": 27559
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755072535636.0fbe4e88225a97e6.png",
+      "local": "/extra-assets/788f680f088a16eb7bce.png",
+      "sha256": "788f680f088a16eb7bceac30b6cc12c25f7fb5e07cbc71f86f60280e99e00185",
+      "size": 45432
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755072549070.a7165958485a3f1e.png",
+      "local": "/extra-assets/48a71c165928ef04c82f.png",
+      "sha256": "48a71c165928ef04c82fde88a8aa3abb01fe7db25cced1bb1432d5860e6e3e0a",
+      "size": 103480
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755072561147.2a5698a71be10f01.png",
+      "local": "/extra-assets/ed69c82a1a1dbf390b10.png",
+      "sha256": "ed69c82a1a1dbf390b104e937d030c4921019de87174975ca67cbc183a5f023e",
+      "size": 73718
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-13/1755074016279.3932f491f4ec2c29.png",
+      "local": "/extra-assets/49dd7877ebc46a659cec.png",
+      "sha256": "49dd7877ebc46a659cec1242c35d61a6e81f7db37ea2f509b1329a4ece797445",
+      "size": 49819
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-code.png",
+      "local": "/extra-assets/4c45b6fb6fbed164fc4a.png",
+      "sha256": "4c45b6fb6fbed164fc4a3d6badf2bed3d4c13a76fba69c72ffbb7cee73676ca9",
+      "size": 329
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-figma-fill.png",
+      "local": "/extra-assets/c2dbd378ee8b875fd9a6.png",
+      "sha256": "c2dbd378ee8b875fd9a64724b92ee1b54637d4c4a290d0960be67376dbee461c",
+      "size": 1186
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/m0-header-logo.svg",
+      "local": "/extra-assets/3d84f85a16b29b981a39.svg",
+      "sha256": "3d84f85a16b29b981a393a254f9a39d1f1688f95782772882bd9111efcacff5c",
+      "size": 806
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-figma.svg",
+      "local": "/extra-assets/3402dee137a2554e9e6e.svg",
+      "sha256": "3402dee137a2554e9e6ebb0af458e6b066d47fe7a0b9a018c11c7334e14a28ca",
+      "size": 1076
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-codebase.svg",
+      "local": "/extra-assets/5602e772de2454b23cc6.svg",
+      "sha256": "5602e772de2454b23cc6d169eb4f378e12bd6e6bfe96f939032640c5f6d5434c",
+      "size": 2419
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-cooperate.svg",
+      "local": "/extra-assets/d48426b4bee6aabdba9b.svg",
+      "sha256": "d48426b4bee6aabdba9bd176e08f9e89d7d77df4ae45a4082af1fb4a77bbfa69",
+      "size": 633
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/m0-poster.png",
+      "local": "/extra-assets/246562ff21de6796644d.png",
+      "sha256": "246562ff21de6796644d90bf3c0e6c972cf62fd669df545e9f0191fe495929d7",
+      "size": 20985
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/m0_run.380e3bd748ac21b8.png",
+      "local": "/extra-assets/cc5844ecc2defd0d2560.png",
+      "sha256": "cc5844ecc2defd0d256034e5a8e0f06dbf3df6e084564a096501f6e954ae67d7",
+      "size": 2126769
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-code-fill.png",
+      "local": "/extra-assets/8f8a8626ceaf1c7bd169.png",
+      "sha256": "8f8a8626ceaf1c7bd1691236bdbeca91b6d52b0bdbd6cf2873ab882373018610",
+      "size": 759
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/m0/ic-figma.png",
+      "local": "/extra-assets/7e7c2123a65956f8b6e8.png",
+      "sha256": "7e7c2123a65956f8b6e83021e8c3716ab6d977dcbb64762c3ef89f04b0ee7728",
+      "size": 386
+    },
+    {
+      "url": "https://cdnfile.corp.kuaishou.com/kc/files/a/mfe/chrome-plugin-upload/2025-08-12/1754987867499.38e0f0c57c67b3b6.webp",
+      "local": "/extra-assets/37c48d152e57f2701321.webp",
+      "sha256": "37c48d152e57f2701321664ee599c0543aea59e4565fefb36210c8bd420fc707",
+      "size": 62282
+    }
+  ]
+}

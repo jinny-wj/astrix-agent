@@ -1,0 +1,14 @@
+{
+  "nodeTree": {
+    "id": "local-root",
+    "nodeType": "view",
+    "name": "LocalCard",
+    "uniqueStyleName": "localCard",
+    "styles": { "width": "320px", "height": "180px", "padding": "24px", "backgroundColor": "#ffffff", "borderRadius": "16px" },
+    "props": [],
+    "children": [
+      { "id": "local-title", "nodeType": "text", "name": "Title", "uniqueStyleName": "title", "characters": "本地恢复的原 KRN 引擎", "styles": { "fontSize": "20px", "fontWeight": "600", "color": "#222222" }, "props": [], "children": [] }
+    ]
+  },
+  "imageMap": {}
+}
