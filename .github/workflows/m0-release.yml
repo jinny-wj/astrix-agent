@@ -1,0 +1,54 @@
+name: Publish M0 source version notes
+on:
+  push:
+    tags:
+      - 'm0/v[0-9]*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+      COMMIT: ${{ github.sha }}
+    steps:
+      - name: Publish only the exact tagged source notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^m0/v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]
+          VERSION_FILE="${TAG#m0/}"
+          gh api "repos/$GH_REPO/contents/m0-local/versions/$VERSION_FILE.md?ref=$COMMIT" --jq '.content' | base64 --decode > release-notes.md
+          python3 - <<'PY'
+          import os, pathlib, posixpath, re, urllib.parse
+          path = pathlib.Path('release-notes.md')
+          base = 'https://github.com/' + os.environ['GH_REPO'] + '/blob/' + urllib.parse.quote(os.environ['TAG'], safe='') + '/'
+          def link(match):
+              target = posixpath.normpath('m0-local/versions/' + match[1])
+              if target == '..' or target.startswith('../'):
+                  raise ValueError('Release note link escapes the repository')
+              return '](' + base + urllib.parse.quote(target, safe='/') + ')'
+          text = re.sub(r'\]\((?![a-z][a-z0-9+.-]*:|#|/)([^)]+)\)', link, path.read_text(), flags=re.I)
+          path.write_text(text)
+          PY
+          if ! gh release view "$TAG" --repo "$GH_REPO" --json isDraft,assets > release-state.json 2> release-error.txt; then
+            if ! grep -Eiq 'not found|HTTP 404|release not found' release-error.txt; then
+              cat release-error.txt >&2
+              exit 1
+            fi
+            # Runtime archives are handled only by the local publisher, as an
+            # unpublished m0-runtime/vX draft, never by this workflow.
+            if ! gh release create "$TAG" --repo "$GH_REPO" --verify-tag --title "M0 $VERSION_FILE" --notes-file release-notes.md --latest=false; then
+              # A local publisher can create the same Release concurrently.
+              gh release view "$TAG" --repo "$GH_REPO" --json isDraft,assets > release-state.json
+            fi
+          fi
+          gh release view "$TAG" --repo "$GH_REPO" --json isDraft,assets > release-state.json
+          python3 - <<'PY'
+          import json
+          release = json.load(open('release-state.json'))
+          if release['isDraft'] or release['assets']:
+              raise ValueError('M0 source Release must be published and contain no runtime attachments')
+          PY

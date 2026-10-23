@@ -18,6 +18,7 @@
 
 - [产品能力](#产品能力)
 - [客户端与网页版](#客户端与网页版)
+- [M0 整合工程](#m0-整合工程)
 - [快速开始](#快速开始)
 - [连接 Figma](#连接-figma)
 - [图层选择与修改](#图层选择与修改)
@@ -80,7 +81,7 @@ git clone https://github.com/jinny-wj/astrix-agent.git
 cd astrix-agent
 ```
 
-两个子目录独立安装依赖、独立构建；根目录不是统一的包管理入口。
+客户端、网页端分别安装依赖和构建；另有下方的 `m0-local/` 整合工程。根目录不是统一的包管理入口。
 
 ### 3. 启动 macOS 客户端
 
@@ -105,6 +106,21 @@ pnpm dev
 打开终端输出的本机地址，默认使用 `http://127.0.0.1:5273/`。完整 Figma 侧栏需要按[扩展文档][extension-doc]在 Chrome 中加载 `网页端/browser-extension`，仓库中的扩展不等于已上架的商店商品。
 
 两端默认使用相同的本地服务端口。首次测试请先运行其中一端，避免端口占用或连接到另一端的旧服务。
+
+## M0 整合工程
+
+`m0-local/` 接入恢复的 M0 工作台、项目与会话、代码编辑器、终端、多 Agent，以及真实 Figma 和 Plugin Bridge。画布、矢量编辑和云端协作由官方 Figma 提供。
+
+```bash
+cd m0-local
+npm ci
+# 按运行包说明恢复本机生成资源与可选原生组件
+npm run desktop:figma
+```
+
+M0 默认服务为 `http://127.0.0.1:4317`，使用 **M0 Local Figma Bridge**。请按 [M0 说明](m0-local/README.md)、[资源与运行包说明](m0-local/docs/GitHub运行包.md)完成准备和配对。生成资源与原生组件以有权访问草稿的账号可获取的受限附件提供；公开 Git 保存适配源码与版本记录。
+
+M0 版本单独使用 `m0/vX.Y.Z`；0.1～0.5 仅有历史文档，标记为 `m0/history/vX.Y.Z`。整合发布从 `m0/v0.6.1` 继续，记录见 [M0 版本总表](m0-local/versions/index.json)与[变更记录](m0-local/CHANGELOG.md)。Astrix 原客户端、网页版及原预览版本保持自己的发布入口。
 
 ## 连接 Figma
 
@@ -187,6 +203,7 @@ AGENT_ALLOW_DEMO_FALLBACK=0
 astrix-agent/
 ├── README.md                  # 仓库首页与使用总览
 ├── assets/brand/astrix/        # 品牌图形与启动图标源素材
+├── m0-local/                  # M0 工作台、真实 Figma、原编辑器与 Agent 整合
 ├── 客户端/                    # macOS 独立工程
 │   ├── src/                   # React 页面、组件、状态与服务
 │   ├── desktop/               # Electron 主进程、预加载和窗口外壳
@@ -261,7 +278,7 @@ pnpm desktop:dist:mac:local  # 生成本机测试 DMG / ZIP
 
 ### 是否支持 Windows、正式 macOS 安装包和 Code 模式？
 
-仓库当前以 macOS 客户端与浏览器开发版为主，没有在此承诺 Windows 客户端发布。macOS 本机包不是已公证发行版；Code 模式尚未开放。
+仓库当前以 macOS 客户端与浏览器开发版为主，没有在此承诺 Windows 客户端发布。macOS 本机包不是已公证发行版；Astrix 原客户端的 Code 模式尚未开放。同仓库的 M0 整合工程另提供恢复的代码编辑器与终端，使用步骤见上方说明。
 
 ## 数据、安全与发布
 
