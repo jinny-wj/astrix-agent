@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "version": "0.6.1",
+  "repository": "jinny-wj/astrix-agent",
+  "module": "m0-local",
+  "sourceTag": "m0/v0.6.1",
+  "runtimeDraft": "m0-runtime/v0.6.1",
+  "importedStages": 6,
+  "existingAstrixSourceUnchanged": true,
+  "sourcePolicy": {
+    "generatedResourcesExcluded": true,
+    "personalDataExcluded": true,
+    "runtimeAttachmentsDraftOnly": true
+  },
+  "assets": [
+    {
+      "name": "M0-local-resources-v0.6.1.tar.gz",
+      "files": 351,
+      "bytes": 50019836,
+      "sha256": "639f662236848a125a18c2985df165e7a6d2345a025fd0ddb9ff38cff8d717c3"
+    },
+    {
+      "name": "M0-AI-recovered-runtime-v0.6.1.tar.gz",
+      "files": 6286,
+      "packages": 33,
+      "bytes": 94863289,
+      "sha256": "611a4fdce12885714db2381a86b7a2aaf50a6e351deeddc7b59ec2cbd40d6975"
+    }
+  ],
+  "validation": {
+    "independentSourceAndTwoArchiveRestore": true,
+    "fileHashesAndPermissionsVerified": true,
+    "installedNpmDependenciesReused": true,
+    "isolatedRestoreNodeTests": {
+      "passed": 143,
+      "failed": 0
+    },
+    "publisherTests": {
+      "passed": 14,
+      "failed": 0
+    },
+    "figmaHostPolicy": {
+      "passed": 17,
+      "failed": 0
+    },
+    "marketplacePolicy": {
+      "passed": 3,
+      "failed": 0
+    },
+    "navigationPolicy": {
+      "passed": 3,
+      "failed": 0
+    },
+    "generatorsAndLegacyCanvasPassed": true
+  },
+  "boundaries": [
+    "No new GUI or real Figma account document write was claimed in this repository migration.",
+    "The 0.1.0 through 0.5.0 historical tags contain documentation, not source snapshots.",
+    "Existing Astrix desktop and web business code and original preview version remain unchanged."
+  ]
+}

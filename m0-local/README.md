@@ -1,17 +1,20 @@
 # M0 AI 本地运行项目
 
-该工程使用已恢复的 M0 AI 工作台前端构建，补上独立的本地服务与 Electron 桌面壳。它可以在本机启动，项目、会话、模型配置均保存在项目目录中，不需要原公司的 SSO。
+该工程使用已恢复的 M0 AI 工作台前端构建，补上独立的本地服务与 Electron 桌面壳。准备运行资源后可在本机启动，项目、会话、模型配置均保存在项目目录中，不需要原公司的 SSO。
 
-GitHub：[jinny-wj/m0-local](https://github.com/jinny-wj/m0-local)（私有仓库，需要账号权限）。[版本总表](versions/index.json)收录全部版本，历史 0.1～0.5 为文档记录，完整 Git 源码从 [v0.6.0](https://github.com/jinny-wj/m0-local/releases/tag/v0.6.0) 开始。后续版本按[发布流程](docs/版本发布.md)提交代码、建立标签并发布 Release。
+正式位置：[jinny-wj/astrix-agent/m0-local](https://github.com/jinny-wj/astrix-agent/tree/main/m0-local)，当前为 **0.6.1**。[版本总表](versions/index.json)保留全部阶段；0.1～0.5 为文档记录，应用源码从 0.6.0 开始保存。M0 使用 `m0/history/v版本号` 和 `m0/v版本号`，旧引用对应关系见[历史导入映射](docs/历史导入映射.json)。后续按[发布流程](docs/版本发布.md)逐版保存准确源码，保留 Astrix 原有 preview/latest 发布入口。
 
-从 GitHub 克隆后先运行 `npm ci`，仓库已包含生成好的 `public/` 和插件转换器。完整原编辑器、原 OpenCode、原 LangGraph 和 Skills 另按[运行包说明](docs/GitHub运行包.md)下载同版本 Release 附件，解压到相邻的 `M0-AI-recovered/`。重新生成恢复前端还需要原始恢复素材；`npm ci` 不会获取原公司服务或登录数据。
+公开 Git 和 `m0/v0.6.1` Release 保存源码与文档。生成的 `public/`、插件转换器、额外静态资源和图标不放入 Git；它们与原编辑器、原 OpenCode、原 LangGraph 和 Skills 通过受限草稿 `m0-runtime/v0.6.1` 单独提供。请先按[运行包说明](docs/GitHub运行包.md)准备对应资源；原引擎恢复目录为 `astrix-agent/M0-AI-recovered/`。`npm ci` 只安装项目依赖，不会取得这些资源、原公司服务或登录资料。
 
 ## 启动
 
-本机已安装依赖、生成前端文件，可双击 **启动M0.command**，或在终端运行：
+新克隆后进入 M0 子目录安装依赖，按运行包说明准备资源后启动。资源齐备时也可双击 **启动M0.command**：
 
 ```sh
-cd /Users/zhangye/Desktop/ceshi/m0-local
+git clone https://github.com/jinny-wj/astrix-agent.git
+cd astrix-agent/m0-local
+npm ci
+# 按运行包说明准备受限资源后启动
 npm run desktop
 ```
 
@@ -75,17 +78,17 @@ Figma 工作区、多 Agent、代码工具、项目与会话、原版 Skills 均
 
 ```text
 frontend-tools/  原构建的可重复准备、本地适配与补丁记录
-public/          已生成前端与静态资源
+public/          本地生成/解压的前端与静态资源（不提交 Git）
 server/          项目/会话接口、SSE 对话、模型客户端、文件接口
 desktop/         独立 Electron 主进程与 preload
-plugins/         原 KRN、主题、渐变算法的派生构建、来源清单和隔离执行器
+plugins/         来源清单与隔离执行器；recovered/ 派生构建单独准备
 figma-plugin-bridge/  配对插件、标准节点操作与真实 Schema 导出
 canvas/          保留的独立本地画布，不再作为 Design 默认界面
 workspace/       默认本地工作目录
 .local-data/     新建的本地项目/会话/模型配置（不提交仓库）
 .data/electron/  本地桌面壳自己的配置与缓存
 test/           HTTP、会话、文件隔离和模型协议集成验证
-diagnostics/    本工程测试截图与诊断
+diagnostics/    本工程本地测试截图与诊断（不提交 Git）
 ```
 
 源码和运行机制说明见 [后端接口契约](docs/backend-contracts.md)、[桌面运行说明](docs/desktop-runtime.md)、[前端准备说明](frontend-tools/README.md)。
@@ -107,7 +110,7 @@ npm run desktop -- --smoke-test
 
 ## 与原软件的关系
 
-这是以恢复构建为基础的本地重建工程，版本为 0.6.0。原前端源码地图、完整原始 monorepo、服务端与企业运行环境未取得，因此不能保证与原软件二进制或功能完全等同。修改和新增代码均与原始恢复证据分开保存。
+这是以恢复构建为基础的本地重建工程，当前版本为 0.6.1。本版将 M0 合入 Astrix 并整理发布兼容，UI 和功能沿用 0.6.0。原前端源码地图、完整原始 monorepo、服务端与企业运行环境未取得，因此不能保证与原软件二进制或功能完全等同。修改和新增代码均与原始恢复证据分开保存。
 
 运行版会移除检测出的原内嵌凭据，重定向旧服务请求至本地，并限制页面联网。不要直接替换回原主进程或原 preload 期待本地兼容层自动生效。
 

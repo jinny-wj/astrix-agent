@@ -1,5 +1,8 @@
 import http from 'node:http';
 import {randomBytes} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+
+const bridgeVersion=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8')).version;
 
 const object=(properties,required=[])=>({type:'object',properties,required,additionalProperties:false});
 const text={type:'string'},number={type:'number'},nodeId={type:'string',description:'真实 Figma 图层 ID'};
@@ -89,7 +92,7 @@ export async function createFigmaMcpGateway(scope,{signal}={}){
     const response=result=>reply(200,{jsonrpc:'2.0',id:input.id,result});
     try{
       operationSignal.throwIfAborted();
-      if(input.method==='initialize')return response({protocolVersion:input.params?.protocolVersion||'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'M0 Figma Plugin Bridge',version:'0.6.0'}});
+      if(input.method==='initialize')return response({protocolVersion:input.params?.protocolVersion||'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'M0 Figma Plugin Bridge',version:bridgeVersion}});
       if(input.method==='ping')return response({});
       if(input.method==='tools/list')return response({tools:scope.tools.map(({function:f})=>({name:f.name,description:f.description,inputSchema:f.parameters}))});
       if(input.method==='tools/call'){

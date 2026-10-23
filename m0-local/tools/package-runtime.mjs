@@ -98,7 +98,8 @@ export async function dependencyClosure(appRoot,seeds=['@langchain/langgraph','@
   return {packages:[...packages.values()].sort((a,b)=>a.path.localeCompare(b.path)),omitted};
 }
 
-export async function collectRuntime({sourceRoot,version='0.6.0'}){
+export async function collectRuntime({sourceRoot,version}){
+  version??=(await json(path.join(defaultRoot,'package.json'))).version;
   sourceRoot=await fs.realpath(sourceRoot);
   const files=new Map(),excluded=[];
   async function addFile(file,category,boundary){
@@ -207,7 +208,13 @@ export async function packageRuntime({projectRoot=defaultRoot,sourceRoot=path.re
     const generated={path:'extracted/app/package.json',category:'generated-resolution-anchor',kind:'file',mode:0o644,bytes:appBytes.length,sha256:sha(appBytes),sourcePackage:null};
     const verification=verify?await verifyStagedRuntime(stage):{graph:'skipped'};
     const files=[...plan.records.map(({source,...record})=>record),generated].sort((a,b)=>a.path.localeCompare(b.path));
-    const manifest={format:'m0-recovered-runtime-v1',projectVersion:version,platform:'darwin',arch:'arm64',archiveRoot:'M0-AI-recovered',dependencyPolicy:'Node nested resolution; all declared runtime dependencies and installed optional/peer packages; package contents preserved except nested node_modules handled separately.',packages:plan.packages,omittedDependencies:plan.omittedDependencies,excluded:plan.excluded,verification,fileCount:files.length,totalBytes:files.reduce((n,f)=>n+f.bytes,0),files};
+    let sourceRuntime;
+    const sourceManifest=path.join(plan.sourceRoot,'runtime-manifest.json');
+    if(await exists(sourceManifest)){
+      const bytes=await fs.readFile(sourceManifest),prior=JSON.parse(bytes);
+      sourceRuntime={format:prior.format,projectVersion:prior.projectVersion,manifestSha256:sha(bytes)};
+    }
+    const manifest={format:'m0-recovered-runtime-v1',projectVersion:version,platform:'darwin',arch:'arm64',archiveRoot:'M0-AI-recovered',...(sourceRuntime?{sourceRuntime}:{}),dependencyPolicy:'Node nested resolution; all declared runtime dependencies and installed optional/peer packages; package contents preserved except nested node_modules handled separately.',packages:plan.packages,omittedDependencies:plan.omittedDependencies,excluded:plan.excluded,verification,fileCount:files.length,totalBytes:files.reduce((n,f)=>n+f.bytes,0),files};
     const manifestBytes=Buffer.from(JSON.stringify(manifest,null,2)+'\n');
     await fs.writeFile(path.join(stage,'runtime-manifest.json'),manifestBytes);
     await fs.mkdir(outputDir,{recursive:true});

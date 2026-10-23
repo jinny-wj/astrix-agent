@@ -58,10 +58,14 @@ test('allowlist excludes original app and private paths while preserving safe ed
 
 test('archive contains only allowlisted files with verified hashes and a new resolution anchor',async t=>{
   const f=await fixture(t),outputDir=path.join(f.directory,'assets');
+  const priorManifest=JSON.stringify({format:'m0-recovered-runtime-v1',projectVersion:'0.5.0'});
+  await f.write('runtime-manifest.json',priorManifest);
   const result=await packageRuntime({projectRoot:f.directory,sourceRoot:f.sourceRoot,version:'0.6.0',outputDir,verify:false});
   const extracted=path.join(f.directory,'extract');await fs.mkdir(extracted);
   const unpack=spawnSync('/usr/bin/tar',['-xzf',result.archive,'-C',extracted],{encoding:'utf8'});assert.equal(unpack.status,0,unpack.stderr);
   const root=path.join(extracted,'M0-AI-recovered'),manifest=JSON.parse(await fs.readFile(path.join(root,'runtime-manifest.json')));
+  assert.equal(manifest.sourceRuntime.projectVersion,'0.5.0');
+  assert.equal(manifest.sourceRuntime.manifestSha256,createHash('sha256').update(priorManifest).digest('hex'));
   assert.equal(manifest.packages.length,4);assert.ok(!await fs.access(path.join(root,'original')).then(()=>true,()=>false));
   for(const record of manifest.files){
     const bytes=await fs.readFile(path.join(root,record.path));

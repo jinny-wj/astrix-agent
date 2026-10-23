@@ -1,6 +1,6 @@
 {
   "name": "m0-local-reconstruction",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "type": "module",
   "description": "Local reconstruction using recovered M0 AI frontend assets and a replaceable local backend",
@@ -29,7 +29,8 @@
     "test:marketplace-policy": "node tools/test-marketplace-policy.cjs",
     "test:workflow-ui": "electron scripts/workflow-check.cjs",
     "test:collaboration": "node --test test/canvas-collaboration.test.mjs canvas/collaboration-state.test.mjs",
-    "test:collaboration-ui": "node scripts/canvas-check.mjs --collaboration"
+    "test:collaboration-ui": "node scripts/canvas-check.mjs --collaboration",
+    "release:resources": "node tools/package-resources.mjs"
   },
   "engines": {
     "node": ">=22"

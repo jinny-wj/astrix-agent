@@ -1,0 +1,54 @@
+{
+  "layout": "m0-local/",
+  "policy": "generated distributions excluded from public Git; private runtime assets separate",
+  "versions": [
+    {
+      "originalRef": "history/v0.1.0",
+      "originalCommit": "bf5dbe2a81812e41cadf5e8f67dfc546e762d254",
+      "importedRef": "m0/history/v0.1.0",
+      "importedCommit": "89e3de297a35b0ff44ad7589bd3260b247a7acba",
+      "sourceFiles": 5,
+      "excludedDistributionFiles": 0
+    },
+    {
+      "originalRef": "history/v0.2.0",
+      "originalCommit": "2f989c9c64c68f696f1243912105d9ad36fdc33f",
+      "importedRef": "m0/history/v0.2.0",
+      "importedCommit": "41143d4219358d3c2dcb46bebbb0cb24ed6a5cdc",
+      "sourceFiles": 8,
+      "excludedDistributionFiles": 0
+    },
+    {
+      "originalRef": "history/v0.3.0",
+      "originalCommit": "0ef2d0fd1b44282c992efc1df32319a8ad5d994d",
+      "importedRef": "m0/history/v0.3.0",
+      "importedCommit": "fd85fca21d9736a3b8d76070b20bda64deac160f",
+      "sourceFiles": 11,
+      "excludedDistributionFiles": 0
+    },
+    {
+      "originalRef": "history/v0.4.0",
+      "originalCommit": "ddbf3d9c94bc56d07a218c056a96da05d75b05e9",
+      "importedRef": "m0/history/v0.4.0",
+      "importedCommit": "52ddfecf3b9a4300e9577fffc0acfca2a23dfb38",
+      "sourceFiles": 14,
+      "excludedDistributionFiles": 0
+    },
+    {
+      "originalRef": "history/v0.5.0",
+      "originalCommit": "82851d3069db534f7bc304401e7da2398d854981",
+      "importedRef": "m0/history/v0.5.0",
+      "importedCommit": "e1fb8b7860091160dda1924013a5fe2ce4a9556c",
+      "sourceFiles": 17,
+      "excludedDistributionFiles": 0
+    },
+    {
+      "originalRef": "v0.6.0",
+      "originalCommit": "83e8e195300700c144cc7c8561de3b69ae960a9c",
+      "importedRef": "m0/v0.6.0",
+      "importedCommit": "335ac01fe3309ff4fbd78b643e122250ed05aec4",
+      "sourceFiles": 166,
+      "excludedDistributionFiles": 351
+    }
+  ]
+}

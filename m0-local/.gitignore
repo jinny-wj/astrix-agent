@@ -14,3 +14,9 @@ node_modules/
 *.log
 .DS_Store
 /plugins/verification-output/
+
+/public/
+/plugins/recovered/
+/frontend-tools/extra-assets/
+/desktop/icon.icns
+/resources-manifest.json

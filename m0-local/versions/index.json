@@ -1,12 +1,15 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.6.0",
+  "currentVersion": "0.6.1",
   "recordedAt": "2026-10-23",
   "historyPolicy": {
-    "documentationOnlyTagPrefix": "history/v",
-    "sourceTagPrefix": "v",
+    "documentationOnlyTagPrefix": "m0/history/v",
+    "sourceTagPrefix": "m0/v",
     "earliestCompleteSourceVersion": "0.6.0",
-    "notice": "0.1.0 through 0.5.0 are documentation-only historical records. Their original complete source snapshots were not retained. Historical tags do not identify runnable source versions."
+    "notice": "0.1.0 through 0.5.0 are documentation-only historical records. Their original complete source snapshots were not retained. Historical tags do not identify runnable source versions.",
+    "importMapping": "docs/历史导入映射.json",
+    "generatedDistributionsExcludedFromGit": true,
+    "runtimeDistribution": "restricted draft m0-runtime/vVERSION; public m0/vVERSION contains source and documentation only"
   },
   "versions": [
     {
@@ -14,72 +17,106 @@
       "date": "2026-10-23",
       "recordType": "documentation-only",
       "sourceSnapshotAvailable": false,
-      "tag": "history/v0.1.0",
+      "tag": "m0/history/v0.1.0",
       "record": "versions/v0.1.0.md",
       "evidence": [
         "versions/evidence/v0.1.0.json"
-      ]
+      ],
+      "originalTag": "history/v0.1.0"
     },
     {
       "version": "0.2.0",
       "date": "2026-10-23",
       "recordType": "documentation-only",
       "sourceSnapshotAvailable": false,
-      "tag": "history/v0.2.0",
+      "tag": "m0/history/v0.2.0",
       "record": "versions/v0.2.0.md",
       "evidence": [
         "versions/evidence/v0.2.0.json",
         "docs/本地整合-0.2.0.md"
-      ]
+      ],
+      "originalTag": "history/v0.2.0"
     },
     {
       "version": "0.3.0",
       "date": "2026-10-23",
       "recordType": "documentation-only",
       "sourceSnapshotAvailable": false,
-      "tag": "history/v0.3.0",
+      "tag": "m0/history/v0.3.0",
       "record": "versions/v0.3.0.md",
       "evidence": [
         "versions/evidence/v0.3.0.json",
         "docs/本地整合-0.3.0.md"
-      ]
+      ],
+      "originalTag": "history/v0.3.0"
     },
     {
       "version": "0.4.0",
       "date": "2026-10-23",
       "recordType": "documentation-only",
       "sourceSnapshotAvailable": false,
-      "tag": "history/v0.4.0",
+      "tag": "m0/history/v0.4.0",
       "record": "versions/v0.4.0.md",
       "evidence": [
         "versions/evidence/v0.4.0.json",
         "docs/本地整合-0.4.0.md"
-      ]
+      ],
+      "originalTag": "history/v0.4.0"
     },
     {
       "version": "0.5.0",
       "date": "2026-10-23",
       "recordType": "documentation-only",
       "sourceSnapshotAvailable": false,
-      "tag": "history/v0.5.0",
+      "tag": "m0/history/v0.5.0",
       "record": "versions/v0.5.0.md",
       "evidence": [
         "versions/evidence/v0.5.0.json",
         "docs/本地整合-0.5.0.md"
-      ]
+      ],
+      "originalTag": "history/v0.5.0"
     },
     {
       "version": "0.6.0",
       "date": "2026-10-23",
       "recordType": "source-release",
       "sourceSnapshotAvailable": true,
-      "tag": "v0.6.0",
+      "tag": "m0/v0.6.0",
       "record": "versions/v0.6.0.md",
       "evidence": [
         "versions/evidence/v0.6.0.json",
         "docs/本地整合-0.6.0.md",
         "versions/evidence/github-publication-v0.6.0.json"
-      ]
+      ],
+      "originalTag": "v0.6.0",
+      "importedSourceExcludesGeneratedDistributions": true,
+      "originalPublication": {
+        "repository": "https://github.com/jinny-wj/m0-local",
+        "visibility": "private",
+        "tag": "v0.6.0",
+        "evidence": "versions/evidence/github-publication-v0.6.0.json",
+        "status": "historical source evidence; not the canonical repository or current distribution target"
+      }
+    },
+    {
+      "version": "0.6.1",
+      "date": "2026-10-23",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.6.1",
+      "record": "versions/v0.6.1.md",
+      "evidence": [
+        "docs/历史导入映射.json",
+        "versions/evidence/v0.6.1.json"
+      ],
+      "changes": [
+        "Imported M0 source and mapped version history under astrix-agent/m0-local.",
+        "Namespaced tags and source-only public Release preserve Astrix release entry points.",
+        "Generated resources and recovered runtime are distributed separately through restricted draft m0-runtime/v0.6.1."
+      ],
+      "uiFeatureChanges": false
     }
-  ]
+  ],
+  "repository": "https://github.com/jinny-wj/astrix-agent",
+  "projectPath": "m0-local/"
 }
