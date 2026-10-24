@@ -1,280 +1,88 @@
-# 星序 Astrix · macOS 客户端
+# Astrix · macOS 客户端
 
-macOS 应用。同一窗口内提供应用级标签、真实 Figma 工作区和右侧 Agent。
-网页端源码在上级目录的 `网页端/`。
+0.7.0 起，客户端默认启动完整工作台：项目与会话、AI 对话与多 Agent、真实 Figma、原 KSCode 编辑器、终端和扩展。它们在当前客户端窗口内运行。原来的 Astrix 设计界面仍可通过应用菜单“打开原设计界面”或 `desktop:legacy` 访问。
 
-当前交付方式是**指定人员私发试用**：运行 `pnpm desktop:dist:mac:private` 生成
-`release/private/Astrix-0.1.0-arm64-private.dmg`，附带安装说明与 SHA-256 校验文件。
-接收者安装应用无需项目源码或 Node；使用 AI / Figma 仍需自己的账号和配置。
-详见 [安装与首次使用](docs/private-install.txt)。
+网页端入口位于相邻的 `网页端/`。共享目录 `packages/astrix-workbench/` 只提供路径、版本和验证，不再是第三个独立应用。
 
-私发包适用于 Apple 芯片 / macOS 13+，使用临时签名，首次打开可能被系统拦截。
-正式可信分发仍需 Developer ID 签名、公证和 Gatekeeper 验收；`desktop:dist:mac` 保留这套严格检查。
+## 启动完整工作台
 
-## 快速开始
+需要 Node.js 22+、pnpm 10、macOS 13+。本轮原生功能和私发包面向 Apple Silicon。
 
-### 单人海报延展（输入准备已接通）
-
-右侧输入框点击“单人海报延展”，上传干净的海报模板和人物图片，或 XLSX 人物表。
-选择模板、工作表，核对完整昵称、对应照片，并填写模板中的原昵称。
-默认只替换人物与昵称；需要替换赛事或赛道时，展开额外文案映射并明确模板原文。
-支持常规 XLSX 浮动内嵌图片、CSV/TSV 图片引用、docs-parse 导出 JSON；不直接连接企业在线文档。
-每次最多 8 个附件、每个不超过 4 MB；更多人物请使用表格。图片链接仍需在生成前检查可访问性。
-
-窗口可展开查看完整业务 Skill。当前完成输入解析和任务清单准备；图片生成服务、生成质量检查及
-真实 Figma 成图回填尚未接通，不能将准备任务当作生成完成。完整规则见
-[`skills/person-poster-extension/SKILL.md`](skills/person-poster-extension/SKILL.md)。
-
-### 启动开发环境
-
-在本目录执行：
-
-```bash
+```sh
 pnpm install
-pnpm desktop:dev          # 构建并运行 Mac 客户端
-pnpm desktop:pack:mac     # 生成并验收 Apple Silicon 本机调试 .app
-pnpm desktop:dist:mac:private # 生成私发 DMG、安装说明与校验文件（临时签名）
-pnpm desktop:dist:mac     # 预检、签名、公证并生成 universal 发行 DMG + ZIP
+pnpm desktop:dev
 ```
 
-客户端从首页启动。输入设计需求并发送、点击功能卡、打开最近文件或新建设计稿时，
-会在应用内创建 Figma 标签；右侧 Agent 直接复用真实选区与 Plugin Bridge 写回链路。
-Figma 使用独立持久会话，首次手动登录后会在后续启动中保留登录状态。
-客户端会把 Bridge 插件一并放进安装包；进入 Figma 工作区后点击顶部
-「Bridge 文件」即可定位 `manifest.json`。本地开发插件需在 Figma 官方桌面版导入；内嵌 Figma 页面需要已发布的插件。OAuth 登录本身不代表 Bridge 已连接。
+`desktop:dev` 构建保留的 React 界面、检查桌面类型并生成入口，再启动 Electron。默认入口为 `desktop/bootstrap.ts`；它在同一个 Electron 进程内加载 `workbench/desktop/main.cjs`。旧主进程独立编译为 `dist-electron/legacy-main.mjs`，两套主进程不会同时注册服务和 IPC。
 
-本机开发包使用临时签名。发行命令会强制检查 Developer ID Application、Apple
-公证凭证、universal 架构、Gatekeeper 验收和 stapler 公证票据，任一缺失都会失败，
-不会再把临时签名包误当发行包。OAuth Client Secret 仍应移到在线后端，不能随
-安装包分发。
+从源码启动前，需要准备工作台资源和恢复的原生运行组件。受控资源按[共享资源说明](../packages/astrix-workbench/docs/GitHub运行包.md)和[版本记录](../packages/astrix-workbench/versions/index.json)获取；运行资源保存在未发布草稿中，不在公开 Git 源码内。开发目录布局为：
 
-## 技术栈
-
-| 项 | 版本 |
-|----|------|
-| React | 18.3 |
-| TypeScript | 5.9 |
-| Vite | 5.4 |
-| Tailwind CSS | 3.4 |
-| Electron | 43.4 |
-| electron-builder | 26.15 |
-| lucide-react | 0.454 |
-
-Node 22 / pnpm 10。
-
-客户端原生窗口内已集成 Figma 与右侧 Agent，无需 Chrome 扩展；浏览器版侧栏的配置见 [`browser-extension/README.md`](browser-extension/README.md)。
-
-## 目录结构
-
-```
-src/
-├── App.tsx                     # 路由出口
-├── router.tsx                  # 浏览器 History 路由（home / creating / editor / agent）
-├── config/
-│   ├── brand.ts                # ⭐ 品牌配置唯一来源（名称/标语/文案）
-│   └── figma.ts                # Figma 工作区意图、figma.new 与扩展握手
-├── pages/
-│   ├── HomePage.tsx            # 首页
-│   ├── CreatingFigmaPage.tsx   # 自动创建设计稿过渡页
-│   ├── AgentPanelPage.tsx      # Agent 独立预览 / Side Panel 内容入口
-│   └── EditorPage.tsx          # 编辑器（含 EditorProvider）
-├── state/
-│   └── editorStore.tsx         # 编辑器、选区、视图与 Figma 导入状态
-├── services/
-│   ├── figmaApi.ts             # Figma URL 解析、REST 请求与错误映射
-│   └── figmaAuth.ts            # OAuth Session 前端接口
-├── types/
-│   └── figma.ts                # Figma 文件、节点、填充与文本类型
-├── components/
-│   ├── FigmaAccountMenu.tsx    # 授权账户、配置提示与解绑
-│   ├── TitleBar.tsx            # 通用 AppLogo
-│   ├── Sidebar.tsx             # 首页侧栏（生成/资产/工具/创意）
-│   ├── HeroSection.tsx         # 品牌图形 + 主标语
-│   ├── PromptInput.tsx         # 首页输入框
-│   ├── FeatureCards.tsx        # 五个功能入口卡
-│   ├── CaseGallery.tsx         # 精选案例响应式卡片
-│   ├── RecentFigma.tsx         # 文件流（点击进入编辑器）
-│   └── editor/
-│       ├── EditorTopBar.tsx    # 编辑器顶栏（编辑器/Figma 切换）
-│       ├── LayersPanel.tsx     # 左侧图层栏（收起态）
-│       ├── Canvas.tsx          # 单稿画布（选中框 + 手柄）
-│       ├── FigmaCanvas.tsx     # Figma REST 节点树渲染器
-│       ├── FigmaImportDialog.tsx # 文件链接 + PAT 导入对话框
-│       ├── CanvasToolbar.tsx   # 悬浮 AI 操作条
-│       ├── CanvasControls.tsx  # 底部缩放控件 + 沉浸模式
-│       ├── BatchCanvas.tsx     # 批量产出画布（深色底、画板组平铺）
-│       ├── AiPanel.tsx         # 右侧面板容器
-│       ├── AiWelcome.tsx       # 欢迎卡 + 三步引导
-│       ├── AiInputArea.tsx     # 能力标签 + 输入框 + 状态栏
-│       └── agent/
-│           ├── ConversationFlow.tsx  # 消息流回放编排
-│           ├── MessageParts.tsx      # 用户气泡 / Skill 卡 / 采集摘要
-│           └── ToolParts.tsx         # 工具调用卡 / 设计预览 / 结果网格
-├── data/
-│   ├── mock.ts                 # 首页功能卡与文件流数据
-│   ├── aiPanel.ts              # 面板能力说明与快捷标签
-│   ├── canvasDoc.ts            # 单稿画布占位内容
-│   ├── agentScript.ts          # ⭐ Agent 消息模型 + 回放脚本
-│   └── batchBoards.ts          # 批量画板数据
-├── styles/index.css
-└── public/assets/brand-mark.svg
-
-server/
-└── figmaOAuthPlugin.ts         # 本地 OAuth + PKCE + HttpOnly Session
-
-browser-extension/
-├── manifest.json               # Chrome Manifest V3
-├── service-worker.js           # Side Panel 打开与工作区意图保存
-├── workspace-bridge.js         # 首页用户手势桥接
-└── sidepanel.*                 # Agent / Skills 原生侧栏界面
-
-desktop/
-├── main.ts                     # macOS 窗口、多标签、Figma 会话与安全边界
-├── server.ts                   # 127.0.0.1:5273 内置服务与生产静态站点
-├── preload/                    # 首页、顶栏、Agent 的最小 IPC 接口
-└── renderer/                   # macOS 应用级标签栏与导航栏
+```text
+astrix-agent/
+  客户端/workbench/desktop/       Electron 宿主与原编辑器适配
+  客户端/workbench/tools/         原生隔离与桌面验收工具
+  网页端/workbench/server/        工作台服务
+  网页端/workbench/public/        已准备的界面资源（忽略）
+  网页端/workbench/plugins/recovered/  已准备的生成器（忽略）
+  packages/astrix-workbench/      共享路径、版本与验证
+  M0-AI-recovered/               已清理的恢复运行包（忽略）
 ```
 
-## 当前实现状态
+恢复运行包中的旧名称用于识别组件来源。应用显示名为 Astrix。打包后的应用自带所需资源，接收者无需源码或 Node；AI 和 Figma 仍使用接收者自己的配置与账号。
 
-下面区分代码已实现的链路与运行环境要求。Figma 登录、团队文件读取和 Bridge 写回仍需在具备相应权限的目标文件中验证；Agent 取决于本机后端登录与额度。
+## 当前能力
 
-### 代码已接通
+| 功能 | 客户端中的实现 |
+| --- | --- |
+| 项目、会话、文件 | 工作台本地服务持久保存；原编辑器可保存项目文件 |
+| AI 对话与多 Agent | 共用工作区与模型配置；首次保持演示模式，启用真实模型后才发送模型请求 |
+| Figma | 独立会话中的官方页面；Figma 自身提供画布、矢量编辑与多人协作 |
+| Figma 修改 | 在目标文件运行 Astrix Figma Bridge，配对后执行；成功以真实插件回执为准 |
+| 原编辑器、终端与扩展 | 原 KSCode、独立 PTY 和扩展宿主；市场来源 Open VSX，也可安装本地 VSIX |
+| 原设计界面 | `pnpm desktop:legacy`；与工作台可通过应用菜单重启切换 |
 
-- **macOS 客户端**：首页固定标签、真实 Figma 多标签、右侧 Agent、独立 `persist:design-studio-figma` 登录会话；启动时会把 OAuth Cookie 同步回首页
-- **Agent 链路**：默认 Codex CLI → Claude Code → Hermes。未登录、额度用尽或 CLI 失败时返回真实错误，**默认不会静默落到演示壳伪造物料**
-- **Figma 登录**：Authorization Code + PKCE、HttpOnly Session。登录后跨重启保持；打开/读取走 OAuth，改图层走当前文件里的 Design Studio Bridge
-- **团队文件**：浏览团队页或粘贴团队链接后自动记住，不必先配 Team ID 再重新登录
-- **Plugin Bridge 写回**：工作区顶栏「Bridge 安装」可定位插件；安装一次后画布可一键重开
-- **PAT / OAuth 探测**：设置里可贴文件链接验证当前凭证能否读到真实文件
-- **macOS 双轨打包**：本机调试包允许临时签名；发行命令强制 Developer ID、公证、universal 与 Gatekeeper
+Figma 网站登录、Plugin Bridge 配对、模型配置分别完成。登录网站不会自动授予插件写入能力，网页浏览器也不能使用客户端的原生编辑器、终端或嵌入式 Figma 宿主。原编辑器和扩展保持已有的本地隔离边界；扩展另需的网络或二进制不保证可用。
 
-### 运行时仍常缺的条件
+## 原设计界面
 
-| 缺口 | 现状 |
-|------|------|
-| **真实 Agent** | 需要本机已登录且有额度。状态页 online 只表示 CLI 登录，发消息仍可能失败 |
-| **macOS 正式分发** | 当前仓库里的 `.app` 是临时签名 arm64 本机包。没有 Apple Team ID / Developer ID / 公证凭证时不能过 Gatekeeper |
-| **Code 模式** | 尚未开放 |
+```sh
+pnpm desktop:legacy
+```
 
-## 读取 Figma 文件
+该模式保留原 Astrix 首页、设计任务入口、Figma 标签和右侧 Agent。应用菜单“打开完整工作台”可切回默认模式。旧 React、Agent、OAuth 和 Bridge 源码仍在本目录的 `src/`、`server/`、`desktop/main.ts` 等位置。
 
-1. 在 Figma 设置的 Security 页面生成 Personal Access Token，并勾选
-   `file_content:read`。
-2. 运行 `pnpm dev`，或先 `pnpm build` 再运行 `pnpm preview`。
-3. 进入编辑器，点击顶部「读取 Figma」。
-4. 粘贴 `figma.com/design/...` 文件链接（支持带 `node-id`）或文件 Key，
-   再输入 Token。
+原设计模式的 Codex CLI / Claude Code / Hermes 和模型 API 配置仍按原文档使用；它们与完整工作台的模型设置不是同一个配置接口。原入口的 OAuth / REST 用于读取，修改仍需对应插件回执。相关说明：[原 Agent](docs/agent.md)、[模型 API](docs/model-api-settings.md)、[原 Figma 工作区](docs/figma-browser-workspace.md)、[浏览器扩展](browser-extension/README.md)。
 
-Token 只在导入弹窗内存中使用。浏览器把它发送给本机 `/api/figma`
-代理，由代理转换为 Figma 要求的 `X-Figma-Token` 请求头；不会写入
-`localStorage` 或构建产物。
+单人海报延展等原功能入口保留输入解析、模板与 XLSX / CSV 人物表准备能力；图片生成、质量检查与实际成图回填仍取决于已配置服务，不把准备任务等同于生成完成。
 
-## 配置 AI 模型 API
+## 数据和端口
 
-客户端首页右上角「工作台设置」顶部提供「AI 模型 API」。可以先保存未启用的空白或部分草稿，稍后填写服务地址、API Key 和完整模型 ID。当前支持 OpenAI 兼容的文字对话接口；图像生成、工具执行等能力仍由相应 Agent / 工作流承担。
+完整工作台把可写状态与应用资源分开。开发模式兼容原 `m0-local/.local-data` 和 `.data/<profile>`；新工作区使用 `workbench/` 下的本地数据目录。正式安装的客户端使用 `~/Library/Application Support/Design Studio/workbench/` 下的工作台数据与独立 Electron profile，不向安装目录写项目、登录或编辑器缓存。原设计模式保留已有 `Design Studio` 数据目录。
 
-配置完整并启用后，模型选「Auto」、服务器选「自动选择」时使用此 API；手动选择其他 Agent 时保留该选择。保存不会请求模型，「测试连接」需手动点击且会发送一个小型请求。配置通过桌面系统安全存储加密，仅保存在当前用户的电脑上，不进入仓库或安装包。
+可通过 `ASTRIX_STATE_ROOT`、`ASTRIX_DATA_DIR`、`ASTRIX_PROFILE_ROOT` 和 `ASTRIX_WORKSPACE` 明确指定隔离位置；原设计模式的独立验收可设置 `ASTRIX_LEGACY_PROFILE_DIR` 和 `ASTRIX_LEGACY_PORT`（OAuth 配置仍需使用匹配的回调地址）。旧 `M0_LOCAL_*` 参数保留兼容。
 
-详见 [模型 API 设置说明](docs/model-api-settings.md)。
+完整工作台默认尝试 4317；已被其他实例占用时，未显式指定端口的桌面客户端会选空闲端口，并验证服务的产品、版本、桌面标识和实例 ID。显式 `ASTRIX_PORT` / `M0_LOCAL_PORT` 或 URL 指向旧服务时会报错，不会悄悄连到另一份数据。原设计模式仍使用原 5273 服务；两套聊天和 Bridge 协议不会混在一起。
 
-## 配置 Figma OAuth
+## 验证与私发包
 
-1. 打开 [Figma Developer Apps](https://www.figma.com/developers/apps)，
-   创建 OAuth App。
-2. 配置回调：
-   `http://127.0.0.1:5273/api/auth/figma/callback`。
-3. 基础连接启用 `current_user:read`、`file_content:read`、
-   `file_metadata:read`，与当前应用请求的权限保持一致。
-   团队目录权限需单独核对，不要向未启用对应权限的应用请求 `projects:read`。
-4. 复制 `.env.example` 为 `.env.local`，填写 Client ID / Secret。
-5. 重启客户端后，点击首页右上角「连接 Figma」。
-6. 打开任意团队页，或在最近文件里粘贴团队链接。Team ID 会自动记住，不必重新登录。
+```sh
+pnpm test
+pnpm desktop:typecheck
+pnpm desktop:bundle
+pnpm test:workbench-ui
+pnpm test:workbench-terminal
+```
 
-Client Secret 没有 `VITE_` 前缀，不会进入浏览器代码。本地 OAuth Session
-加密写入 `.design-studio`；客户端写入 macOS 的应用 `userData/data` 目录。
+原生界面检查使用独立 profile、后端和工作区，并会打开临时测试窗口。市场联调另用 `pnpm exec electron workbench/tools/test-native-editor-marketplace.cjs`，会在隔离扩展目录中下载、安装和卸载测试主题。
 
-## 交互入口
+```sh
+pnpm desktop:prepare:resources
+pnpm desktop:pack:mac
+pnpm desktop:dist:mac:private
+```
 
-| 操作 | 结果 |
-|------|------|
-| 首页输入框获得焦点 | 只进入输入状态，不跳转 |
-| 首页输入框输入并发送 | 打开 Agent Side Panel，随后通过 `figma.new` 新建真实设计稿 |
-| 首页点功能卡 | 同上，并把该功能预选为 Skill |
-| 首页点「新建设计稿」 | 显示创建进度后进入 Figma Drafts 新文件 |
-| 首页点已有文件卡片 / 「打开设计稿」 | 打开真实 Figma 文件，Side Panel 保持在右侧 |
-| 打开 `/agent` | 在普通浏览器页单独预览现有 Agent 面板 |
-| 真实 Figma 中选中图层 | Side Panel 输入框上方同步展示全部选中图层 |
-| 多选人物 / 图片图层 | 显示集中编辑器，可统一修改或为每层填写不同指令 |
-| Side Panel 输入指令并发送 | 锁定文件、选区版本和目标列表，通过 Bridge 批量修改并显示逐层回执 |
-| 编辑器顶部「读取 Figma」 | 输入链接和 PAT，读取真实文件 |
-| 图层树 / 画布节点 | 同步选择真实 Figma 节点 |
-| 编辑器右上房子图标 | 返回首页 |
-| 面板输入框打字 + Enter | 触发 Agent 回放 |
-| 点任意能力标签 | 同上 |
-| 面板左上「+」 | 重置会话，画布回到单稿态 |
+资源准备器按白名单复制桌面宿主、网页服务与界面、共享路径文件及恢复的原生组件到忽略的 `.workbench-bundle/`，生成清单并校验恢复依赖。electron-builder 把它们放到 `Contents/Resources/workbench` 和 `Contents/Resources/recovered`；运行时通过共享路径配置读取。
 
-## 二次开发要点
+`desktop:pack:mac` 生成并验收 `release/mac-arm64/Astrix.app`；私发命令生成 DMG、安装说明和 SHA-256。两者均为本机临时签名包，不代表 Apple 正式公证发行。当前恢复组件仅提供 darwin-arm64，正式 universal 命令会明确拒绝，不能用 Intel 外壳冒充完整原生支持。
 
-**改品牌名/文案**：界面文案位于 `src/config/brand.ts`；macOS 应用名称由 `package.json` 的 `build.productName` 决定，修改时同步打包和签名脚本中的 `.app` 路径。验收脚本会核对应用名称、显示名称和可执行文件名称。已打包应用继续使用原有的本机数据目录，保留登录和工作区记录。
-
-**接真实 Agent**：默认 Codex CLI，见 [`docs/agent.md`](docs/agent.md)。前端 `ConversationFlow` 消费 `/api/agent/chat` SSE。
-
-## macOS 正式发布
-
-`pnpm desktop:dist:mac` 只用于正式发行。运行前必须满足：
-
-1. 当前用户钥匙串中有有效的 `Developer ID Application` 证书和私钥。
-2. 公证凭证使用以下任一完整组合：
-   - `APPLE_API_KEY` + `APPLE_API_KEY_ID` + `APPLE_API_ISSUER`（推荐）；
-   - `APPLE_ID` + `APPLE_APP_SPECIFIC_PASSWORD` + `APPLE_TEAM_ID`；
-   - 已保存的 `APPLE_KEYCHAIN_PROFILE`。
-3. Xcode Command Line Tools 提供 `notarytool` 和 `stapler`。
-
-发行成功后会生成 arm64 + x86_64 的 universal 应用，并自动执行代码签名完整性、
-Gatekeeper 与公证票据验收。只想在本机调试时使用 `desktop:pack:mac` 或
-`desktop:dist:mac:local`。
-
-如果桌面或同步目录反复附加 Finder 元数据导致签名失败，可先将构建好的
-`Astrix.app` 复制到本机临时目录，再运行 `node scripts/sign-mac-local.mjs /绝对路径/Astrix.app`。
-验收时将同一路径传给 `verify-mac-release.mjs --mode=local --app=...`，生成安装镜像时也使用该路径作为 `--prepackaged`。
-
-**Figma 官方能力边界（产品已按此闭环，不是未完成项）**：
-
-1. **不要用 File Embed 当编辑器** —— 客户端嵌真实 Figma 页面。
-2. **REST 不能写普通设计节点** —— 读取走 OAuth，改图层走当前文件里的 Design Studio Bridge。
-3. **没有「列出我的全部团队」API** —— 打开团队页或粘贴团队链接后自动记住 Team ID。
-
-所需 scope：`file_content:read`、`file_metadata:read`、`projects:read`。
-
-完整架构说明见
-[`docs/figma-browser-workspace.md`](docs/figma-browser-workspace.md)。
-
-## 多图层人物集中修改
-
-1. 在真实 Figma 中运行 `Design Studio Bridge`。
-2. 按住 Shift 选择两个或更多人物/图片图层。
-3. 在右侧选择「统一修改」，输入例如
-   `全部人物放大20%；右移20px；透明度90%`；或切换「分别修改」，为每层
-   勾选目标并填写不同指令。
-4. 发送后，Bridge 会在执行前再次校验当前文件、选区版本和全部目标。默认
-   `atomic` 模式下任一目标失败会取消或回滚整批，并在右侧逐层显示结果。
-
-当前可批量修改位置、尺寸、等比缩放、透明度、显隐、名称、文本和安全填充属性。
-图片人物图层不会丢失原有 IMAGE 填充。本阶段不包含 AI 换脸、生成新人物或替换
-图片内容；这些需要后续接入图片编辑模型与素材上传链路。
-
-## 占位资产说明
-
-以下内容为自制占位，非最终素材：
-
-- `public/assets/brand-mark.svg` —— 中性几何图形，可整体替换
-- `HeroSection.tsx` 的标语立体字 —— 渐变裁切 + 投影模拟，可换为图片资产（标记 `data-slot="brand-mark"`）
-- `canvasDoc.ts` / `batchBoards.ts` 的画面 —— 全部为 CSS 拼的示意图形
-- 文件流缩略图 —— 手写 DOM 结构
-
-### 桌面端 Figma 浏览器授权
-
-桌面端“连接 Figma”默认使用系统浏览器完成官方 OAuth；本地交接窗口在后台保留自己的 HttpOnly 领取凭据（不展示额外确认页），收到回调后连接 Astrix 并继续待打开文件。取消或过期不会循环重开授权。浏览器 OAuth 会话不等于 Electron 内嵌 Figma 网站的登录状态。
-
-开发此应用时，仅需配置一次自己的 Figma OAuth 应用。开发维护人员可从应用菜单“开发 → Figma 应用配置”填写已有应用的连接配置；普通用户连接流程不展示开发表单。桌面端使用系统 safeStorage 加密保存到用户数据目录，更新安装包时仍保留；不把凭据写入仓库或安装包。配置保存后自动在系统浏览器继续授权。官方应用中需预先设置客户端固定回调地址及三个读取权限（current_user:read、file_content:read、file_metadata:read）。最终权限确认由用户在 Figma 官方页面完成。
+资源包、安装包、账号状态、模型密钥、项目、会话、缓存和诊断不进入公开 Git。首次使用和系统提示见[安装与首次使用](docs/private-install.txt)。

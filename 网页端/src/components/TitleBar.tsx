@@ -52,6 +52,7 @@ export default function TitleBar() {
     <header className="flex h-[52px] shrink-0 items-center justify-between px-[18px]">
       <div className="flex items-center gap-[26px]">
         <TrafficLights />
+        <a href="/home" className="text-[12px] text-[#52658c] hover:text-[#315edf]">Astrix 工作台</a>
       </div>
       <ModeSwitch />
     </header>

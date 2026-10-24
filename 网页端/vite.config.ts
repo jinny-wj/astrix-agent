@@ -6,6 +6,8 @@ import { figmaOAuthPlugin } from './server/figmaOAuthPlugin'
 import { figmaRecentsPlugin } from './server/figmaRecentsPlugin'
 import { desktopStatusPlugin } from './server/desktopStatusPlugin'
 import { webCapturePlugin } from './server/webCapturePlugin'
+import { workbenchPlugin } from './server/workbenchPlugin'
+import { fileURLToPath } from 'node:url'
 
 const DEFAULT_FIGMA_OAUTH_REDIRECT_URI =
   'http://127.0.0.1:5273/api/auth/figma/callback'
@@ -66,16 +68,22 @@ export default defineConfig(({ mode }) => {
           .filter(Boolean),
       }),
       figmaRecentsPlugin(),
+      workbenchPlugin(),
     ],
     server: {
       port: 5273,
       host: '127.0.0.1',
+      strictPort: true,
       proxy: { '/api/figma': figmaProxy() },
     },
     preview: {
       port: 5273,
       host: '127.0.0.1',
+      strictPort: true,
       proxy: { '/api/figma': figmaProxy() },
+    },
+    build: {
+      rollupOptions: { input: { design: fileURLToPath(new URL('./design.html', import.meta.url)) } },
     },
   }
 })

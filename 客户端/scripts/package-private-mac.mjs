@@ -21,7 +21,7 @@ mkdirSync(output, { recursive: true })
 const scratch = mkdtempSync(join(tmpdir(), 'astrix-private-'))
 const artifact = `${pkg.build.productName}-${pkg.version}-arm64-private.dmg`
 try {
-  for (const script of ['build', 'desktop:typecheck', 'desktop:bundle']) run('pnpm', ['run', script])
+  for (const script of ['build', 'desktop:typecheck', 'desktop:bundle', 'desktop:prepare:resources']) run('pnpm', ['run', script])
   run('pnpm', ['exec', 'electron-builder', '--mac', 'dir', '--arm64', '--publish', 'never',
     `-c.electronDist=${electronDist}`, `-c.directories.output=${join(scratch, 'build')}`], {
     env: { ...process.env, CSC_IDENTITY_AUTO_DISCOVERY: 'false' },

@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.0",
+  "layoutVersion": 2,
+  "recordedAt": "2026-10-25",
+  "kind": "two-application-integration-final-verification",
+  "sourceRoots": {
+    "desktop": "客户端/workbench/",
+    "web": "网页端/workbench/",
+    "shared": "packages/astrix-workbench/"
+  },
+  "migration": {
+    "mappedSourceFiles": 176,
+    "allDestinationsExist": true,
+    "unchangedHistoricalRecords": 17,
+    "legacyIgnoredStatePreserved": true,
+    "thirdApplicationRemoved": true
+  },
+  "sources": [
+    {
+      "path": ".release-assets/final-shared-v0.7.0.log",
+      "distribution": "local-only",
+      "bytes": 19810,
+      "sha256": "03722c27cf68c180ef1394999d5c87b94913c66b5fb51ccfa39bf923360061ea"
+    },
+    {
+      "path": ".release-assets/client-integration-v0.7.0.json",
+      "distribution": "local-only",
+      "bytes": 3464,
+      "sha256": "9ed49d30b57ecc67a2bd4d1e7a9c1e582f1fbd52858974850178921585dbbab4"
+    },
+    {
+      "path": ".release-assets/web-integration-v0.7.0.json",
+      "distribution": "local-only",
+      "bytes": 9934,
+      "sha256": "1b30603957e33698dfe702f15ebb91af57d29ae9f8c16f06fe3e8665febe6fa6"
+    },
+    {
+      "path": ".release-assets/fresh-restore-v0.7.0.json",
+      "distribution": "local-only",
+      "bytes": 11724,
+      "sha256": "9d0949444fd5876b81829d8039d2f4269473b8da1a08409efc58f416fe2b2bb0"
+    },
+    {
+      "path": ".release-assets/history-migration-v0.7.0.json",
+      "distribution": "local-only",
+      "bytes": 2465,
+      "sha256": "600b8c88e4973ccf7a36b78b39741399feccca434b43abae55d21561abbd6747"
+    },
+    {
+      "path": ".release-assets/desktop-stage-final-v0.7.0.log",
+      "distribution": "local-only",
+      "bytes": 377,
+      "sha256": "517641f3ca7ea5d52b1eb1fbd7d2a2874ba0dd9ab538ed64ef2d6d5ebe19b3db"
+    },
+    {
+      "path": ".release-assets/desktop-pack-canonical-v0.7.0.log",
+      "distribution": "local-only",
+      "bytes": 1930,
+      "sha256": "2716683a775dcdb26b564b44adae9a6f6a412e6f187f4bf43d0e11b500a4b5e5"
+    },
+    {
+      "path": ".release-assets/desktop-sign-canonical-v0.7.0.log",
+      "distribution": "local-only",
+      "bytes": 3169,
+      "sha256": "6ada611e61428fef6c5d88e861200c4dfdcc1f647c368c50e7730757ea3ca484"
+    },
+    {
+      "path": ".release-assets/desktop-verify-canonical-v0.7.0.log",
+      "distribution": "local-only",
+      "bytes": 365,
+      "sha256": "d4b98e36383c63531df874aefedae061f2f20e5e0c8d2c34a861b86d0030a191"
+    }
+  ],
+  "validation": {
+    "sharedNodeAndCanvas": {
+      "passed": 151,
+      "failed": 0,
+      "skipped": 0
+    },
+    "figmaHostPolicy": {
+      "passed": 18,
+      "failed": 0
+    },
+    "marketplacePolicy": {
+      "passed": 3,
+      "failed": 0
+    },
+    "localNavigation": {
+      "passed": 3,
+      "failed": 0
+    },
+    "originalGeneratorsPassed": true,
+    "legacyCanvasChecksPassed": true,
+    "publicationTargeted": {
+      "passed": 18,
+      "failed": 0
+    },
+    "desktop": {
+      "runtime": {
+        "platform": "darwin",
+        "architecture": "arm64",
+        "electron": "43.4.0",
+        "node": "24.18.1",
+        "packaged": true
+      },
+      "checks": {
+        "clientUnit": {
+          "command": "pnpm test",
+          "passed": 102,
+          "failed": 0,
+          "includes": "real filesystem symlink state-directory regression"
+        },
+        "nativeDevelopment": {
+          "editor": {
+            "passed": 18,
+            "failed": 0
+          },
+          "terminalAndExtensions": {
+            "passed": 13,
+            "failed": 0
+          },
+          "liveOpenVSX": {
+            "passed": 11,
+            "failed": 0
+          },
+          "totalPassed": 42,
+          "failed": 0
+        },
+        "desktopBootstrap": {
+          "command": "pnpm exec electron . --smoke-test",
+          "loaded": true,
+          "title": "Astrix",
+          "errors": 0,
+          "nativeEditorAvailable": true,
+          "occupiedDefaultPortHandled": true
+        },
+        "packagedBootstrap": {
+          "command": "Astrix --smoke-test",
+          "copiedOutsideCheckout": true,
+          "emptyWorkingDirectory": true,
+          "loaded": true,
+          "title": "Astrix",
+          "errors": 0,
+          "nativeEditorAvailable": true
+        },
+        "packagedNative": {
+          "passed": 12,
+          "failed": 0,
+          "assertions": {
+            "packagedBootstrap": true,
+            "electron43": true,
+            "desktopOwnInstance": true,
+            "nativeEditorReady": true,
+            "isolatedWritableWorkspace": true,
+            "nativeResourcesBundled": true,
+            "realPackagedPty": true,
+            "packagedPtyOutput": true,
+            "installedExtensionActivated": true,
+            "originalExtensionsUI": true,
+            "packagedHelperPaths": true,
+            "helperProcessesStopped": true
+          },
+          "symlinkStateRoot": true,
+          "isolatedSyntheticProject": true,
+          "deepStrictSignatureVerifiedAfterCopy": true,
+          "trackedHelpers": 6,
+          "helpersRemaining": 0
+        },
+        "packagedLegacy": {
+          "passed": 7,
+          "failed": 0,
+          "assertions": {
+            "legacyRoute": true,
+            "originalHomeBridge": true,
+            "legacyReactRendered": true,
+            "legacyTitle": true,
+            "packagedShell": true,
+            "separateLegacyServer": true,
+            "reloadPreservesLegacy": true
+          },
+          "isolatedProfileAndPort": true,
+          "realFigmaDocumentsOpened": false
+        }
+      }
+    },
+    "web": {
+      "commands": [
+        {
+          "cwd": "网页端",
+          "command": "pnpm install --frozen-lockfile",
+          "status": "passed"
+        },
+        {
+          "cwd": "网页端",
+          "command": "pnpm build",
+          "status": "passed"
+        },
+        {
+          "cwd": "网页端",
+          "command": "pnpm test",
+          "status": "passed",
+          "tests": 39,
+          "failed": 0
+        },
+        {
+          "cwd": "网页端",
+          "command": "pnpm test:workbench",
+          "status": "passed",
+          "nodeTests": 27,
+          "additionalChecks": [
+            "canvas migration/geometry/layout/assets/imports/prototype",
+            "recovered KRN/theme/gradient generators"
+          ]
+        },
+        {
+          "cwd": "网页端",
+          "command": "ASTRIX_RECOVERY_ROOT=<read-only-complete-recovery> pnpm prepare:workbench",
+          "status": "passed",
+          "preparedStaticResources": 270,
+          "removedObsoleteEmbeddedLiterals": 6
+        }
+      ],
+      "actualProcesses": [
+        {
+          "command": "pnpm dev --port <isolated-port>",
+          "status": "passed",
+          "checks": [
+            {
+              "id": "workbench-entry",
+              "status": "passed"
+            },
+            {
+              "id": "legacy-react-entry",
+              "status": "passed"
+            },
+            {
+              "id": "identity",
+              "status": "passed"
+            },
+            {
+              "id": "legacy-api-preserved",
+              "status": "passed"
+            },
+            {
+              "id": "project-session-storage",
+              "status": "passed"
+            },
+            {
+              "id": "runtime-fetch-remap",
+              "status": "passed"
+            },
+            {
+              "id": "runtime-xhr-remap",
+              "status": "passed"
+            },
+            {
+              "id": "file-editor-preview",
+              "status": "passed"
+            },
+            {
+              "id": "figma-metadata",
+              "status": "passed"
+            },
+            {
+              "id": "chat-stop",
+              "status": "passed"
+            },
+            {
+              "id": "cli-websocket",
+              "status": "passed"
+            },
+            {
+              "id": "shutdown",
+              "status": "passed"
+            },
+            {
+              "id": "vite-hmr",
+              "status": "passed"
+            }
+          ]
+        },
+        {
+          "command": "pnpm preview --port <isolated-port>",
+          "status": "passed",
+          "checks": [
+            {
+              "id": "workbench-entry",
+              "status": "passed"
+            },
+            {
+              "id": "legacy-react-entry",
+              "status": "passed"
+            },
+            {
+              "id": "identity",
+              "status": "passed"
+            },
+            {
+              "id": "legacy-api-preserved",
+              "status": "passed"
+            },
+            {
+              "id": "project-session-storage",
+              "status": "passed"
+            },
+            {
+              "id": "runtime-fetch-remap",
+              "status": "passed"
+            },
+            {
+              "id": "runtime-xhr-remap",
+              "status": "passed"
+            },
+            {
+              "id": "file-editor-preview",
+              "status": "passed"
+            },
+            {
+              "id": "figma-metadata",
+              "status": "passed"
+            },
+            {
+              "id": "chat-stop",
+              "status": "passed"
+            },
+            {
+              "id": "cli-websocket",
+              "status": "passed"
+            },
+            {
+              "id": "shutdown",
+              "status": "passed"
+            },
+            {
+              "id": "cross-restart-history",
+              "status": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    "desktopPrivateBundle": {
+      "platform": "darwin",
+      "arch": "arm64",
+      "files": 6685,
+      "sourceAndResourceManifestVerified": true,
+      "codesignDeepStrictPassed": true,
+      "actualAsarMainAndVersionPassed": true,
+      "localAdHocSignature": true,
+      "generatedTestOutputsIncluded": false
+    },
+    "freshRestore": {
+      "status": "passed",
+      "controlledSourceFiles": 189,
+      "noLegacyApplication": true,
+      "noDependencyInstall": true,
+      "archives": [
+        {
+          "file": "M0-local-resources-v0.7.0.tar.gz",
+          "bytes": 49325190,
+          "sha256": "b52c52e0f3a420c615665a1c40dcdc9adf24b0640b9b9e623549419a669879f5",
+          "manifestSha256": "480cef4cc68e0631cd8d75c45d1b6ca33cc42b66b3a1adbe088a56c126ab8bc1",
+          "recordsVerified": 353,
+          "filesVerified": 353,
+          "symlinksVerified": 0,
+          "allModesVerified": true,
+          "allHashesVerified": true
+        },
+        {
+          "file": "M0-AI-recovered-runtime-v0.7.0.tar.gz",
+          "bytes": 94861624,
+          "sha256": "9b253b1b06e3b7c63702fb21977e2dfd4cc93bd036d4db9422d17d1f32faabdc",
+          "manifestSha256": "4f43b99d9570791ef9c382527aad5669696260590fa5300fd98c2aa66760257f",
+          "recordsVerified": 6286,
+          "filesVerified": 6271,
+          "symlinksVerified": 15,
+          "allModesVerified": true,
+          "allHashesVerified": true
+        }
+      ],
+      "htmlRoutesPassed": 3,
+      "staticResourcesPassed": 21,
+      "workflow": {
+        "graph": "passed",
+        "version": "0.3.9",
+        "callback": "passed"
+      },
+      "native": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "opencodeVersion": "1.17.10",
+        "editorEntrypointsPresent": true,
+        "guiStarted": false
+      }
+    }
+  },
+  "runtimeDistribution": {
+    "release": "m0-runtime/v0.7.0",
+    "policy": "restricted unpublished draft only",
+    "assets": [
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.0.manifest.json",
+        "bytes": 3549832,
+        "sha256": "4f43b99d9570791ef9c382527aad5669696260590fa5300fd98c2aa66760257f"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.0.sha256",
+        "bytes": 104,
+        "sha256": "d2cdf2bbcdd47bd66da4f7c0b89182ab5594e42a538571a00c849b5b6b5b0b40"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.0.tar.gz",
+        "bytes": 94861624,
+        "sha256": "9b253b1b06e3b7c63702fb21977e2dfd4cc93bd036d4db9422d17d1f32faabdc"
+      },
+      {
+        "name": "M0-local-resources-v0.7.0.manifest.json",
+        "bytes": 133402,
+        "sha256": "480cef4cc68e0631cd8d75c45d1b6ca33cc42b66b3a1adbe088a56c126ab8bc1"
+      },
+      {
+        "name": "M0-local-resources-v0.7.0.sha256",
+        "bytes": 99,
+        "sha256": "4c135d48d7247bccfe062083992159ca62439ce5189715816678473d45bb6fb2"
+      },
+      {
+        "name": "M0-local-resources-v0.7.0.tar.gz",
+        "bytes": 49325190,
+        "sha256": "b52c52e0f3a420c615665a1c40dcdc9adf24b0640b9b9e623549419a669879f5"
+      }
+    ]
+  },
+  "limits": [
+    "Native editor, PTY and extension runtime were verified on macOS arm64 with Electron 43.4.0; no universal/Intel native support or Apple notarization is claimed.",
+    "Web dev/preview checks exercised actual HTTP/WebSocket and served-runtime mappings; browser objects in the runtime mapping check were VM stubs, not a full browser GUI.",
+    "No external live model conversation or real Figma account/document operation was performed; Figma and model access require the recipient configuration.",
+    "Raw diagnostics, screenshots, personal projects, login state, model settings and installers remain outside public source Git."
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  }
+}

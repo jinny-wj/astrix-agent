@@ -19,7 +19,7 @@ function pathFor(
   fileId?: string | null,
   figmaUrl?: string | null,
 ) {
-  if (route === 'home') return '/'
+  if (route === 'home') return '/design'
   if (route === 'editor' && fileId) return `/editor/${fileId}`
   if (route === 'creating' && fileId) {
     return `/creating?file=${encodeURIComponent(fileId)}`

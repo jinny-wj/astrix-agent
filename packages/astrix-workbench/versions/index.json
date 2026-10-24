@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "currentVersion": "0.7.0",
+  "recordedAt": "2026-10-25",
+  "historyPolicy": {
+    "documentationOnlyTagPrefix": "m0/history/v",
+    "sourceTagPrefix": "m0/v",
+    "earliestCompleteSourceVersion": "0.6.0",
+    "notice": "0.1.0 through 0.5.0 are documentation-only historical records. Their original complete source snapshots were not retained. Historical tags do not identify runnable source versions.",
+    "importMapping": "docs/历史导入映射.json",
+    "generatedDistributionsExcludedFromGit": true,
+    "runtimeDistribution": "restricted draft m0-runtime/vVERSION; public m0/vVERSION contains source and documentation only",
+    "resourceLayoutVersion": 2
+  },
+  "versions": [
+    {
+      "version": "0.1.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "m0/history/v0.1.0",
+      "record": "versions/v0.1.0.md",
+      "evidence": [
+        "versions/evidence/v0.1.0.json"
+      ],
+      "originalTag": "history/v0.1.0"
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "m0/history/v0.2.0",
+      "record": "versions/v0.2.0.md",
+      "evidence": [
+        "versions/evidence/v0.2.0.json",
+        "docs/本地整合-0.2.0.md"
+      ],
+      "originalTag": "history/v0.2.0"
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "m0/history/v0.3.0",
+      "record": "versions/v0.3.0.md",
+      "evidence": [
+        "versions/evidence/v0.3.0.json",
+        "docs/本地整合-0.3.0.md"
+      ],
+      "originalTag": "history/v0.3.0"
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "m0/history/v0.4.0",
+      "record": "versions/v0.4.0.md",
+      "evidence": [
+        "versions/evidence/v0.4.0.json",
+        "docs/本地整合-0.4.0.md"
+      ],
+      "originalTag": "history/v0.4.0"
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-23",
+      "recordType": "documentation-only",
+      "sourceSnapshotAvailable": false,
+      "tag": "m0/history/v0.5.0",
+      "record": "versions/v0.5.0.md",
+      "evidence": [
+        "versions/evidence/v0.5.0.json",
+        "docs/本地整合-0.5.0.md"
+      ],
+      "originalTag": "history/v0.5.0"
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-23",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.6.0",
+      "record": "versions/v0.6.0.md",
+      "evidence": [
+        "versions/evidence/v0.6.0.json",
+        "docs/本地整合-0.6.0.md",
+        "versions/evidence/github-publication-v0.6.0.json"
+      ],
+      "originalTag": "v0.6.0",
+      "importedSourceExcludesGeneratedDistributions": true,
+      "originalPublication": {
+        "repository": "https://github.com/jinny-wj/m0-local",
+        "visibility": "private",
+        "tag": "v0.6.0",
+        "evidence": "versions/evidence/github-publication-v0.6.0.json",
+        "status": "historical source evidence; not the canonical repository or current distribution target"
+      }
+    },
+    {
+      "version": "0.6.1",
+      "date": "2026-10-23",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.6.1",
+      "record": "versions/v0.6.1.md",
+      "evidence": [
+        "docs/历史导入映射.json",
+        "versions/evidence/v0.6.1.json"
+      ],
+      "changes": [
+        "Imported M0 source and mapped version history under astrix-agent/m0-local.",
+        "Namespaced tags and source-only public Release preserve Astrix release entry points.",
+        "Generated resources and recovered runtime are distributed separately through restricted draft m0-runtime/v0.6.1."
+      ],
+      "uiFeatureChanges": false
+    },
+    {
+      "version": "0.6.2",
+      "date": "2026-10-24",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.6.2",
+      "record": "versions/v0.6.2.md",
+      "evidence": [
+        "versions/evidence/v0.6.2.json"
+      ],
+      "changes": [
+        "Product-facing titles, Electron app name, local pages and Figma plugin renamed to Astrix.",
+        "Reuses existing Astrix brand assets; retains historical references and persistent compatibility IDs.",
+        "Provides versioned source and restricted runtime resources."
+      ],
+      "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.0",
+      "date": "2026-10-25",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.0",
+      "record": "versions/v0.7.0.md",
+      "evidence": [
+        "versions/evidence/v0.7.0.json",
+        "docs/源码迁移映射.json"
+      ],
+      "changes": [
+        "Physically splits browser/service source into 网页端/workbench and native source into 客户端/workbench.",
+        "Connects both existing application entry points to the workbench instead of retaining a third runnable package.",
+        "Uses shared versioning, verification, scoped publication and layout 2 runtime resources."
+      ],
+      "uiFeatureChanges": true
+    }
+  ],
+  "repository": "https://github.com/jinny-wj/astrix-agent",
+  "projectPath": "packages/astrix-workbench/",
+  "sourceRoots": {
+    "web": "网页端/workbench/",
+    "desktop": "客户端/workbench/",
+    "shared": "packages/astrix-workbench/"
+  }
+}

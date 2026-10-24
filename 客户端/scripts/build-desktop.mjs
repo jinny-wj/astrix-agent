@@ -14,10 +14,20 @@ const shared = {
 
 await build({
   ...shared,
-  entryPoints: ['desktop/main.ts'],
+  entryPoints: ['desktop/bootstrap.ts'],
   external: ['electron', '@anthropic-ai/claude-agent-sdk', 'exceljs'],
   format: 'esm',
   outfile: 'dist-electron/main.mjs',
+})
+
+// The original Figma-first application keeps its complete IPC and lifecycle.
+// Bootstrap selects one main process implementation, never both at once.
+await build({
+  ...shared,
+  entryPoints: ['desktop/main.ts'],
+  external: ['electron', '@anthropic-ai/claude-agent-sdk', 'exceljs'],
+  format: 'esm',
+  outfile: 'dist-electron/legacy-main.mjs',
 })
 
 await build({

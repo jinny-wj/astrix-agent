@@ -30,8 +30,12 @@ import {
   DESKTOP_PROTOCOL_VERSION,
 } from '../server/desktopStatusPlugin'
 
-const APP_NAME = '星序 Astrix'
-const SERVER_ORIGIN = 'http://127.0.0.1:5273'
+const APP_NAME = 'Astrix'
+const SERVER_PORT = Number(process.env.ASTRIX_LEGACY_PORT || 5273)
+if (!Number.isInteger(SERVER_PORT) || SERVER_PORT < 1 || SERVER_PORT > 65535) {
+  throw new Error('ASTRIX_LEGACY_PORT 必须是 1 到 65535 之间的端口')
+}
+const SERVER_ORIGIN = `http://127.0.0.1:${SERVER_PORT}`
 const HOME_TAB_ID = 'home'
 const HOME_CHROME_HEIGHT = 48
 const WORKSPACE_CHROME_HEIGHT = 88
@@ -105,7 +109,7 @@ let finishingOAuth = false
 let activeOAuthWindow: BrowserWindow | null = null
 let activeOAuthTarget: string | null = null
 let oauthSetupWindow: BrowserWindow | null = null
-let oauthSetupReturnUrl = `${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`
+let oauthSetupReturnUrl = `${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2Fdesign`
 let continueOAuthInBrowser: (() => void) | null = null
 
 function figmaBrowserSession() {
@@ -193,7 +197,7 @@ async function ensureFigmaWebSession() {
   // API authorization returned from the system browser does not copy Figma web
   // cookies into Electron. Requiring both would create an endless OAuth loop.
   if (state?.authenticated) return true
-  openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=${encodeURIComponent('/')}`)
+  openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=${encodeURIComponent('/design')}`)
   return false
 }
 
@@ -352,7 +356,7 @@ function shellState() {
     profile: chromeProfile,
     activeTabId,
     activeKind: active ? 'figma' : 'home',
-    activeUrl: active?.url ?? `${SERVER_ORIGIN}/`,
+    activeUrl: active?.url ?? `${SERVER_ORIGIN}/design`,
     agentVisible,
     serverMode,
     tabs: [
@@ -360,7 +364,7 @@ function shellState() {
         id: HOME_TAB_ID,
         kind: 'home',
         title: '首页',
-        url: `${SERVER_ORIGIN}/`,
+        url: `${SERVER_ORIGIN}/design`,
         loading: false,
         canGoBack: false,
         canGoForward: false,
@@ -1078,7 +1082,7 @@ function createHomeView() {
     }
     return { action: 'deny' }
   })
-  void view.webContents.loadURL(`${SERVER_ORIGIN}/`)
+  void view.webContents.loadURL(`${SERVER_ORIGIN}/design`)
   return view
 }
 
@@ -1282,6 +1286,10 @@ function buildApplicationMenu() {
       label: APP_NAME,
       submenu: [
         { role: 'about' },
+        { label: '打开完整工作台', click: () => {
+          app.relaunch({args:process.argv.slice(1).filter(argument=>argument!=='--legacy-ui')})
+          app.quit()
+        } },
         { type: 'separator' },
         { role: 'hide' },
         { role: 'hideOthers' },
@@ -1308,14 +1316,14 @@ function buildApplicationMenu() {
         },
         {
           label: '连接 Figma',
-          click: () => openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`),
+          click: () => openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2Fdesign`),
         },
         {
           label: '在浏览器中继续 Figma 授权',
           accelerator: 'CommandOrControl+Shift+B',
           click: () => {
             if (continueOAuthInBrowser) continueOAuthInBrowser()
-            else openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`, true)
+            else openFigmaOAuthWindow(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2Fdesign`, true)
           },
         },
         {
@@ -1327,7 +1335,7 @@ function buildApplicationMenu() {
     },
     {
       label: '开发',
-      submenu: [{ label: 'Figma 应用配置', click: () => openFigmaOAuthSetup(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2F`) }],
+      submenu: [{ label: 'Figma 应用配置', click: () => openFigmaOAuthSetup(`${SERVER_ORIGIN}/api/auth/figma/start?returnTo=%2Fdesign`) }],
     },
     { role: 'editMenu' },
     {
@@ -1433,6 +1441,7 @@ async function ensureDesktopServer() {
   }
   ownedServer = await startDesktopServer({
     appRoot: appRoot(),
+    port: SERVER_PORT,
     figmaOAuth: await readFigmaOAuthSettings(join(app.getPath('userData'), 'data'), safeStorage) ?? undefined,
     // Optional model settings must not keep the user out of the repair/clear UI.
     modelApi: await readModelApiSettings(join(app.getPath('userData'), 'data'), safeStorage).catch(() => null) ?? undefined,
@@ -1444,9 +1453,10 @@ async function ensureDesktopServer() {
   serverMode = 'embedded'
 }
 
-// Keep the original profile and instance lock when the packaged app is renamed.
-if (app.isPackaged) {
-  const profilePath = join(app.getPath('appData'), 'Design Studio')
+// Keep existing users on their original profile. An explicit isolated path is
+// useful for local verification and never silently replaces that profile.
+if (process.env.ASTRIX_LEGACY_PROFILE_DIR || app.isPackaged) {
+  const profilePath = process.env.ASTRIX_LEGACY_PROFILE_DIR || join(app.getPath('appData'), 'Design Studio')
   mkdirSync(profilePath, { recursive: true })
   app.setPath('userData', profilePath)
   app.setPath('sessionData', profilePath)

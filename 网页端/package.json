@@ -1,9 +1,9 @@
 {
-  "name": "design-studio-wj-web",
-  "description": "Design Studio WJ 网页端",
-  "author": "Design Studio WJ",
+  "name": "astrix-web",
+  "description": "Astrix 网页工作台与设计界面",
+  "author": "Astrix",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.7.0",
   "type": "module",
   "scripts": {
     "test": "node --experimental-strip-types --test server/*.test.ts server/agent/*.test.ts src/services/*.test.ts browser-extension/*.test.js",
@@ -13,7 +13,9 @@
     "test:figma-oauth-config": "node --experimental-strip-types --test server/figmaOAuthConfig.test.ts",
     "test:figma-layer": "node --experimental-strip-types --test src/services/figmaLayer.test.ts",
     "test:agent-composer": "node --experimental-strip-types --test server/agent/composer.test.ts server/agent/runtimePolicy.test.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare:workbench": "node workbench/plugins/prepare.mjs && node workbench/frontend-tools/prepare-frontend.mjs",
+    "test:workbench": "node --test workbench/canvas/vector.test.mjs workbench/canvas/collaboration-state.test.mjs && node workbench/canvas/test-canvas.mjs && node workbench/plugins/test-generators.mjs"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.220",

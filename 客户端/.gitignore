@@ -1,6 +1,13 @@
 # 依赖与构建产物
 node_modules
 .pnpm-store/
+.pnpm-cache/
+.electron-cache/
+.workbench-bundle/
+.workbench-bundle.pending-*/
+workbench/.data/
+workbench/.local-data/
+workbench/diagnostics/
 dist
 dist-ssr
 dist-electron

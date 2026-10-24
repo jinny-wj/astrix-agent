@@ -12,12 +12,12 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.6.2](https://img.shields.io/badge/Workbench-v0.6.2-4F46E5?style=flat-square)](m0-local/versions/v0.6.2.md)
+[![Workbench v0.7.0](https://img.shields.io/badge/Workbench-v0.7.0-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.0.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
-**[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [本地工作台](m0-local/README.md)**
+**[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
 
-[快速开始](#快速开始) · [产品能力](#产品能力) · [连接 Figma](#连接-figma) · [常见问题](#常见问题) · [版本记录](m0-local/CHANGELOG.md) · [反馈](#反馈与贡献)
+[快速开始](#快速开始) · [产品能力](#产品能力) · [连接 Figma](#连接-figma) · [常见问题](#常见问题) · [版本记录](packages/astrix-workbench/CHANGELOG.md) · [反馈](#反馈与贡献)
 
 <code>git clone https://github.com/jinny-wj/astrix-agent.git</code>
 
@@ -30,14 +30,14 @@
 
 星序将真实 Figma 工作区、图层上下文和 AI 助手放在同一条工作流中，减少在设计工具、聊天窗口和素材之间反复切换的成本，让设计师围绕正在编辑的内容工作。
 
-项目提供 **macOS 客户端**与**网页版**两套独立工程。客户端在真实 Figma 界面外增加应用级导航、标签页和右侧 AI 面板，保留 Figma 自带的图层树、画布和属性栏；网页版通过本地服务与浏览器扩展组织协作界面。同仓库的[本地工作台](m0-local/README.md)还整合了代码编辑器、终端与多 Agent 工作流。
+项目提供 **macOS 客户端**与**网页版**两套独立工程。客户端在真实 Figma 界面外增加应用级导航、标签页和右侧 AI 面板，保留 Figma 自带的图层树、画布和属性栏；网页版通过本地服务与浏览器扩展组织协作界面。两端均接入工作台界面与本地服务；客户端还承载原生代码编辑器、终端和扩展，网页版提供浏览器文件编辑与预览。
 
 ## 目录
 
 - [项目简介](#项目简介)
 - [产品能力](#产品能力)
 - [客户端与网页版](#客户端与网页版)
-- [Astrix 整合工作台](#astrix-整合工作台)
+- [工作台已接入两端](#工作台已接入两端)
 - [快速开始](#快速开始)
 - [连接 Figma](#连接-figma)
 - [图层选择与修改](#图层选择与修改)
@@ -75,11 +75,12 @@
 | 对比项 | macOS 客户端 | 网页版 |
 |---|---|---|
 | 使用形式 | Electron 原生窗口 | 本地网页 + 浏览器 |
-| Figma 与 AI 面板 | 同一应用窗口内展示 | 通过 Chrome Side Panel 扩展协作 |
-| 浏览器扩展 | 不需要 | 完整侧栏流程需要加载本地扩展 |
+| Figma 与 AI 面板 | 官方 Figma 与工作台在同一窗口 | 官方 Figma 在浏览器打开，与工作台配对 |
+| 浏览器扩展 | 不需要 | 原设计界面的侧栏流程可加载本地扩展 |
 | 图层写入 | 需要目标文件中的 Plugin Bridge | 同样需要 Plugin Bridge |
-| 本地 AI 后端 | 需要安装、登录并配置 | 同样需要本地服务和后端 |
-| 当前打包状态 | 以 Apple Silicon 本机调试包为主 | 通过本地开发服务运行 |
+| 本地 AI 后端 | 本地设置可配置模型与多 Agent | 同源服务提供相同配置与工作流 |
+| 代码与文件 | 原 KSCode、PTY 终端、扩展宿主与 Open VSX | 本地服务支持的浏览器文件编辑与 HTML 预览 |
+| 当前打包状态 | Apple Silicon 本机调试包 | 开发及构建预览均带完整本地服务 |
 
 详细文档：[客户端说明][desktop-doc] · [网页版说明][web-doc] · [浏览器扩展安装][extension-doc]。
 
@@ -100,9 +101,13 @@ git clone https://github.com/jinny-wj/astrix-agent.git
 cd astrix-agent
 ```
 
-客户端、网页端分别安装依赖和构建；另有下方的 `m0-local/` 整合工程。根目录不是统一的包管理入口。
+客户端、网页端分别安装依赖和构建。共用路径配置、跨端测试和版本记录位于 `packages/astrix-workbench/`，它不提供第三套应用入口。根目录不是统一的包管理入口。
 
-### 3. 启动 macOS 客户端
+### 3. 准备工作台运行资源
+
+公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.0 资源并在仓库根目录还原。资源采用两端目录布局，旧版 `m0-local/` 压缩包不能直接当作新版资源解压使用。
+
+### 4. 启动 macOS 客户端
 
 ```bash
 cd 客户端
@@ -110,9 +115,9 @@ pnpm install
 pnpm desktop:dev
 ```
 
-该命令会构建前端、检查桌面端类型、打包桌面主进程并启动 Electron。初次安装与构建需要一定时间。
+该命令通过客户端正式入口启动完整工作台：真实 Figma、原编辑器、终端、扩展、项目与会话及多 Agent。原来的 Figma 设计界面可用 `pnpm desktop:legacy` 打开，或从应用菜单切换。两种主进程按启动模式二选一。
 
-### 4. 或者启动网页版
+### 5. 或者启动网页版
 
 从仓库根目录执行：
 
@@ -122,28 +127,33 @@ pnpm install
 pnpm dev
 ```
 
-打开终端输出的本机地址，默认使用 `http://127.0.0.1:5273/`。完整 Figma 侧栏需要按[扩展文档][extension-doc]在 Chrome 中加载 `网页端/browser-extension`，仓库中的扩展不等于已上架的商店商品。
+打开 `http://127.0.0.1:5273/` 即进入工作台；`pnpm build` 后的 `pnpm preview` 同样接入本地服务。原 React 设计界面保留在 `/design.html`。若使用原设计界面的 Chrome Side Panel，请按[扩展文档][extension-doc]加载 `网页端/browser-extension`。
 
-两端默认使用相同的本地服务端口。首次测试请先运行其中一端，避免端口占用或连接到另一端的旧服务。
+完整客户端优先使用 4317，遇到旧服务占用时会选择独立端口；网页版使用 5273。两端默认分别保存状态，避免同时写同一份配置。原客户端设计模式也使用 5273，与网页版同开时需先核对端口。
 
-## Astrix 整合工作台
+## 工作台已接入两端
 
-`m0-local/` 接入恢复的 M0 工作台、项目与会话、代码编辑器、终端、多 Agent，以及真实 Figma 和 Plugin Bridge。画布、矢量编辑和云端协作由官方 Figma 提供。
+从 **0.7.0** 起，之前恢复并整合的工作台源码已按职责迁入两端，`m0-local/` 不再是独立可执行工程。默认启动客户端或网页版即可使用各自的工作台入口。
 
-```bash
-cd m0-local
-npm ci
-# 按运行包说明恢复本机生成资源与可选原生组件
-npm run desktop:figma
-```
+| 位置 | 实际职责 |
+| --- | --- |
+| `客户端/workbench/` | Electron 宿主、真实 Figma 容器、原 KSCode、PTY 终端、扩展与桌面验证工具 |
+| `网页端/workbench/` | 工作台前端、本地项目与会话、文件编辑与预览、Agent / 多 Agent、生成器及 Figma Bridge |
+| `packages/astrix-workbench/` | 共用路径配置、跨端测试、资源打包、版本与历史记录；没有第三套应用入口 |
 
-整合工作台默认服务为 `http://127.0.0.1:4317`，使用 **Astrix Figma Bridge**。请按 [工作台说明](m0-local/README.md)、[资源与运行包说明](m0-local/docs/GitHub运行包.md)完成准备和配对。生成资源与原生组件以有权访问草稿的账号可获取的受限附件提供；公开 Git 保存适配源码与版本记录。
+客户端 bootstrap、网页端 Vite 开发与预览服务、构建输出和客户端资源打包均引用上述实际实现。普通网页不会获得 Electron 原生编辑器或 PTY；Figma 的画布、矢量和云端协作继续由官方 Figma 提供。
 
-整合工作台版本单独使用 `m0/vX.Y.Z`；0.1～0.5 仅有历史文档，标记为 `m0/history/vX.Y.Z`。整合发布从 `m0/v0.6.1` 继续；当前 `m0/v0.6.2` 已将产品显示名统一为 Astrix，记录见 [版本总表](m0-local/versions/index.json)与[变更记录](m0-local/CHANGELOG.md)。Astrix 原客户端、网页版及原预览版本保持自己的发布入口。客户端安装包请使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向整合工作台源码记录。
+历史标签不移动，源码版本继续使用兼容命名空间 `m0/v版本号`，运行资源保存在受限草稿 `m0-runtime/v版本号`。逐版记录见[版本总表](packages/astrix-workbench/versions/index.json)与[变更记录](packages/astrix-workbench/CHANGELOG.md)。旧 `m0-local/` 中的本地状态保留在磁盘，不再上传；应用数据兼容方式见[工作台指南](packages/astrix-workbench/README.md)。
 
 ## 连接 Figma
 
-### OAuth 连接
+### 默认工作台连接
+
+在 Design 中打开真实 Figma 文件。客户端使用隔离的官方 Figma 登录会话；网页版在浏览器打开官方页面。随后在工作台生成配对码，在目标文件运行 **Astrix Figma Bridge** 并完成配对。只有插件的实际回执才能证明图层修改成功。详细步骤见[工作台指南](packages/astrix-workbench/README.md)。
+
+### 原设计界面的 OAuth 连接
+
+以下 OAuth、团队目录与原 Side Panel 说明适用于 `/design.html` 和客户端 `--legacy-ui` 模式。
 
 1. 在 Figma 开发者后台创建自己的 OAuth 应用。
 2. 将对应工程中的 `.env.example` 复制为本机 `.env.local`，按照示例填写 OAuth 配置。
@@ -166,7 +176,11 @@ npm run desktop:figma
 
 ## 图层选择与修改
 
-### 安装并连接 Bridge
+### 默认工作台的 Bridge
+
+默认工作台使用 `网页端/workbench/figma-plugin-bridge/` 的 **Astrix Figma Bridge**，客户端也使用同一份协议与插件源码。通过工作台的插件帮助准备开发插件、在对应文件中配对并选中图层；每次修改仍须核对真实执行回执。
+
+### 原设计界面安装并连接 Bridge
 
 1. 保持星序本地服务运行。
 2. 在 Figma 官方桌面版中，通过开发插件入口导入对应工程的 `figma-plugin-bridge/manifest.json`。
@@ -197,7 +211,9 @@ npm run desktop:figma
 
 ## 配置 AI 助手
 
-应用默认优先使用本机 Codex CLI，并提供 Claude Code / Hermes 等后端路径。安装应用不代表这些后端已经安装或登录，也不包含第三方服务额度。
+默认工作台先以演示模式运行界面。在“本地设置”中配置可用模型服务后，可使用本地助手或恢复的 OpenCode，以及规划、执行与复核的多 Agent 工作流。模型配置不随源码和资源包分发。
+
+原设计界面默认优先使用本机 Codex CLI，并提供 Claude Code / Hermes 等后端路径。以下环境配置说明适用于原设计界面；安装应用不代表这些后端已经安装或登录，也不包含第三方服务额度。
 
 在对应工程的 `.env.local` 中可配置：
 
@@ -222,10 +238,11 @@ AGENT_ALLOW_DEMO_FALLBACK=0
 astrix-agent/
 ├── README.md                  # 仓库首页与使用总览
 ├── assets/brand/astrix/        # 品牌图形与启动图标源素材
-├── m0-local/                  # M0 工作台、真实 Figma、原编辑器与 Agent 整合
+├── packages/astrix-workbench/  # 共用配置、跨端测试、打包工具与版本历史
 ├── 客户端/                    # macOS 独立工程
 │   ├── src/                   # React 页面、组件、状态与服务
-│   ├── desktop/               # Electron 主进程、预加载和窗口外壳
+│   ├── desktop/               # 启动 bootstrap 与原设计界面主进程
+│   ├── workbench/             # 工作台 Electron、Figma、原生编辑器及终端宿主
 │   ├── server/                # 本地 OAuth、Agent 与 Bridge 服务
 │   ├── figma-plugin-bridge/   # Figma 插件与协议说明
 │   ├── browser-extension/    # 浏览器协作代码
@@ -233,14 +250,15 @@ astrix-agent/
 │   ├── scripts/              # 构建、签名和验收脚本
 │   └── build/                # macOS 图标、权限等构建资源
 └── 网页端/                    # 浏览器独立工程
-    ├── src/                   # 网页工作台与 AI 面板
+    ├── src/                   # 原设计界面与 AI 面板
+    ├── workbench/             # 工作台前端、本地服务、Agent、Bridge 与生成器
     ├── server/                # 本地服务
     ├── browser-extension/    # Chrome Side Panel 扩展
     ├── figma-plugin-bridge/   # Figma 插件
     └── skills/               # 任务技能
 ```
 
-技术栈为 React、TypeScript、Vite、Tailwind CSS；客户端增加 Electron 与 electron-builder。具体依赖以各端 `package.json` 和锁文件为准。
+原设计界面采用 React、TypeScript、Vite、Tailwind CSS；恢复工作台由已恢复前端与独立本地 Node 服务适配，客户端增加 Electron、原生编辑器与 electron-builder。具体依赖以各端 `package.json` 和锁文件为准。
 
 品牌文案入口为各端 `src/config/brand.ts`；右侧面板位于 `src/components/editor/`；桌面应用级外壳位于 `客户端/desktop/renderer/`。两个工程并非自动同步，涉及通用协议或共享交互的改动应分别验证。
 
@@ -261,7 +279,9 @@ pnpm desktop:pack:mac        # 构建并验收 arm64 本机调试应用
 pnpm desktop:dist:mac:local  # 生成本机测试 DMG / ZIP
 ```
 
-正式发布命令为 `pnpm desktop:dist:mac`，需要签名与公证条件，不能用本机测试包替代。验收脚本会检查架构、签名及应用图标资源；正式发布还包含 Gatekeeper 与公证检查。
+完整工作台目前只有 darwin-arm64 恢复组件；`pnpm desktop:dist:mac:private` 可生成本机私发包，资源、入口、签名和图标均需验收。原 universal 正式发行命令暂不支持完整工作台，不能把本机包当作已签名、公证的正式发行版。
+
+跨端工作台检查在 `packages/astrix-workbench/` 执行 `npm test`；两端各自的 `pnpm test` 保留原设计工程检查。
 
 自动化测试和编译通过不等于外部服务端到端验证完成。Figma 授权、真实图层写回、模型服务调用和正式安装体验仍需要在具备对应权限的环境中单独验收。
 
@@ -297,7 +317,7 @@ pnpm desktop:dist:mac:local  # 生成本机测试 DMG / ZIP
 
 ### 是否支持 Windows、正式 macOS 安装包和 Code 模式？
 
-仓库当前以 macOS 客户端与浏览器开发版为主，没有在此承诺 Windows 客户端发布。macOS 本机包不是已公证发行版；Astrix 原客户端的 Code 模式尚未开放。同仓库的 M0 整合工程另提供恢复的代码编辑器与终端，使用步骤见上方说明。
+完整客户端的原 KSCode、终端与扩展现已接入默认入口，目前原生恢复组件支持 macOS Apple Silicon。网页版提供浏览器文件编辑与预览，不具备 Electron 原生终端。尚未在此承诺 Windows、Intel 完整客户端或已公证发行版。原设计界面的独立 Code 模式仍按其原能力边界保留。
 
 ## 数据、安全与发布
 

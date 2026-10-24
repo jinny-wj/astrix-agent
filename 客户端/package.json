@@ -1,9 +1,9 @@
 {
   "name": "design-studio-wj-desktop",
-  "description": "星序 Astrix macOS 客户端",
+  "description": "Astrix macOS 工作台：真实 Figma、Agent、原生编辑器、终端与扩展",
   "author": "Design Studio WJ",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.7.0",
   "type": "module",
   "main": "dist-electron/main.mjs",
   "scripts": {
@@ -19,14 +19,19 @@
     "desktop:bundle": "node scripts/build-desktop.mjs",
     "desktop:dev": "pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && electron .",
     "desktop:sign:mac": "node scripts/sign-mac-local.mjs",
-    "desktop:pack:mac": "pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --arm64 && pnpm run desktop:sign:mac && pnpm run desktop:verify:mac:local",
+    "desktop:pack:mac": "pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && pnpm run desktop:prepare:resources && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac dir --arm64 --publish never -c.electronDist=node_modules/electron/dist && pnpm run desktop:sign:mac && pnpm run desktop:verify:mac:local",
     "desktop:dist:mac:local": "pnpm run desktop:dist:mac:private",
     "desktop:release:preflight": "node scripts/preflight-mac-release.mjs",
     "desktop:release:mac": "pnpm run desktop:release:preflight && pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && electron-builder --mac dmg zip --universal -c.forceCodeSigning=true -c.mac.notarize=true && pnpm run desktop:verify:mac:release",
     "desktop:dist:mac": "pnpm run desktop:release:mac",
     "desktop:verify:mac:local": "node scripts/verify-mac-release.mjs --mode=local --app='release/mac-arm64/Astrix.app'",
     "desktop:verify:mac:release": "node scripts/verify-mac-release.mjs --mode=distribution --app='release/mac-universal/Astrix.app'",
-    "desktop:dist:mac:private": "node scripts/package-private-mac.mjs"
+    "desktop:dist:mac:private": "node scripts/package-private-mac.mjs",
+    "desktop:legacy": "pnpm run build && pnpm run desktop:typecheck && pnpm run desktop:bundle && electron . --legacy-ui",
+    "desktop:prepare:resources": "node scripts/prepare-workbench.mjs",
+    "test:workbench-ui": "electron workbench/tools/test-native-editor-integration.cjs",
+    "test:workbench-terminal": "electron workbench/tools/test-native-editor-terminal.cjs",
+    "test:workbench-figma": "electron workbench/tools/test-real-figma-integration.cjs"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.220",
@@ -97,6 +102,20 @@
           "code.js",
           "ui.html",
           "README.md"
+        ]
+      },
+      {
+        "from": ".workbench-bundle/workbench",
+        "to": "workbench",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": ".workbench-bundle/recovered",
+        "to": "recovered",
+        "filter": [
+          "**/*"
         ]
       }
     ],

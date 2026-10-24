@@ -1,213 +1,105 @@
-# 星序 Astrix · 网页端
+# Astrix · 网页端
 
-浏览器版 AI 设计协作。首页打开真实 Figma，配合 Chrome Side Panel 使用右侧 Agent。
-macOS 客户端源码与安装包在上级目录的 `客户端/`。
+默认入口是 Astrix 工作台：项目、会话、Agent、文件编辑、HTML 预览和真实 Figma Plugin Bridge 在同一个本机服务中运行。原有 React 设计界面保留在 `/design.html`，工作台左下角提供「原设计界面」入口；原界面标题栏可返回工作台。
 
-## 快速开始
+## 启动
+
+需要 Node 22 或更新版本、pnpm 10，以及与当前版本对应的工作台运行资源。首次还原资源的目录与校验步骤见 [运行包说明](../packages/astrix-workbench/docs/GitHub运行包.md)。恢复的生成资源不加入 Git。
 
 在本目录执行：
 
 ```bash
-pnpm install
-pnpm dev          # http://127.0.0.1:5273/
+pnpm install --frozen-lockfile
+pnpm dev                 # http://127.0.0.1:5273/
 ```
 
-其他命令：
+如持有完整的本机恢复目录，可以从只读原始素材重新准备前端和生成器：
 
 ```bash
-pnpm build        # tsc -b && vite build
-npx tsc -b        # 仅类型检查
+ASTRIX_RECOVERY_ROOT=/path/to/M0-AI-recovered pnpm prepare:workbench
 ```
 
-## 技术栈
+这个目录需要包含 `web-assets/cache-recovered/manifest.json` 和生成器所需的 `web-assets/additional-static/`。只含原生引擎的 runtime 包不足以重建浏览器静态素材；已还原对应 UI 资源包时可直接启动。路径默认为仓库根目录的 `M0-AI-recovered/`，与客户端共用只读资源。
 
-| 项 | 版本 |
-|----|------|
-| React | 18.3 |
-| TypeScript | 5.9 |
-| Vite | 5.4 |
-| Tailwind CSS | 3.4 |
-| lucide-react | 0.454 |
-
-Node 22 / pnpm 10。
-
-要预览「真实 Figma + 右侧 Agent」完整形态，还需按
-[`browser-extension/README.md`](browser-extension/README.md) 加载本地扩展。
-
-## 目录结构
-
-```
-src/
-├── App.tsx                     # 路由出口
-├── router.tsx                  # 浏览器 History 路由（home / creating / editor / agent）
-├── config/
-│   ├── brand.ts                # ⭐ 品牌配置唯一来源（名称/标语/文案）
-│   └── figma.ts                # Figma 工作区意图、figma.new 与扩展握手
-├── pages/
-│   ├── HomePage.tsx            # 首页
-│   ├── CreatingFigmaPage.tsx   # 自动创建设计稿过渡页
-│   ├── AgentPanelPage.tsx      # Agent 独立预览 / Side Panel 内容入口
-│   └── EditorPage.tsx          # 编辑器（含 EditorProvider）
-├── state/
-│   └── editorStore.tsx         # 编辑器、选区、视图与 Figma 导入状态
-├── services/
-│   ├── figmaApi.ts             # Figma URL 解析、REST 请求与错误映射
-│   └── figmaAuth.ts            # OAuth Session 前端接口
-├── types/
-│   └── figma.ts                # Figma 文件、节点、填充与文本类型
-├── components/
-│   ├── FigmaAccountMenu.tsx    # 授权账户、配置提示与解绑
-│   ├── TitleBar.tsx            # 通用 AppLogo
-│   ├── Sidebar.tsx             # 首页侧栏（生成/资产/工具/创意）
-│   ├── HeroSection.tsx         # 品牌图形 + 主标语
-│   ├── PromptInput.tsx         # 首页输入框
-│   ├── FeatureCards.tsx        # 五个功能入口卡
-│   ├── CaseGallery.tsx         # 精选案例响应式卡片
-│   ├── RecentFigma.tsx         # 文件流（点击打开真实 Figma）
-│   ├── StudioHealth.tsx        # Agent / OAuth / Team ID / Bridge 状态与设置
-│   └── editor/
-│       ├── EditorTopBar.tsx    # 编辑器顶栏（编辑器/Figma 切换）
-│       ├── LayersPanel.tsx     # 左侧图层栏（收起态）
-│       ├── Canvas.tsx          # 单稿画布（选中框 + 手柄）
-│       ├── FigmaCanvas.tsx     # Figma REST 节点树渲染器
-│       ├── FigmaImportDialog.tsx # 文件链接 + PAT 导入对话框
-│       ├── CanvasToolbar.tsx   # 悬浮 AI 操作条
-│       ├── CanvasControls.tsx  # 底部缩放控件 + 沉浸模式
-│       ├── BatchCanvas.tsx     # 批量产出画布（深色底、画板组平铺）
-│       ├── AiPanel.tsx         # 右侧面板容器
-│       ├── AiWelcome.tsx       # 欢迎卡 + 三步引导
-│       ├── AiInputArea.tsx     # 能力标签 + 输入框 + 状态栏
-│       └── agent/
-│           ├── ConversationFlow.tsx  # 消息流回放编排
-│           ├── MessageParts.tsx      # 用户气泡 / Skill 卡 / 采集摘要
-│           └── ToolParts.tsx         # 工具调用卡 / 设计预览 / 结果网格
-├── data/
-│   ├── mock.ts                 # 首页功能卡与文件流数据
-│   ├── aiPanel.ts              # 面板能力说明与快捷标签
-│   ├── canvasDoc.ts            # 单稿画布占位内容
-│   ├── agentScript.ts          # ⭐ Agent 消息模型 + 回放脚本
-│   └── batchBoards.ts          # 批量画板数据
-├── styles/index.css
-└── public/assets/brand-mark.svg
-
-server/
-└── figmaOAuthPlugin.ts         # 本地 OAuth + PKCE + HttpOnly Session
-
-browser-extension/
-├── manifest.json               # Chrome Manifest V3
-├── service-worker.js           # Side Panel 打开与工作区意图保存
-├── workspace-bridge.js         # 首页用户手势桥接
-└── sidepanel.*                 # Agent / Skills 原生侧栏界面
+```bash
+pnpm build               # 类型检查；构建工作台资源和原 React 界面到 dist/
+pnpm preview             # http://127.0.0.1:5273/，同时启动真实本地后端
+pnpm test                # 原界面、浏览器扩展及工作台服务测试
+pnpm test:workbench       # 本地矢量/协作与恢复生成器验证
+pnpm exec tsc -b          # 仅类型检查
 ```
 
-## 当前实现状态
+开发和预览均固定使用 5273；占用时会明确退出，避免 OAuth 回调、插件地址和扩展连接到错误实例。需要隔离验收时可传 `--port 端口号`，但原设计界面的 OAuth 回调及 Chrome 扩展仍须相应配置。
 
-下面区分代码已实现的链路与运行环境要求。Figma 登录、团队文件读取和 Bridge 写回仍需在具备相应权限的目标文件中验证；Agent 取决于本机后端登录与额度。
+`dist/` 包含两套界面的前端资源；`pnpm preview` 会加载工作台后端和原有服务插件。部署成普通静态站点无法提供项目存储、Agent 或 Plugin Bridge。
 
-### 代码已接通
+## 入口与功能
 
-- **浏览器首页**：侧栏、Design 模式、输入区、功能卡、最近文件；Code 模式明确禁用
-- **真实 Figma 入口**：首页发送、生成设计稿、功能卡会打开官方 `figma.new` 或已有文件；浏览器靠扩展挂 Agent，桌面客户端在同一窗口嵌真实 Figma
-- **Agent 链路**：默认 Codex CLI → Claude Code → Hermes。未登录、额度用尽或 CLI 失败时返回真实错误，**默认不会静默落到演示壳伪造物料**
-- **Figma 登录**：Authorization Code + PKCE、HttpOnly Session。登录后跨重启保持；打开/读取走 OAuth，改图层走当前文件里的 Design Studio Bridge
-- **团队文件**：浏览 `figma.com/files/team/...` 或粘贴团队链接后自动记住，不必先配 Team ID 再重新登录
-- **Plugin Bridge 写回**：在当前 Figma 文件运行 Design Studio Bridge；安装一次后画布可一键重开
-- **PAT / OAuth 探测**：设置里可贴文件链接验证当前凭证能否读到真实文件
-- **REST 预览编辑器**：用 OAuth/PAT 拉节点树做预览，编辑仍在真实 Figma 里完成
-
-### 运行时仍常缺的条件
-
-| 缺口 | 现状 |
+| 路径 | 内容 |
 |------|------|
-| **真实 Agent** | 需要本机已登录且有额度。`/api/agent/status` 的 online 只表示 CLI 登录状态，发消息仍可能因额度/网络失败 |
-| **macOS 正式分发** | 见客户端 README。本机临时签名包不能当发行包 |
-| **Code 模式** | 尚未开放 |
+| `/`、`/home` | 默认工作台，项目与会话 |
+| `/__local/settings` | 工作台模型配置与权限 |
+| `/__local/editor` | 浏览器文件编辑器 |
+| `/__local/preview` | 当前项目 HTML 预览，使用独立沙箱 |
+| `/__local/workflow` | 多 Agent 工作流与运行记录 |
+| `/figma-workspace.html?projectId=…` | 当前项目的真实 Figma 连接与 Bridge 状态 |
+| `/design.html` | 保留的原 React 设计首页 |
+| `/editor/…`、`/workspace`、`/creating`、`/agent` | 原 React 路由，仍加载原界面 |
+| `/local-canvas/index.html` | 先前的独立本地设计编辑器，可选使用 |
 
-## 读取 Figma 文件
+工作台默认处于明确标注的界面演示模式，不调用模型。配置独立模型服务后可开启真实对话、文件工具和多 Agent 工作流；原 OpenCode 引擎和 LangGraph 工作流还需要对应的受限运行资源。模型不可用时展示实际错误。
 
-1. 在 Figma 设置的 Security 页面生成 Personal Access Token，并勾选
-   `file_content:read`。
-2. 运行 `pnpm dev`，或先 `pnpm build` 再运行 `pnpm preview`。
-3. 进入编辑器，点击顶部「读取 Figma」。
-4. 粘贴 `figma.com/design/...` 文件链接（支持带 `node-id`）或文件 Key，
-   再输入 Token。
+浏览器可编辑项目文本文件并预览保存的 HTML/CSS/JavaScript。浏览器不加载原生 KSCode、PTY 终端和 Open VSX 扩展安装；这些能力由 [macOS 客户端](../客户端/README.md) 提供。HTML 预览不会执行项目安装或构建脚本，React Native 工程需要自己的运行环境。
 
-Token 只在导入弹窗内存中使用。浏览器把它发送给本机 `/api/figma`
-代理，由代理转换为 Figma 要求的 `X-Figma-Token` 请求头；不会写入
-`localStorage` 或构建产物。
+原设计界面的 Agent 保留 Codex CLI → Claude Code → Hermes 的原链路，需要本机登录与额度，演示 fallback 必须显式开启。工作台的模型设置不会替换这一条链路。配置细节见 [原 Agent 说明](docs/agent.md)。
 
-## 配置 Figma OAuth
+## 真实 Figma
 
-1. 打开 [Figma Developer Apps](https://www.figma.com/developers/apps)，
-   创建 OAuth App。
-2. 配置回调：
-   `http://127.0.0.1:5273/api/auth/figma/callback`。
-3. 基础连接启用 `current_user:read`、`file_content:read`、
-   `file_metadata:read`，与当前应用请求的权限保持一致。
-   团队目录权限需单独核对，不要向未启用对应权限的应用请求 `projects:read`。
-4. 复制 `.env.example` 为 `.env.local`，填写 Client ID / Secret。
-5. 重启 `pnpm dev`，点击首页右上角「连接 Figma」。
-6. 打开任意团队页，或在最近文件里粘贴团队链接。Team ID 会自动记住，不必重新登录。
+在工作台项目中切换到 Design，保存官方 Figma 文件链接，然后在浏览器中打开真实 Figma。浏览器无法把官方编辑器嵌入普通网页；设计节点仍在 Figma 自己的画布、图层树与属性面板中编辑。
 
-Client Secret 没有 `VITE_` 前缀，不会进入浏览器代码。本地 OAuth Session
-加密写入 `.design-studio`；客户端写入 macOS 的应用 `userData/data` 目录。
+按工作区提供的插件目录导入开发版 Plugin Bridge，在目标文件里运行，并使用一次性配对码连接本机服务。选区、导出和修改绑定当前项目、文件、会话及选区版本。发送命令只代表排队，收到实际插件回执后才显示成功；没有插件连接时不会声称写入完成。操作说明见 [Figma 工作区](workbench/frontend-tools/FIGMA-WORKSPACE.md)。
 
-## 交互入口
+原设计界面与 Chrome Side Panel 继续使用原来的 Bridge 链路。需要这一形态时，按 [扩展说明](browser-extension/README.md) 加载扩展。原 React 中的 REST 节点预览器和演示画面仍保留，它们不代替官方 Figma 编辑器。
 
-| 操作 | 结果 |
-|------|------|
-| 首页输入框获得焦点 | 只进入输入状态，不跳转 |
-| 首页输入框输入并发送 | 打开 Agent Side Panel，随后通过 `figma.new` 新建真实设计稿 |
-| 首页点功能卡 | 同上，并把该功能预选为 Skill |
-| 首页点「新建设计稿」 | 显示创建进度后进入 Figma Drafts 新文件 |
-| 首页点已有文件卡片 / 「打开设计稿」 | 打开真实 Figma 文件，Side Panel 保持在右侧 |
-| 打开 `/agent` | 在普通浏览器页单独预览现有 Agent 面板 |
-| 真实 Figma 中选中图层 | Side Panel 输入框上方同步展示全部选中图层 |
-| 多选人物 / 图片图层 | 显示集中编辑器，可统一修改或为每层填写不同指令 |
-| Side Panel 输入指令并发送 | 锁定文件、选区版本和目标列表，通过 Bridge 批量修改并显示逐层回执 |
-| 编辑器顶部「读取 Figma」 | 输入链接和 PAT，读取真实文件 |
-| 图层树 / 画布节点 | 同步选择真实 Figma 节点 |
-| 编辑器右上房子图标 | 返回首页 |
-| 面板输入框打字 + Enter | 触发 Agent 回放 |
-| 点任意能力标签 | 同上 |
-| 面板左上「+」 | 重置会话，画布回到单稿态 |
+## 数据与同源服务
 
-## 二次开发要点
+`server/workbenchPlugin.ts` 将 `workbench/server/application.mjs` 工厂直接挂载到 Vite 的开发和预览 HTTP 服务。构建本身不启动 Agent、不写用户状态；原 React 服务插件先处理自己的 API。
 
-**改品牌名/文案**：只动 `src/config/brand.ts`。所有对外展示文字从此处取值，不要在组件里硬写。
+- 工作台项目/会话继续使用 `/devops-api/…`，本地服务使用 `/__local/…`。
+- 恢复页面的网络适配器将 `/api/agent/chat` 改到 `/__local/chat`，将 `/api/agent/stop` 改到 `/__local/agent/stop`，保持 AG-UI 事件流与停止操作成对。
+- 原 React 的 `/api/agent/…`、`/api/figma-bridge/…`、`/api/auth/…`、`/api/desktop/…`、`/api/local/…` 和 Figma REST 代理保持原协议。
+- 工作台仅处理自己的 WebSocket 握手；Vite 的 `vite-hmr` 子协议继续由 Vite 管理。
+- `/__local/health` 返回产品、版本、运行表面与实例 ID，客户端据此拒绝误连旧服务。
 
-**接真实 Agent**：默认 Codex CLI，见 [`docs/agent.md`](docs/agent.md)。前端 `ConversationFlow` 消费 `/api/agent/chat` SSE。
+默认网页工作台数据位于 `workbench/.local-data/`，与客户端的默认数据目录分开。原 React 的 OAuth 等数据继续使用 `.design-studio/`。不要让两个进程同时写同一份工作台 JSON 状态。可用下列变量为测试或私有运行指定独立目录：
 
-**Figma 官方能力边界（产品已按此闭环，不是未完成项）**：
+```bash
+ASTRIX_STATE_ROOT=/path/to/web-state \
+ASTRIX_DATA_DIR=/path/to/web-state/data \
+ASTRIX_WORKSPACE=/path/to/web-state/workspace \
+DESIGN_STUDIO_DATA_DIR=/path/to/web-state/design \
+pnpm dev
+```
 
-1. **不要用 File Embed 当编辑器** —— 客户端嵌真实 Figma 页面。
-2. **REST 不能写普通设计节点** —— 读取走 OAuth，改图层走当前文件里的 Design Studio Bridge。
-3. **没有「列出我的全部团队」API** —— 打开团队页或粘贴团队链接后自动记住 Team ID。
+`ASTRIX_DATA_DIR`、`ASTRIX_WORKSPACE` 优先；旧的 `M0_LOCAL_DATA_DIR`、`M0_LOCAL_WORKSPACE` 环境变量仍兼容。显示品牌为 Astrix，历史导入格式、存储键及桥接消息标识保留兼容名称。
 
-所需 scope：`file_content:read`、`file_metadata:read`、`projects:read`。
+## 原设计界面的 Figma OAuth
 
-完整架构说明见
-[`docs/figma-browser-workspace.md`](docs/figma-browser-workspace.md)。
+工作台的 Plugin Bridge 不要求原 React 的 OAuth；以下配置用于原设计首页的账号与文件读取。
 
-## 多图层人物集中修改
+1. 在 [Figma Developer Apps](https://www.figma.com/developers/apps) 创建 OAuth App。
+2. 配置回调 `http://127.0.0.1:5273/api/auth/figma/callback`。
+3. 基础连接启用 `current_user:read`、`file_content:read`、`file_metadata:read`。团队目录需要的权限须与应用实际授权一致。
+4. 复制 `.env.example` 为 `.env.local`，填写服务端配置，重启 `pnpm dev`。
+5. 打开 `/design.html`，连接 Figma 后打开团队页或粘贴团队链接。
 
-1. 在真实 Figma 中运行 `Design Studio Bridge`。
-2. 按住 Shift 选择两个或更多人物/图片图层。
-3. 在右侧选择「统一修改」，输入例如
-   `全部人物放大20%；右移20px；透明度90%`；或切换「分别修改」，为每层
-   勾选目标并填写不同指令。
-4. 发送后，Bridge 会在执行前再次校验当前文件、选区版本和全部目标。默认
-   `atomic` 模式下任一目标失败会取消或回滚整批，并在右侧逐层显示结果。
+原界面的 PAT 导入也可读取文件。Figma REST/OAuth 负责读取，设计节点修改必须经当前目标文件内运行的 Plugin Bridge 确认。更多说明见 [原浏览器工作区架构](docs/figma-browser-workspace.md)。
 
-当前可批量修改位置、尺寸、等比缩放、透明度、显隐、名称、文本和安全填充属性。
-图片人物图层不会丢失原有 IMAGE 填充。本阶段不包含 AI 换脸、生成新人物或替换
-图片内容；这些需要后续接入图片编辑模型与素材上传链路。
+## 源码位置
 
-## 占位资产说明
-
-以下内容为自制占位，非最终素材：
-
-- `public/assets/brand-mark.svg` —— 中性几何图形，可整体替换
-- `HeroSection.tsx` 的标语立体字 —— 渐变裁切 + 投影模拟，可换为图片资产（标记 `data-slot="brand-mark"`）
-- `canvasDoc.ts` / `batchBoards.ts` 的画面 —— 全部为 CSS 拼的示意图形
-- 文件流缩略图 —— 手写 DOM 结构
+- `workbench/server/`：工作台服务工厂、CLI 兼容入口、项目/会话/模型/文件/Figma/工作流。
+- `workbench/frontend-tools/`：恢复前端准备器、Astrix 品牌适配及浏览器集成源码。
+- `workbench/plugins/`：隔离恢复生成器的适配源码。
+- `workbench/canvas/`、`workbench/figma-plugin-bridge/`：可选本地画布与真实 Figma 插件。
+- `src/`、`server/`、`browser-extension/`：保留的 React 设计界面、Vite 服务和浏览器扩展。
+- `../packages/astrix-workbench/`：两端共用的布局、版本、检查及运行资源打包工具；不是第三个应用入口。

@@ -1,7 +1,20 @@
 import { execFileSync } from 'node:child_process'
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import layoutModule from '../../packages/astrix-workbench/layout.cjs'
 
 if (process.platform !== 'darwin') {
   throw new Error('macOS 发行包只能在 macOS 上签名和公证。')
+}
+
+// The existing release command builds universal Electron, but this workbench's
+// recovered native editor and engine currently ship only arm64 components.
+// Do not label that combination as an Intel-capable full application.
+const runtimeManifest = join(layoutModule.getLayout().recoveryRoot, 'runtime-manifest.json')
+const nativeRuntime = existsSync(runtimeManifest) ? JSON.parse(readFileSync(runtimeManifest, 'utf8')) : null
+const nativeArchitectures = nativeRuntime?.supportedArchitectures ?? [nativeRuntime?.arch]
+if (!nativeArchitectures.includes('arm64') || !nativeArchitectures.includes('x86_64')) {
+  throw new Error('完整工作台当前仅有 macOS arm64 原生运行组件，尚不支持 universal 正式发行。请使用 desktop:dist:mac:private 生成 Apple 芯片本机试用包。')
 }
 
 function hasCompleteGroup(names) {

@@ -1,0 +1,711 @@
+{
+  "layoutVersion": 2,
+  "version": "0.7.0",
+  "policy": "Source paths relocated without rewriting historical tags; legacy ignored account and project data remain local.",
+  "moves": [
+    {
+      "from": "m0-local/.gitignore",
+      "to": "packages/astrix-workbench/.gitignore"
+    },
+    {
+      "from": "m0-local/AGENTS.md",
+      "to": "packages/astrix-workbench/AGENTS.md"
+    },
+    {
+      "from": "m0-local/CHANGELOG.md",
+      "to": "packages/astrix-workbench/CHANGELOG.md"
+    },
+    {
+      "from": "m0-local/README.md",
+      "to": "packages/astrix-workbench/README.md"
+    },
+    {
+      "from": "m0-local/canvas/README.md",
+      "to": "网页端/workbench/canvas/README.md"
+    },
+    {
+      "from": "m0-local/canvas/app.mjs",
+      "to": "网页端/workbench/canvas/app.mjs"
+    },
+    {
+      "from": "m0-local/canvas/collab-model.mjs",
+      "to": "网页端/workbench/canvas/collab-model.mjs"
+    },
+    {
+      "from": "m0-local/canvas/collaboration-state.mjs",
+      "to": "网页端/workbench/canvas/collaboration-state.mjs"
+    },
+    {
+      "from": "m0-local/canvas/collaboration-state.test.mjs",
+      "to": "网页端/workbench/canvas/collaboration-state.test.mjs"
+    },
+    {
+      "from": "m0-local/canvas/collaboration.mjs",
+      "to": "网页端/workbench/canvas/collaboration.mjs"
+    },
+    {
+      "from": "m0-local/canvas/index.html",
+      "to": "网页端/workbench/canvas/index.html"
+    },
+    {
+      "from": "m0-local/canvas/model.mjs",
+      "to": "网页端/workbench/canvas/model.mjs"
+    },
+    {
+      "from": "m0-local/canvas/style.css",
+      "to": "网页端/workbench/canvas/style.css"
+    },
+    {
+      "from": "m0-local/canvas/test-canvas.mjs",
+      "to": "网页端/workbench/canvas/test-canvas.mjs"
+    },
+    {
+      "from": "m0-local/canvas/ui-check.cjs",
+      "to": "网页端/workbench/canvas/ui-check.cjs"
+    },
+    {
+      "from": "m0-local/canvas/ui-collaboration-check.cjs",
+      "to": "网页端/workbench/canvas/ui-collaboration-check.cjs"
+    },
+    {
+      "from": "m0-local/canvas/ui-enhanced-check.cjs",
+      "to": "网页端/workbench/canvas/ui-enhanced-check.cjs"
+    },
+    {
+      "from": "m0-local/canvas/ui-vector-check.cjs",
+      "to": "网页端/workbench/canvas/ui-vector-check.cjs"
+    },
+    {
+      "from": "m0-local/canvas/vector-core.mjs",
+      "to": "网页端/workbench/canvas/vector-core.mjs"
+    },
+    {
+      "from": "m0-local/canvas/vector-geometry.mjs",
+      "to": "网页端/workbench/canvas/vector-geometry.mjs"
+    },
+    {
+      "from": "m0-local/canvas/vector-guide.md",
+      "to": "网页端/workbench/canvas/vector-guide.md"
+    },
+    {
+      "from": "m0-local/canvas/vector-svg.mjs",
+      "to": "网页端/workbench/canvas/vector-svg.mjs"
+    },
+    {
+      "from": "m0-local/canvas/vector.test.mjs",
+      "to": "网页端/workbench/canvas/vector.test.mjs"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/LICENSE.txt",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/LICENSE.txt"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/manifest.json",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/manifest.json"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/node/canvas.js",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/node/canvas.js"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/node/extend.js",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/node/extend.js"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/node/self.js",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/node/self.js"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/node/xml.js",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/node/xml.js"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/package.json",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/package.json"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/paper-core.browser.mjs",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/paper-core.browser.mjs"
+    },
+    {
+      "from": "m0-local/canvas/vendor/paper-0.12.18/paper-core.js",
+      "to": "网页端/workbench/canvas/vendor/paper-0.12.18/paper-core.js"
+    },
+    {
+      "from": "m0-local/desktop/editor-server.cjs",
+      "to": "客户端/workbench/desktop/editor-server.cjs"
+    },
+    {
+      "from": "m0-local/desktop/figma-host.cjs",
+      "to": "客户端/workbench/desktop/figma-host.cjs"
+    },
+    {
+      "from": "m0-local/desktop/local-navigation.cjs",
+      "to": "客户端/workbench/desktop/local-navigation.cjs"
+    },
+    {
+      "from": "m0-local/desktop/main.cjs",
+      "to": "客户端/workbench/desktop/main.cjs"
+    },
+    {
+      "from": "m0-local/desktop/marketplace-network.cjs",
+      "to": "客户端/workbench/desktop/marketplace-network.cjs"
+    },
+    {
+      "from": "m0-local/desktop/original-editor.cjs",
+      "to": "客户端/workbench/desktop/original-editor.cjs"
+    },
+    {
+      "from": "m0-local/desktop/preload.cjs",
+      "to": "客户端/workbench/desktop/preload.cjs"
+    },
+    {
+      "from": "m0-local/docs/Astrix与M0的Figma接入对照.md",
+      "to": "packages/astrix-workbench/docs/Astrix与M0的Figma接入对照.md"
+    },
+    {
+      "from": "m0-local/docs/GitHub运行包.md",
+      "to": "packages/astrix-workbench/docs/GitHub运行包.md"
+    },
+    {
+      "from": "m0-local/docs/REA-继续恢复.md",
+      "to": "packages/astrix-workbench/docs/REA-继续恢复.md"
+    },
+    {
+      "from": "m0-local/docs/backend-contracts.md",
+      "to": "packages/astrix-workbench/docs/backend-contracts.md"
+    },
+    {
+      "from": "m0-local/docs/desktop-runtime.md",
+      "to": "packages/astrix-workbench/docs/desktop-runtime.md"
+    },
+    {
+      "from": "m0-local/docs/rea-editor-findings.md",
+      "to": "packages/astrix-workbench/docs/rea-editor-findings.md"
+    },
+    {
+      "from": "m0-local/docs/rea-figma-api-map.json",
+      "to": "packages/astrix-workbench/docs/rea-figma-api-map.json"
+    },
+    {
+      "from": "m0-local/docs/rea-figma-findings.md",
+      "to": "packages/astrix-workbench/docs/rea-figma-findings.md"
+    },
+    {
+      "from": "m0-local/docs/历史导入映射.json",
+      "to": "packages/astrix-workbench/docs/历史导入映射.json"
+    },
+    {
+      "from": "m0-local/docs/本地多Agent工作流.md",
+      "to": "packages/astrix-workbench/docs/本地多Agent工作流.md"
+    },
+    {
+      "from": "m0-local/docs/本地实时协作.md",
+      "to": "packages/astrix-workbench/docs/本地实时协作.md"
+    },
+    {
+      "from": "m0-local/docs/本地整合-0.2.0.md",
+      "to": "packages/astrix-workbench/docs/本地整合-0.2.0.md"
+    },
+    {
+      "from": "m0-local/docs/本地整合-0.3.0.md",
+      "to": "packages/astrix-workbench/docs/本地整合-0.3.0.md"
+    },
+    {
+      "from": "m0-local/docs/本地整合-0.4.0.md",
+      "to": "packages/astrix-workbench/docs/本地整合-0.4.0.md"
+    },
+    {
+      "from": "m0-local/docs/本地整合-0.5.0.md",
+      "to": "packages/astrix-workbench/docs/本地整合-0.5.0.md"
+    },
+    {
+      "from": "m0-local/docs/本地整合-0.6.0.md",
+      "to": "packages/astrix-workbench/docs/本地整合-0.6.0.md"
+    },
+    {
+      "from": "m0-local/docs/版本发布.md",
+      "to": "packages/astrix-workbench/docs/版本发布.md"
+    },
+    {
+      "from": "m0-local/docs/真实Figma接入.md",
+      "to": "packages/astrix-workbench/docs/真实Figma接入.md"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/README.md",
+      "to": "网页端/workbench/figma-plugin-bridge/README.md"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/SOURCES.json",
+      "to": "网页端/workbench/figma-plugin-bridge/SOURCES.json"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/code.js",
+      "to": "网页端/workbench/figma-plugin-bridge/code.js"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/manifest.json",
+      "to": "网页端/workbench/figma-plugin-bridge/manifest.json"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/test-harness.mjs",
+      "to": "网页端/workbench/figma-plugin-bridge/test-harness.mjs"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/ui.html",
+      "to": "网页端/workbench/figma-plugin-bridge/ui.html"
+    },
+    {
+      "from": "m0-local/figma-plugin-bridge/upstream-code.js",
+      "to": "网页端/workbench/figma-plugin-bridge/upstream-code.js"
+    },
+    {
+      "from": "m0-local/frontend-tools/FIGMA-WORKSPACE.md",
+      "to": "网页端/workbench/frontend-tools/FIGMA-WORKSPACE.md"
+    },
+    {
+      "from": "m0-local/frontend-tools/README.md",
+      "to": "网页端/workbench/frontend-tools/README.md"
+    },
+    {
+      "from": "m0-local/frontend-tools/additional-static-assets.json",
+      "to": "网页端/workbench/frontend-tools/additional-static-assets.json"
+    },
+    {
+      "from": "m0-local/frontend-tools/asset-map.json",
+      "to": "网页端/workbench/frontend-tools/asset-map.json"
+    },
+    {
+      "from": "m0-local/frontend-tools/branding.mjs",
+      "to": "网页端/workbench/frontend-tools/branding.mjs"
+    },
+    {
+      "from": "m0-local/frontend-tools/branding/astrix-dock.png",
+      "to": "网页端/workbench/frontend-tools/branding/astrix-dock.png"
+    },
+    {
+      "from": "m0-local/frontend-tools/branding/astrix-logo-v1.png",
+      "to": "网页端/workbench/frontend-tools/branding/astrix-logo-v1.png"
+    },
+    {
+      "from": "m0-local/frontend-tools/figma-workspace.css",
+      "to": "网页端/workbench/frontend-tools/figma-workspace.css"
+    },
+    {
+      "from": "m0-local/frontend-tools/figma-workspace.html",
+      "to": "网页端/workbench/frontend-tools/figma-workspace.html"
+    },
+    {
+      "from": "m0-local/frontend-tools/figma-workspace.js",
+      "to": "网页端/workbench/frontend-tools/figma-workspace.js"
+    },
+    {
+      "from": "m0-local/frontend-tools/local-codegen.html",
+      "to": "网页端/workbench/frontend-tools/local-codegen.html"
+    },
+    {
+      "from": "m0-local/frontend-tools/local-codegen.js",
+      "to": "网页端/workbench/frontend-tools/local-codegen.js"
+    },
+    {
+      "from": "m0-local/frontend-tools/local-runtime.js",
+      "to": "网页端/workbench/frontend-tools/local-runtime.js"
+    },
+    {
+      "from": "m0-local/frontend-tools/prepare-frontend.mjs",
+      "to": "网页端/workbench/frontend-tools/prepare-frontend.mjs"
+    },
+    {
+      "from": "m0-local/frontend-tools/probe-original-static.mjs",
+      "to": "网页端/workbench/frontend-tools/probe-original-static.mjs"
+    },
+    {
+      "from": "m0-local/frontend-tools/recover-extra-assets.mjs",
+      "to": "网页端/workbench/frontend-tools/recover-extra-assets.mjs"
+    },
+    {
+      "from": "m0-local/frontend-tools/workflow-monitor.js",
+      "to": "网页端/workbench/frontend-tools/workflow-monitor.js"
+    },
+    {
+      "from": "m0-local/package-lock.json",
+      "to": "packages/astrix-workbench/package-lock.json"
+    },
+    {
+      "from": "m0-local/package.json",
+      "to": "packages/astrix-workbench/package.json"
+    },
+    {
+      "from": "m0-local/plugins/README.md",
+      "to": "网页端/workbench/plugins/README.md"
+    },
+    {
+      "from": "m0-local/plugins/fixtures/basic-schema.json",
+      "to": "网页端/workbench/plugins/fixtures/basic-schema.json"
+    },
+    {
+      "from": "m0-local/plugins/generator-worker.mjs",
+      "to": "网页端/workbench/plugins/generator-worker.mjs"
+    },
+    {
+      "from": "m0-local/plugins/local-generators.mjs",
+      "to": "网页端/workbench/plugins/local-generators.mjs"
+    },
+    {
+      "from": "m0-local/plugins/prepare.mjs",
+      "to": "网页端/workbench/plugins/prepare.mjs"
+    },
+    {
+      "from": "m0-local/plugins/test-generators.mjs",
+      "to": "网页端/workbench/plugins/test-generators.mjs"
+    },
+    {
+      "from": "m0-local/scripts/canvas-check.mjs",
+      "to": "客户端/workbench/scripts/canvas-check.mjs"
+    },
+    {
+      "from": "m0-local/scripts/design-cloud-check.cjs",
+      "to": "客户端/workbench/scripts/design-cloud-check.cjs"
+    },
+    {
+      "from": "m0-local/scripts/design-preview-check.cjs",
+      "to": "客户端/workbench/scripts/design-preview-check.cjs"
+    },
+    {
+      "from": "m0-local/scripts/desktop-settings-check.cjs",
+      "to": "客户端/workbench/scripts/desktop-settings-check.cjs"
+    },
+    {
+      "from": "m0-local/scripts/preview-check.cjs",
+      "to": "客户端/workbench/scripts/preview-check.cjs"
+    },
+    {
+      "from": "m0-local/scripts/start.mjs",
+      "to": "网页端/workbench/scripts/start.mjs"
+    },
+    {
+      "from": "m0-local/scripts/ui-check.cjs",
+      "to": "客户端/workbench/scripts/ui-check.cjs"
+    },
+    {
+      "from": "m0-local/scripts/workflow-check.cjs",
+      "to": "客户端/workbench/scripts/workflow-check.cjs"
+    },
+    {
+      "from": "m0-local/server/canvas-collaboration.mjs",
+      "to": "网页端/workbench/server/canvas-collaboration.mjs"
+    },
+    {
+      "from": "m0-local/server/canvas.mjs",
+      "to": "网页端/workbench/server/canvas.mjs"
+    },
+    {
+      "from": "m0-local/server/chat.mjs",
+      "to": "网页端/workbench/server/chat.mjs"
+    },
+    {
+      "from": "m0-local/server/design-cloud-client.js",
+      "to": "网页端/workbench/server/design-cloud-client.js"
+    },
+    {
+      "from": "m0-local/server/design-cloud-page.mjs",
+      "to": "网页端/workbench/server/design-cloud-page.mjs"
+    },
+    {
+      "from": "m0-local/server/design-cloud.mjs",
+      "to": "网页端/workbench/server/design-cloud.mjs"
+    },
+    {
+      "from": "m0-local/server/design-prototype.mjs",
+      "to": "网页端/workbench/server/design-prototype.mjs"
+    },
+    {
+      "from": "m0-local/server/editor-pages.mjs",
+      "to": "网页端/workbench/server/editor-pages.mjs"
+    },
+    {
+      "from": "m0-local/server/figma-agent.mjs",
+      "to": "网页端/workbench/server/figma-agent.mjs"
+    },
+    {
+      "from": "m0-local/server/figma-bridge.mjs",
+      "to": "网页端/workbench/server/figma-bridge.mjs"
+    },
+    {
+      "from": "m0-local/server/figma-workspace.mjs",
+      "to": "网页端/workbench/server/figma-workspace.mjs"
+    },
+    {
+      "from": "m0-local/server/files.mjs",
+      "to": "网页端/workbench/server/files.mjs"
+    },
+    {
+      "from": "m0-local/server/index.mjs",
+      "to": "网页端/workbench/server/index.mjs"
+    },
+    {
+      "from": "m0-local/server/m0-api.mjs",
+      "to": "网页端/workbench/server/m0-api.mjs"
+    },
+    {
+      "from": "m0-local/server/model-gateway.mjs",
+      "to": "网页端/workbench/server/model-gateway.mjs"
+    },
+    {
+      "from": "m0-local/server/model.mjs",
+      "to": "网页端/workbench/server/model.mjs"
+    },
+    {
+      "from": "m0-local/server/opencode.mjs",
+      "to": "网页端/workbench/server/opencode.mjs"
+    },
+    {
+      "from": "m0-local/server/pages.mjs",
+      "to": "网页端/workbench/server/pages.mjs"
+    },
+    {
+      "from": "m0-local/server/preview.mjs",
+      "to": "网页端/workbench/server/preview.mjs"
+    },
+    {
+      "from": "m0-local/server/skills.mjs",
+      "to": "网页端/workbench/server/skills.mjs"
+    },
+    {
+      "from": "m0-local/server/workflow-client.js",
+      "to": "网页端/workbench/server/workflow-client.js"
+    },
+    {
+      "from": "m0-local/server/workflow-page.mjs",
+      "to": "网页端/workbench/server/workflow-page.mjs"
+    },
+    {
+      "from": "m0-local/server/workflow.mjs",
+      "to": "网页端/workbench/server/workflow.mjs"
+    },
+    {
+      "from": "m0-local/test/canvas-api.test.mjs",
+      "to": "packages/astrix-workbench/test/canvas-api.test.mjs"
+    },
+    {
+      "from": "m0-local/test/canvas-collaboration.test.mjs",
+      "to": "packages/astrix-workbench/test/canvas-collaboration.test.mjs"
+    },
+    {
+      "from": "m0-local/test/canvas-vector-assets.test.mjs",
+      "to": "packages/astrix-workbench/test/canvas-vector-assets.test.mjs"
+    },
+    {
+      "from": "m0-local/test/chat.test.mjs",
+      "to": "packages/astrix-workbench/test/chat.test.mjs"
+    },
+    {
+      "from": "m0-local/test/design-cloud.test.mjs",
+      "to": "packages/astrix-workbench/test/design-cloud.test.mjs"
+    },
+    {
+      "from": "m0-local/test/design-prototype.test.mjs",
+      "to": "packages/astrix-workbench/test/design-prototype.test.mjs"
+    },
+    {
+      "from": "m0-local/test/figma-agent.test.mjs",
+      "to": "packages/astrix-workbench/test/figma-agent.test.mjs"
+    },
+    {
+      "from": "m0-local/test/figma-bridge.test.mjs",
+      "to": "packages/astrix-workbench/test/figma-bridge.test.mjs"
+    },
+    {
+      "from": "m0-local/test/figma-workspace.test.mjs",
+      "to": "packages/astrix-workbench/test/figma-workspace.test.mjs"
+    },
+    {
+      "from": "m0-local/test/local.test.mjs",
+      "to": "packages/astrix-workbench/test/local.test.mjs"
+    },
+    {
+      "from": "m0-local/test/model-gateway.test.mjs",
+      "to": "packages/astrix-workbench/test/model-gateway.test.mjs"
+    },
+    {
+      "from": "m0-local/test/opencode.test.mjs",
+      "to": "packages/astrix-workbench/test/opencode.test.mjs"
+    },
+    {
+      "from": "m0-local/test/preview.test.mjs",
+      "to": "packages/astrix-workbench/test/preview.test.mjs"
+    },
+    {
+      "from": "m0-local/test/resources-package.test.mjs",
+      "to": "packages/astrix-workbench/test/resources-package.test.mjs"
+    },
+    {
+      "from": "m0-local/test/runtime-package.test.mjs",
+      "to": "packages/astrix-workbench/test/runtime-package.test.mjs"
+    },
+    {
+      "from": "m0-local/test/version-publication.test.mjs",
+      "to": "packages/astrix-workbench/test/version-publication.test.mjs"
+    },
+    {
+      "from": "m0-local/test/workflow-monitor.test.mjs",
+      "to": "packages/astrix-workbench/test/workflow-monitor.test.mjs"
+    },
+    {
+      "from": "m0-local/test/workflow.test.mjs",
+      "to": "packages/astrix-workbench/test/workflow.test.mjs"
+    },
+    {
+      "from": "m0-local/tools/authentic-editor-child.cjs",
+      "to": "客户端/workbench/tools/authentic-editor-child.cjs"
+    },
+    {
+      "from": "m0-local/tools/authentic-editor-guard.cjs",
+      "to": "客户端/workbench/tools/authentic-editor-guard.cjs"
+    },
+    {
+      "from": "m0-local/tools/authentic-editor-preload.cjs",
+      "to": "客户端/workbench/tools/authentic-editor-preload.cjs"
+    },
+    {
+      "from": "m0-local/tools/open-authentic-editor.cjs",
+      "to": "客户端/workbench/tools/open-authentic-editor.cjs"
+    },
+    {
+      "from": "m0-local/tools/open-figma-workspace.cjs",
+      "to": "客户端/workbench/tools/open-figma-workspace.cjs"
+    },
+    {
+      "from": "m0-local/tools/package-resources.mjs",
+      "to": "packages/astrix-workbench/tools/package-resources.mjs"
+    },
+    {
+      "from": "m0-local/tools/package-runtime.mjs",
+      "to": "packages/astrix-workbench/tools/package-runtime.mjs"
+    },
+    {
+      "from": "m0-local/tools/probe-authentic-editor.cjs",
+      "to": "客户端/workbench/tools/probe-authentic-editor.cjs"
+    },
+    {
+      "from": "m0-local/tools/publish-version.mjs",
+      "to": "packages/astrix-workbench/tools/publish-version.mjs"
+    },
+    {
+      "from": "m0-local/tools/run-rea.mjs",
+      "to": "packages/astrix-workbench/tools/run-rea.mjs"
+    },
+    {
+      "from": "m0-local/tools/test-canvas-windows.cjs",
+      "to": "客户端/workbench/tools/test-canvas-windows.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-figma-host-policy.cjs",
+      "to": "客户端/workbench/tools/test-figma-host-policy.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-local-navigation.cjs",
+      "to": "客户端/workbench/tools/test-local-navigation.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-marketplace-policy.cjs",
+      "to": "客户端/workbench/tools/test-marketplace-policy.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-native-editor-integration.cjs",
+      "to": "客户端/workbench/tools/test-native-editor-integration.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-native-editor-marketplace.cjs",
+      "to": "客户端/workbench/tools/test-native-editor-marketplace.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-native-editor-terminal.cjs",
+      "to": "客户端/workbench/tools/test-native-editor-terminal.cjs"
+    },
+    {
+      "from": "m0-local/tools/test-real-figma-integration.cjs",
+      "to": "客户端/workbench/tools/test-real-figma-integration.cjs"
+    },
+    {
+      "from": "m0-local/versions/evidence/github-publication-v0.6.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/github-publication-v0.6.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.1.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.1.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.2.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.2.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.3.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.3.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.4.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.4.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.5.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.5.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.6.0.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.6.0.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.6.1.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.6.1.json"
+    },
+    {
+      "from": "m0-local/versions/evidence/v0.6.2.json",
+      "to": "packages/astrix-workbench/versions/evidence/v0.6.2.json"
+    },
+    {
+      "from": "m0-local/versions/index.json",
+      "to": "packages/astrix-workbench/versions/index.json"
+    },
+    {
+      "from": "m0-local/versions/v0.1.0.md",
+      "to": "packages/astrix-workbench/versions/v0.1.0.md"
+    },
+    {
+      "from": "m0-local/versions/v0.2.0.md",
+      "to": "packages/astrix-workbench/versions/v0.2.0.md"
+    },
+    {
+      "from": "m0-local/versions/v0.3.0.md",
+      "to": "packages/astrix-workbench/versions/v0.3.0.md"
+    },
+    {
+      "from": "m0-local/versions/v0.4.0.md",
+      "to": "packages/astrix-workbench/versions/v0.4.0.md"
+    },
+    {
+      "from": "m0-local/versions/v0.5.0.md",
+      "to": "packages/astrix-workbench/versions/v0.5.0.md"
+    },
+    {
+      "from": "m0-local/versions/v0.6.0.md",
+      "to": "packages/astrix-workbench/versions/v0.6.0.md"
+    },
+    {
+      "from": "m0-local/versions/v0.6.1.md",
+      "to": "packages/astrix-workbench/versions/v0.6.1.md"
+    },
+    {
+      "from": "m0-local/versions/v0.6.2.md",
+      "to": "packages/astrix-workbench/versions/v0.6.2.md"
+    },
+    {
+      "from": "m0-local/workspace/README.md",
+      "to": "网页端/workbench/workspace/README.md"
+    },
+    {
+      "from": "m0-local/启动Astrix.command",
+      "to": "客户端/启动Astrix.command"
+    }
+  ]
+}
