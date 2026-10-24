@@ -1,21 +1,40 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/jinny-wj/astrix-agent/main/assets/brand/astrix/astrix-dock-transparent.png" width="112" alt="星序 Astrix 图标" />
-</p>
+<div align="center">
+
+<img src="assets/brand/astrix/astrix-dock-transparent.png" width="96" alt="星序 Astrix 图标" />
 
 # 星序 Astrix
 
-**让灵感变成现实。连接 Figma 的 AI 设计工作台。**
+### 让灵感变成现实。连接 Figma 的 AI 设计工作台。
 
-星序将真实 Figma 工作区、图层上下文和 AI 助手放在同一条工作流中：打开设计稿、选中目标图层、描述修改需求，再查看实际执行结果。希望减少在设计工具、聊天窗口和素材之间反复切换的成本，让设计师始终围绕正在编辑的内容工作。
+**打开设计稿，选中图层，描述需求，查看真实执行结果。**
 
-项目提供 **macOS 客户端**与**网页版**两套独立工程。客户端在真实 Figma 界面外增加应用级导航、标签页和右侧 AI 面板，不重做 Figma 自带的图层树、画布和属性栏；网页版通过本地服务与浏览器扩展组织协作界面。
+[![macOS Apple Silicon](https://img.shields.io/badge/macOS-Apple_Silicon-111827?style=flat-square&logo=apple&logoColor=white)](客户端/README.md)
+[![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
+[![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
+[![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
+[![Workbench v0.6.2](https://img.shields.io/badge/Workbench-v0.6.2-4F46E5?style=flat-square)](m0-local/versions/v0.6.2.md)
+[![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
-> **当前阶段：开发与本机验证。** 最新产品实现位于默认分支 [main](https://github.com/jinny-wj/astrix-agent/tree/main)，包含客户端、网页版、品牌素材和使用文档。仓库不提供已签名、公证的正式安装包。
+**[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [本地工作台](m0-local/README.md)**
 
-指定人员试用可使用客户端的 `pnpm desktop:dist:mac:private` 生成 DMG。适用范围、首次打开与账号配置见 [私发安装说明](客户端/docs/private-install.txt)。源码持续同步本仓库，安装包单独交付。
+[快速开始](#快速开始) · [产品能力](#产品能力) · [连接 Figma](#连接-figma) · [常见问题](#常见问题) · [版本记录](m0-local/CHANGELOG.md) · [反馈](#反馈与贡献)
+
+<code>git clone https://github.com/jinny-wj/astrix-agent.git</code>
+
+</div>
+
+> [!NOTE]
+> **当前阶段：开发与本机验证。** 最新实现位于默认分支 [main](https://github.com/jinny-wj/astrix-agent/tree/main)，仓库不提供已签名、公证的正式安装包。指定人员试用与本机打包见[私发安装说明](客户端/docs/private-install.txt)；源码与安装包分别交付。
+
+## 项目简介
+
+星序将真实 Figma 工作区、图层上下文和 AI 助手放在同一条工作流中，减少在设计工具、聊天窗口和素材之间反复切换的成本，让设计师围绕正在编辑的内容工作。
+
+项目提供 **macOS 客户端**与**网页版**两套独立工程。客户端在真实 Figma 界面外增加应用级导航、标签页和右侧 AI 面板，保留 Figma 自带的图层树、画布和属性栏；网页版通过本地服务与浏览器扩展组织协作界面。同仓库的[本地工作台](m0-local/README.md)还整合了代码编辑器、终端与多 Agent 工作流。
 
 ## 目录
 
+- [项目简介](#项目简介)
 - [产品能力](#产品能力)
 - [客户端与网页版](#客户端与网页版)
 - [Astrix 整合工作台](#astrix-整合工作台)
