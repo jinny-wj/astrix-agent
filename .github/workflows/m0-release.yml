@@ -1,4 +1,4 @@
-name: Publish M0 source version notes
+name: Publish Astrix workspace source version notes
 on:
   push:
     tags:
@@ -40,7 +40,7 @@ jobs:
             fi
             # Runtime archives are handled only by the local publisher, as an
             # unpublished m0-runtime/vX draft, never by this workflow.
-            if ! gh release create "$TAG" --repo "$GH_REPO" --verify-tag --title "M0 $VERSION_FILE" --notes-file release-notes.md --latest=false; then
+            if ! gh release create "$TAG" --repo "$GH_REPO" --verify-tag --title "Astrix $VERSION_FILE" --notes-file release-notes.md --latest=false; then
               # A local publisher can create the same Release concurrently.
               gh release view "$TAG" --repo "$GH_REPO" --json isDraft,assets > release-state.json
             fi

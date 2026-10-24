@@ -18,7 +18,7 @@
 
 - [产品能力](#产品能力)
 - [客户端与网页版](#客户端与网页版)
-- [M0 整合工程](#m0-整合工程)
+- [Astrix 整合工作台](#astrix-整合工作台)
 - [快速开始](#快速开始)
 - [连接 Figma](#连接-figma)
 - [图层选择与修改](#图层选择与修改)
@@ -107,7 +107,7 @@ pnpm dev
 
 两端默认使用相同的本地服务端口。首次测试请先运行其中一端，避免端口占用或连接到另一端的旧服务。
 
-## M0 整合工程
+## Astrix 整合工作台
 
 `m0-local/` 接入恢复的 M0 工作台、项目与会话、代码编辑器、终端、多 Agent，以及真实 Figma 和 Plugin Bridge。画布、矢量编辑和云端协作由官方 Figma 提供。
 
@@ -118,9 +118,9 @@ npm ci
 npm run desktop:figma
 ```
 
-M0 默认服务为 `http://127.0.0.1:4317`，使用 **M0 Local Figma Bridge**。请按 [M0 说明](m0-local/README.md)、[资源与运行包说明](m0-local/docs/GitHub运行包.md)完成准备和配对。生成资源与原生组件以有权访问草稿的账号可获取的受限附件提供；公开 Git 保存适配源码与版本记录。
+整合工作台默认服务为 `http://127.0.0.1:4317`，使用 **Astrix Figma Bridge**。请按 [工作台说明](m0-local/README.md)、[资源与运行包说明](m0-local/docs/GitHub运行包.md)完成准备和配对。生成资源与原生组件以有权访问草稿的账号可获取的受限附件提供；公开 Git 保存适配源码与版本记录。
 
-M0 版本单独使用 `m0/vX.Y.Z`；0.1～0.5 仅有历史文档，标记为 `m0/history/vX.Y.Z`。整合发布从 `m0/v0.6.1` 继续，记录见 [M0 版本总表](m0-local/versions/index.json)与[变更记录](m0-local/CHANGELOG.md)。Astrix 原客户端、网页版及原预览版本保持自己的发布入口。客户端安装包请使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向 M0 源码记录。
+整合工作台版本单独使用 `m0/vX.Y.Z`；0.1～0.5 仅有历史文档，标记为 `m0/history/vX.Y.Z`。整合发布从 `m0/v0.6.1` 继续；当前 `m0/v0.6.2` 已将产品显示名统一为 Astrix，记录见 [版本总表](m0-local/versions/index.json)与[变更记录](m0-local/CHANGELOG.md)。Astrix 原客户端、网页版及原预览版本保持自己的发布入口。客户端安装包请使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向整合工作台源码记录。
 
 ## 连接 Figma
 
