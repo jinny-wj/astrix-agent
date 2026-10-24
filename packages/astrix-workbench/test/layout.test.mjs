@@ -25,31 +25,57 @@ test('a packaged resource tree resolves both platform sources and native runtime
   assert.equal(layout.desktopRoot,path.join(root,'客户端/workbench'));
   assert.equal(layout.recoveryRoot,path.join(root,'Resources/recovered'));
   assert.equal(layout.version,'0.7.0');
+  assert.deepEqual(Object.keys(layout).sort(),['repositoryRoot','sharedRoot','webRoot','desktopRoot','recoveryRoot','publicRoot','version'].sort());
 });
 
 test('packaged profiles, working files and diagnostics stay in writable user data, never the resource tree',t=>{
   const {root,layout}=fixture(t),userData=path.join(root,'user-data');
-  fs.mkdirSync(path.join(layout.legacyRoot,'.local-data'),{recursive:true});
   const result=getStatePaths({surface:'desktop',packaged:true,userData,layout});
   for(const value of Object.values(result))assert.ok(value.startsWith(userData),value);
   assert.throws(()=>getStatePaths({profile:'../other',layout}),/profile/);
 });
 
-test('desktop keeps existing development state while web uses separate data and explicit overrides remain supported',t=>{
+test('desktop and web development state belongs to each application and ignores unrelated repository state',t=>{
   const {root,layout}=fixture(t);
-  fs.mkdirSync(path.join(layout.legacyRoot,'.local-data'),{recursive:true});
-  fs.mkdirSync(path.join(layout.legacyRoot,'.data/electron'),{recursive:true});
+  fs.mkdirSync(path.join(root,'.local-data'),{recursive:true});
+  fs.mkdirSync(path.join(root,'.data/electron'),{recursive:true});
+  fs.writeFileSync(path.join(root,'.local-data','unrelated-state.json'),'{}');
   const desktop=getStatePaths({surface:'desktop',layout}),web=getStatePaths({surface:'web',layout});
-  assert.equal(desktop.dataDir,path.join(layout.legacyRoot,'.local-data'));
-  assert.equal(desktop.profileDir,path.join(layout.legacyRoot,'.data/electron'));
-  assert.notEqual(web.dataDir,desktop.dataDir);
+  assert.deepEqual(desktop,{
+    base:layout.desktopRoot,dataDir:path.join(layout.desktopRoot,'.local-data'),
+    profileDir:path.join(layout.desktopRoot,'.data/electron'),workspaceRoot:path.join(layout.desktopRoot,'.local-data/workspace'),
+    diagnosticsDir:path.join(layout.desktopRoot,'diagnostics'),
+  });
+  assert.equal(web.base,layout.webRoot);
+  assert.equal(web.dataDir,path.join(layout.webRoot,'.local-data'));
+  assert.equal(web.profileDir,path.join(layout.webRoot,'.data/electron'));
+  assert.equal(fs.existsSync(path.join(desktop.dataDir,'unrelated-state.json')),false);
+  assert.equal(fs.readFileSync(path.join(root,'.local-data','unrelated-state.json'),'utf8'),'{}');
+});
+
+test('explicit state roots and per-directory overrides remain independent of application defaults',t=>{
+  const {root,layout}=fixture(t);
   process.env.ASTRIX_STATE_ROOT=path.join(root,'explicit-state');
   const isolated=getStatePaths({surface:'desktop',layout});
-  assert.ok(isolated.dataDir.startsWith(process.env.ASTRIX_STATE_ROOT));
-  assert.ok(isolated.profileDir.startsWith(process.env.ASTRIX_STATE_ROOT));
+  assert.equal(isolated.dataDir,path.join(process.env.ASTRIX_STATE_ROOT,'.local-data'));
+  assert.equal(isolated.profileDir,path.join(process.env.ASTRIX_STATE_ROOT,'.data/electron'));
   process.env.ASTRIX_DATA_DIR=path.join(root,'explicit-data');
   process.env.ASTRIX_WORKSPACE=path.join(root,'explicit-workspace');
-  const explicit=getStatePaths({surface:'web',layout});
+  process.env.ASTRIX_PROFILE_ROOT=path.join(root,'explicit-profiles');
+  process.env.ASTRIX_DIAGNOSTICS_DIR=path.join(root,'explicit-diagnostics');
+  const explicit=getStatePaths({surface:'web',profile:'verification',layout});
   assert.equal(explicit.dataDir,process.env.ASTRIX_DATA_DIR);
   assert.equal(explicit.workspaceRoot,process.env.ASTRIX_WORKSPACE);
+  assert.equal(explicit.profileDir,path.join(process.env.ASTRIX_PROFILE_ROOT,'verification'));
+  assert.equal(explicit.diagnosticsDir,process.env.ASTRIX_DIAGNOSTICS_DIR);
+});
+
+test('previous explicit environment aliases remain compatible without an automatic directory fallback',t=>{
+  const {root,layout}=fixture(t);
+  process.env.M0_LOCAL_DATA_DIR=path.join(root,'configured-data');
+  process.env.M0_LOCAL_WORKSPACE=path.join(root,'configured-workspace');
+  const result=getStatePaths({surface:'desktop',layout});
+  assert.equal(result.dataDir,process.env.M0_LOCAL_DATA_DIR);
+  assert.equal(result.workspaceRoot,process.env.M0_LOCAL_WORKSPACE);
+  assert.equal(result.profileDir,path.join(layout.desktopRoot,'.data/electron'));
 });

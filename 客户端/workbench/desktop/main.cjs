@@ -293,7 +293,7 @@ async function openCanvasWindow(invite) {
 }
 
 async function createWindow() {
-  const isolatedSession = session.fromPartition('persist:m0-local');
+  const isolatedSession = session.fromPartition('persist:astrix-workbench');
   isolatedSession.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
   isolatedSession.setPermissionCheckHandler(() => false);
   isolatedSession.webRequest.onBeforeRequest((details, callback) => {

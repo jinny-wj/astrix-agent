@@ -4,8 +4,10 @@
 
 ## 接入
 
+从 `网页端/` 工程引用：
+
 ```js
-import { createM0Api } from './server/m0-api.mjs';
+import { createM0Api } from './workbench/server/m0-api.mjs';
 const api = createM0Api({
   dataDir: '/absolute/local/data',
   workspaceRoot: '/absolute/workspace',
@@ -95,7 +97,7 @@ await api.handle(req, res, new URL(req.url, origin), body);
 
 ## 恢复证据
 
-以下文件均在 `M0-AI-recovered` 内，恢复文件保持原样，本地兼容代码位于单独的 `m0-local`：
+以下文件均在 `M0-AI-recovered` 内，恢复文件保持原样；当前本地兼容实现位于 `网页端/workbench/server/`，客户端复用同一服务：
 
 - `extracted/app/out/preload/index.cjs`：`NAMESPACE_CONFIG` 定义 workspace、cli、app、devUser、config、opencode schema；末尾 `IpcPreloadFactory` 定义 `window` globals 和 IPC channel 格式。
 - `extracted/app/node_modules/@m0/cli/src/server/modules/session/session.controller.ts`：`create/v2/create/history_message/exist`；`session.service.ts` 中原业务进一步代理远端服务。

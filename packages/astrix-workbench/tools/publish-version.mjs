@@ -36,14 +36,13 @@ export const publicationPathspecs=[
   '客户端/启动Astrix.command','网页端/启动Astrix网页版.command','客户端/package.json','客户端/pnpm-lock.yaml','客户端/README.md','客户端/AGENTS.md','客户端/vite.config.ts','客户端/tsconfig.json','客户端/tsconfig.desktop.json','客户端/tsconfig.node.json',
   '网页端/package.json','网页端/pnpm-lock.yaml','网页端/README.md','网页端/AGENTS.md','网页端/vite.config.ts','网页端/tsconfig.json','网页端/tsconfig.node.json',
   'README.md','AGENTS.md','.gitignore','.github/workflows/m0-release.yml','客户端/.gitignore','网页端/.gitignore','客户端/index.html','网页端/index.html','网页端/design.html',
-  'package.json','package-lock.json','pnpm-workspace.yaml','pnpm-lock.yaml','m0-local'
+  'package.json','package-lock.json','pnpm-workspace.yaml','pnpm-lock.yaml'
 ];
 const sourceDirectories=['packages/astrix-workbench/','客户端/workbench/','网页端/workbench/','客户端/src/','客户端/desktop/','客户端/server/','客户端/scripts/','网页端/src/','网页端/server/'];
-const exactSources=new Set(publicationPathspecs.filter(name=>!['packages/astrix-workbench','客户端/workbench','网页端/workbench','客户端/src','客户端/desktop','客户端/server','客户端/scripts','网页端/src','网页端/server','m0-local'].includes(name)));
+const exactSources=new Set(publicationPathspecs.filter(name=>!['packages/astrix-workbench','客户端/workbench','网页端/workbench','客户端/src','客户端/desktop','客户端/server','客户端/scripts','网页端/src','网页端/server'].includes(name)));
 export function isProjectPath(name,prefix){
   if(!prefix)return false;
   if(prefix!=='packages/astrix-workbench')return name===prefix||name.startsWith(prefix+'/');
-  if(name.startsWith('m0-local/'))return true; // validation below permits deletions only
   return exactSources.has(name)||sourceDirectories.some(directory=>name.startsWith(directory));
 }
 
@@ -56,19 +55,15 @@ export function rewriteReleaseNotes(notes,{repository,tag,prefix}){
   });
 }
 
-export function validatePublicationFiles({repositoryRoot,prefix,files,deletedLegacyPaths=new Set()}){
+export function validatePublicationFiles({repositoryRoot,prefix,files}){
   for(const name of new Set(files)){
     if(!isProjectPath(name,prefix))throw Error('Git returned a file outside the Astrix project: '+name);
     if(path.posix.normalize(name)!==name||path.isAbsolute(name)||name.startsWith('../'))throw Error('Invalid publication path: '+name);
     const relative=prefix==='packages/astrix-workbench'?name:(prefix?name.slice(prefix.length+1):name);
-    if(prefix==='packages/astrix-workbench'&&name.startsWith('m0-local/')){
-      if(!deletedLegacyPaths.has(name))throw Error('Legacy m0-local files may only be deleted in Git during migration: '+name);
-      continue; // Preserve physical ignored legacy data without inspecting it.
-    }
     const file=path.join(repositoryRoot,name);
     // Deleted files may be removed, but a dangling link must still be rejected.
     let stat;try{stat=fs.lstatSync(file);}catch(error){if(error.code==='ENOENT')continue;throw error;}
-    if(/(?:^|\/)(?:\.local-data|\.data|node_modules|diagnostics|\.release-assets|\.workbench-bundle|M0-AI-recovered)(?:\/|$)|(?:^|\/)\.env(?:\.|$)|\.(?:pem|key|p12|pfx)$/.test(relative)&&!relative.endsWith('.env.example'))throw Error('Refusing private/runtime file: '+name);
+    if(/(?:^|\/)(?:\.local-data|\.data|\.local-archive|node_modules|diagnostics|\.release-assets|\.workbench-bundle|M0-AI-recovered)(?:\/|$)|(?:^|\/)\.env(?:\.|$)|\.(?:pem|key|p12|pfx)$/.test(relative)&&!relative.endsWith('.env.example'))throw Error('Refusing private/runtime file: '+name);
     if(/(?:^|\/)(?:verification-output(?:\/|$)|public\/|plugins\/recovered\/|frontend-tools\/extra-assets\/|desktop\/icon\.icns$)|(?:^|\/)resources-manifest\.json$/.test(name))throw Error('Generated/native resources belong in a draft runtime Release: '+name);
     if(stat.isSymbolicLink()||!stat.isFile())throw Error('Review non-regular file before publication: '+name);
     if(stat.size>100*1024*1024)throw Error('Use a draft runtime Release for files over 100 MiB: '+name);
@@ -77,7 +72,7 @@ export function validatePublicationFiles({repositoryRoot,prefix,files,deletedLeg
 }
 
 export function publicationStagePaths(repositoryRoot,pathspecs,trackedFiles){
-  return pathspecs.filter(spec=>spec!=='m0-local'&&(fs.existsSync(path.join(repositoryRoot,spec))||trackedFiles.some(name=>name===spec||name.startsWith(spec+'/'))));
+  return pathspecs.filter(spec=>fs.existsSync(path.join(repositoryRoot,spec))||trackedFiles.some(name=>name===spec||name.startsWith(spec+'/')));
 }
 
 export function validateApplicationVersions(repositoryRoot,version){
@@ -121,17 +116,15 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
   const remote=git('remote','get-url','origin');
   if(!/^(?:https:\/\/github\.com\/|git@github\.com:)[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+(?:\.git)?$/.test(remote))throw Error('origin must identify the intended GitHub repository');
   const repository=remote.replace(/^https:\/\/github\.com\/|^git@github\.com:/,'').replace(/\.git$/,'');
-  const deletedLegacyPaths=()=>prefix==='packages/astrix-workbench'?new Set(gitRaw('diff','--no-renames','--name-only','--diff-filter=D','-z','HEAD','--','m0-local').split('\0').filter(Boolean)):new Set();
   const assertScopedChanges=()=>{
     const names=changedPaths(gitRaw('status','--porcelain=v1','-z','--untracked-files=all'));
-    const deletions=deletedLegacyPaths();
-    const outside=names.filter(name=>!isProjectPath(name,prefix)||prefix==='packages/astrix-workbench'&&name.startsWith('m0-local/')&&!deletions.has(name));
+    const outside=names.filter(name=>!isProjectPath(name,prefix));
     if(outside.length)throw Error('Commit or set aside changes outside '+(prefix||'Astrix')+' before publishing: '+outside.join(', '));
     return names;
   };
   const changes=assertScopedChanges();
   const files=gitRaw('ls-files','--cached','--others','--exclude-standard','--full-name','-z','--',...pathspecs).split('\0').filter(Boolean);
-  validatePublicationFiles({repositoryRoot,prefix,files,deletedLegacyPaths:deletedLegacyPaths()});
+  validatePublicationFiles({repositoryRoot,prefix,files});
   const publishedNotes=rewriteReleaseNotes(fs.readFileSync(note,'utf8'),{repository,tag,prefix});
   let existingTag=false;try{git('rev-parse','--verify','--quiet','refs/tags/'+tag);existingTag=true;}catch{}
   if(existingTag&&(changes.length||git('rev-list','-n','1',tag)!==git('rev-parse','HEAD')))throw Error('Version tag already exists. Keep it immutable and prepare a new version.');
@@ -148,10 +141,9 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
     run('npm',['test'],{stdio:'inherit'});
     assertScopedChanges();
     const latestFiles=gitRaw('ls-files','--cached','--others','--exclude-standard','--full-name','-z','--',...pathspecs).split('\0').filter(Boolean);
-    validatePublicationFiles({repositoryRoot,prefix,files:latestFiles,deletedLegacyPaths:deletedLegacyPaths()});
+    validatePublicationFiles({repositoryRoot,prefix,files:latestFiles});
     const sourcePathspecs=prefix==='packages/astrix-workbench'?publicationStagePaths(repositoryRoot,pathspecs,latestFiles):pathspecs;
     run('git',['add','--all','--',...sourcePathspecs],{cwd:repositoryRoot,stdio:'inherit'});
-    if(prefix==='packages/astrix-workbench'&&gitRaw('ls-files','--cached','-z','--','m0-local').split('\0').some(Boolean))run('git',['add','--update','--','m0-local'],{cwd:repositoryRoot,stdio:'inherit'});
     const staged=gitRaw('diff','--cached','--name-only','-z').split('\0').filter(Boolean);
     if(staged.some(name=>!isProjectPath(name,prefix)))throw Error('Refusing to commit staged changes outside the Astrix project');
     if(staged.length)run('git',['commit','-m','release: '+tag],{cwd:repositoryRoot,stdio:'inherit'});

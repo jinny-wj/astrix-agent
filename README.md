@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.0](https://img.shields.io/badge/Workbench-v0.7.0-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.0.md)
+[![Workbench v0.7.1](https://img.shields.io/badge/Workbench-v0.7.1-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.1.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -105,7 +105,7 @@ cd astrix-agent
 
 ### 3. 准备工作台运行资源
 
-公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.0 资源并在仓库根目录还原。资源采用两端目录布局，旧版 `m0-local/` 压缩包不能直接当作新版资源解压使用。
+公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.1 资源并在仓库根目录还原。资源采用两端目录布局，下载与当前版本匹配的资源后再启动。
 
 ### 4. 启动 macOS 客户端
 
@@ -133,7 +133,7 @@ pnpm dev
 
 ## 工作台已接入两端
 
-从 **0.7.0** 起，之前恢复并整合的工作台源码已按职责迁入两端，`m0-local/` 不再是独立可执行工程。默认启动客户端或网页版即可使用各自的工作台入口。
+工作台源码已按职责迁入两端，工程只保留客户端和网页版两个应用入口。默认启动客户端或网页版即可使用各自的工作台。
 
 | 位置 | 实际职责 |
 | --- | --- |
@@ -143,7 +143,7 @@ pnpm dev
 
 客户端 bootstrap、网页端 Vite 开发与预览服务、构建输出和客户端资源打包均引用上述实际实现。普通网页不会获得 Electron 原生编辑器或 PTY；Figma 的画布、矢量和云端协作继续由官方 Figma 提供。
 
-历史标签不移动，源码版本继续使用兼容命名空间 `m0/v版本号`，运行资源保存在受限草稿 `m0-runtime/v版本号`。逐版记录见[版本总表](packages/astrix-workbench/versions/index.json)与[变更记录](packages/astrix-workbench/CHANGELOG.md)。旧 `m0-local/` 中的本地状态保留在磁盘，不再上传；应用数据兼容方式见[工作台指南](packages/astrix-workbench/README.md)。
+历史标签不移动，源码版本继续使用兼容命名空间 `m0/v版本号`，运行资源保存在受限草稿 `m0-runtime/v版本号`。逐版记录见[版本总表](packages/astrix-workbench/versions/index.json)与[变更记录](packages/astrix-workbench/CHANGELOG.md)。本地状态使用各端的工作台数据目录，迁移备份不上传；数据位置见[工作台指南](packages/astrix-workbench/README.md)。
 
 ## 连接 Figma
 

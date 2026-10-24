@@ -71,7 +71,7 @@ pnpm exec tsc -b          # 仅类型检查
 - 工作台仅处理自己的 WebSocket 握手；Vite 的 `vite-hmr` 子协议继续由 Vite 管理。
 - `/__local/health` 返回产品、版本、运行表面与实例 ID，客户端据此拒绝误连旧服务。
 
-默认网页工作台数据位于 `workbench/.local-data/`，与客户端的默认数据目录分开。原 React 的 OAuth 等数据继续使用 `.design-studio/`。不要让两个进程同时写同一份工作台 JSON 状态。可用下列变量为测试或私有运行指定独立目录：
+默认网页工作台数据位于 `workbench/.local-data/`，与客户端的默认数据目录分开，不自动探测其他工程目录。原 React 的 OAuth 等数据继续使用 `.design-studio/`。不要让两个进程同时写同一份工作台 JSON 状态。可用下列变量为测试或私有运行指定独立目录：
 
 ```bash
 ASTRIX_STATE_ROOT=/path/to/web-state \

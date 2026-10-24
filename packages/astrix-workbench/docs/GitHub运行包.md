@@ -4,19 +4,19 @@
 
 ## 下载与准备
 
-对应受限草稿为 `m0-runtime/v0.7.0`，只有有权访问草稿的账号可以下载。它不作为公开安装器发布。使用已授权的 GitHub CLI，在仓库外的下载目录执行：
+当前版本对应受限草稿为 `m0-runtime/v0.7.1`，只有有权访问草稿的账号可以下载。它不作为公开安装器发布。使用已授权的 GitHub CLI，在仓库外的下载目录执行：
 
 ```sh
-gh release download m0-runtime/v0.7.0 --repo jinny-wj/astrix-agent --pattern 'M0-*-v0.7.0.*'
-shasum -a 256 -c M0-local-resources-v0.7.0.sha256
-shasum -a 256 -c M0-AI-recovered-runtime-v0.7.0.sha256
+gh release download m0-runtime/v0.7.1 --repo jinny-wj/astrix-agent --pattern 'M0-*-v0.7.1.*'
+shasum -a 256 -c M0-local-resources-v0.7.1.sha256
+shasum -a 256 -c M0-AI-recovered-runtime-v0.7.1.sha256
 ```
 
 界面资源包采用 **layoutVersion: 2**，原生恢复包沿用兼容目录。将两个归档解压到同一个 `astrix-agent` 仓库根：
 
 ```sh
-tar -xzf M0-local-resources-v0.7.0.tar.gz -C /path/to/astrix-agent
-tar -xzf M0-AI-recovered-runtime-v0.7.0.tar.gz -C /path/to/astrix-agent
+tar -xzf M0-local-resources-v0.7.1.tar.gz -C /path/to/astrix-agent
+tar -xzf M0-AI-recovered-runtime-v0.7.1.tar.gz -C /path/to/astrix-agent
 ```
 
 最终结构：
@@ -35,11 +35,11 @@ astrix-agent/
     extracted/resources/
 ```
 
-旧 0.6.x 界面归档会创建 `m0-local/`，不能直接当作新布局资源使用。请取得对应 0.7.0 包，不覆盖本机原恢复证据或混合不同版本。资源准备完成后，按[共享说明](../README.md)分别运行客户端或网页端。
+旧 0.6.x 界面归档采用单应用布局，不能直接当作双端资源使用。请取得对应 0.7.1 包，不覆盖本机原恢复证据或混合不同版本。0.7.1 会重新生成版本清单对应的两个资源包，继续使用布局 2；组件内容与上一版本一致不代表可以混用版本清单。资源准备完成后，按[共享说明](../README.md)分别运行客户端或网页端。
 
 ## 归档范围
 
-界面打包器只收集四个允许的来源：网页端 `public/`、`plugins/recovered/`、`frontend-tools/extra-assets/` 和客户端 `desktop/icon.icns`。归档直接保存仓库相对路径，不再有单应用 `m0-local` 外层。清单记录每个派生文件的哈希、字节数、权限和必要的清理类型，不记录原凭据值。
+界面打包器只收集四个允许的来源：网页端 `public/`、`plugins/recovered/`、`frontend-tools/extra-assets/` 和客户端 `desktop/icon.icns`。归档直接保存仓库相对路径，不创建独立应用外层目录。附件名中的 `M0-local-resources` 继续作为资源格式兼容名称，不是解压后的文件夹。清单记录每个派生文件的哈希、字节数、权限和必要的清理类型，不记录原凭据值。
 
 原生恢复包包括原编辑器、OpenCode、Skills、实际使用的提示词和 LangGraph 运行依赖闭包，适用 **macOS Apple Silicon**。编辑器与终端还须适配实际 Electron 宿主；浏览器不会因为安装此包而取得 Node/preload 权限。
 

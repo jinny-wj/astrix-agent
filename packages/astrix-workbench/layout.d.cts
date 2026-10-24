@@ -5,7 +5,6 @@ export type WorkbenchLayout = {
   desktopRoot: string;
   recoveryRoot: string;
   publicRoot: string;
-  legacyRoot: string;
   version: string;
 };
 export function getLayout(options?: {repositoryRoot?: string; recoveryRoot?: string; publicRoot?: string}): WorkbenchLayout;

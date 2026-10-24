@@ -14,7 +14,7 @@ const targets={
   editor:{root:path.join(recovered,'extracted/resources/editor'),sources:['out/server-main.kscode.js','out/vs/code/browser/workbench/workbench.kscode.js'],ceiling:10000}
 };
 const name=process.argv[2];
-if(!targets[name]){console.log('Usage: npm run analyze:rea -- main|figma-bridge|editor\nUses REA 6.7.0 with a bounded static source selection.');process.exit(name?1:0);}
+if(!targets[name]){console.log('Usage: node tools/run-rea.mjs main|figma-bridge|editor\nUses REA 6.7.0 with a bounded static source selection.');process.exit(name?1:0);}
 const target=targets[name];
 for(const source of target.sources)if(!fs.existsSync(path.join(target.root,source)))throw new Error('Recovered target is missing: '+source);
 const output=path.join(root,'diagnostics/rea');fs.mkdirSync(output,{recursive:true,mode:0o700});

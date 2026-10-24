@@ -53,14 +53,9 @@ skills/battle-report/references/api-config.json
 
 # M0 generated distributions and optional recovered runtime (private assets)
 /M0-AI-recovered/
-/m0-local/public/
-/m0-local/plugins/recovered/
-/m0-local/frontend-tools/extra-assets/
-/m0-local/desktop/icon.icns
-/m0-local/resources-manifest.json
 
 # Physically split workbench resources and local state (layout 2)
-/m0-local/
+/客户端/.local-archive/
 /网页端/workbench/public/
 /网页端/workbench/plugins/recovered/
 /网页端/workbench/plugins/verification-output/

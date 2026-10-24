@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.1",
+  "recordedAt": "2026-10-25",
+  "recordType": "source-release",
+  "status": "passed",
+  "sources": [
+    {
+      "path": ".release-assets/publication-v0.7.1.log",
+      "distribution": "local-only",
+      "bytes": 1908,
+      "sha256": "80d16ba90ac1ec00f94b022eb358c3d9004415124b6c6bb7c43aa82fff22b787"
+    },
+    {
+      "path": ".release-assets/publication-validation-v0.7.1.log",
+      "distribution": "local-only",
+      "bytes": 457,
+      "sha256": "26c340e8d53ad708558f1f6c4fd8d8f6714626017ec2137dd486a806585a7fdd"
+    },
+    {
+      "path": ".release-assets/full-v0.7.1.log",
+      "distribution": "local-only",
+      "bytes": 20020,
+      "sha256": "f80d023c5837e5dd005f7aa23eb7c0c0948cb3678805b770ac7ef8e12056bb8d"
+    },
+    {
+      "path": ".release-assets/directory-migration-v0.7.1.json",
+      "distribution": "local-only",
+      "bytes": 821,
+      "sha256": "3cb0747f23672f7ecddb383ccc9a30f6fb66dae0d488e742a6ad45425ad2fd94"
+    },
+    {
+      "path": ".release-assets/client-cleanup-v0.7.1.json",
+      "distribution": "local-only",
+      "bytes": 855,
+      "sha256": "ceacafae544e5bd017f9c1e38a04667ad9a4db8cf364e78926df4c4a02433f42"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.1.json",
+      "distribution": "local-only",
+      "bytes": 5686,
+      "sha256": "1fd0a36404312657d78922b68f9dc0f524afcc92c2f13d72d4edf31ae024da89"
+    },
+    {
+      "path": ".release-assets/resources-v0.7.1.log",
+      "distribution": "local-only",
+      "bytes": 508,
+      "sha256": "3180f17e912e2c098d5c26675f2dc6709cacb20f81d6612187a80a6772efae33"
+    },
+    {
+      "path": ".release-assets/runtime-v0.7.1.log",
+      "distribution": "local-only",
+      "bytes": 618,
+      "sha256": "43c6d25792008b6296f9e2d7e02ba080965c2045f4a1430edb044a1bb7ea9cb5"
+    }
+  ],
+  "validation": {
+    "publicationTargeted": {
+      "command": "node --test test/version-publication.test.mjs",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "fakeGitAndGitHubRunnerOnly": true,
+      "covers": [
+        "retired directory absent from canonical publication pathspecs and staging",
+        "retired source and state paths rejected even when missing on disk",
+        "private local archive exclusion",
+        "annotated source tag and draft-only runtime publishing policy"
+      ]
+    },
+    "applicationVersionSync": {
+      "desktop": "0.7.1",
+      "web": "0.7.1",
+      "shared": "0.7.1",
+      "sharedLockRootVersionsMatch": true,
+      "applicationDependencyLocksChanged": false
+    },
+    "historicalRecordsPreserved": {
+      "status": "passed",
+      "range": "0.1.0 through 0.7.0",
+      "byteIdenticalFiles": 19,
+      "unchangedExistingLedgerEntries": 9,
+      "comparison": "current files against HEAD before this version"
+    },
+    "userDataRelocation": {
+      "status": "passed",
+      "details": {
+        "version": "0.7.1",
+        "oldStandaloneDirectoryAbsent": true,
+        "repositoryResidualDirectoryAbsent": true,
+        "oldClientGracefullyExited": true,
+        "projectsPreserved": 1,
+        "sessionsPreserved": 1,
+        "projectFilesVerified": 2,
+        "profilesPreserved": 12,
+        "nativeProfileDirectoriesRebased": 10,
+        "storedPathReferencesRebased": 6,
+        "userConfigAndMessagesUnchanged": true,
+        "managedProjectFileHashesUnchanged": true,
+        "sourceBackup": "../astrix-workbench-backup",
+        "privateArchive": "客户端/.local-archive/directory-cleanup-v0.7.1",
+        "activeData": "客户端/workbench/.local-data",
+        "activeProfiles": "客户端/workbench/.data",
+        "rollbackMetadataLocalOnly": true,
+        "persistentPartitionDirectoriesRenamed": 19,
+        "persistentPartitionName": "astrix-workbench",
+        "cookieAndStorageDirectoriesPreserved": true
+      },
+      "contentPolicy": "Projects, messages, configuration, login profiles and partition storage preserved; local backups are ignored and never published."
+    },
+    "publicationValidation": {
+      "command": "npm run release",
+      "status": "passed",
+      "mode": "validate-only",
+      "version": "0.7.1",
+      "tag": "m0/v0.7.1",
+      "runtimeTag": "m0-runtime/v0.7.1",
+      "gitMutation": false,
+      "remoteMutation": false
+    },
+    "staticChecks": {
+      "publicationScriptSyntax": "passed",
+      "reaScriptSyntax": "passed",
+      "reaUsageWithoutAnalysis": "passed"
+    },
+    "sharedNodeAndCanvas": {
+      "passed": 153,
+      "failed": 0,
+      "skipped": 0
+    },
+    "figmaHostPolicy": {
+      "passed": 18,
+      "failed": 0
+    },
+    "marketplacePolicy": {
+      "passed": 3,
+      "failed": 0
+    },
+    "navigation": {
+      "passed": 3,
+      "failed": 0
+    },
+    "generatorsAndCanvasChecks": "passed",
+    "layout": {
+      "passed": 5,
+      "failed": 0,
+      "covers": "application state paths, explicit overrides and removal of other-directory fallback"
+    },
+    "desktopUnit": {
+      "passed": 102,
+      "failed": 0,
+      "typecheck": "passed"
+    },
+    "desktopCleanupSmoke": {
+      "passed": 10,
+      "failed": 0,
+      "temporaryState": true,
+      "checks": {
+        "version": true,
+        "desktopIdentity": true,
+        "loaded": true,
+        "title": true,
+        "nativeAvailable": true,
+        "noRuntimeErrors": true,
+        "newPartitionOnDisk": true,
+        "noOldNamedDirectory": true,
+        "isolatedApplicationExited": true,
+        "ownedServiceStopped": true
+      }
+    }
+  },
+  "runtimeDistribution": {
+    "release": "m0-runtime/v0.7.1",
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "versioned-archives-generated-and-verified",
+    "assets": [
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.1.manifest.json",
+        "bytes": 3549832,
+        "sha256": "f845abb29b9d8e54257b572a1b9551d53d4510b408532a055bafaa495a15c4e7"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.1.sha256",
+        "bytes": 104,
+        "sha256": "2a1f94d0e3f94b0f8acc8ffc4b11e2c17a2a31b89421d6c5648d4c2041a2118d"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.1.tar.gz",
+        "bytes": 94863392,
+        "sha256": "ef8cd8f1615661d3ab020f7661357752ff51349beb7c2f4a3c928da3ae899c5a"
+      },
+      {
+        "name": "M0-local-resources-v0.7.1.manifest.json",
+        "bytes": 133402,
+        "sha256": "b4b32d2301b60447dd84701c085b88da586f01d06ac7ac33335ab6fc14dac4f1"
+      },
+      {
+        "name": "M0-local-resources-v0.7.1.sha256",
+        "bytes": 99,
+        "sha256": "0277fe8de7d0ff7e5a299b12080dfa42882516b9cf59ce4ece6b23cad593a3f4"
+      },
+      {
+        "name": "M0-local-resources-v0.7.1.tar.gz",
+        "bytes": 49325671,
+        "sha256": "64d639f5fa15decc229bb788f39758db4c31400793b55c8309d9d64d5bdaa0a4"
+      }
+    ],
+    "manifestRecordsVerified": 6639,
+    "privateStateIncluded": false
+  },
+  "limits": [
+    "Current source desktop entry and isolated persistent storage were verified; previous version native GUI/package test counts are not counted as new tests in this version.",
+    "No new real-model, Figma account, design-file or cloud-collaboration end-to-end verification is claimed.",
+    "Historical version records and existing tags remain unchanged."
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  }
+}

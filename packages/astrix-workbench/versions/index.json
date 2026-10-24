@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.0",
+  "currentVersion": "0.7.1",
   "recordedAt": "2026-10-25",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -151,6 +151,23 @@
         "Uses shared versioning, verification, scoped publication and layout 2 runtime resources."
       ],
       "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.1",
+      "date": "2026-10-25",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.1",
+      "record": "versions/v0.7.1.md",
+      "evidence": [
+        "versions/evidence/v0.7.1.json"
+      ],
+      "changes": [
+        "Removes the retired standalone application directory and relocates state without deleting user data.",
+        "Removes the completed migration pathspec, deletion exception and staging branch from future publication.",
+        "Synchronizes desktop, web and shared versions while preserving historical records and tags."
+      ],
+      "uiFeatureChanges": false
     }
   ],
   "repository": "https://github.com/jinny-wj/astrix-agent",

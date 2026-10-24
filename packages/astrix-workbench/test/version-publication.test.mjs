@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 import {changedPaths,publicationLayout,publishVersion,rewriteReleaseNotes,runtimeAssetNames,validatePublicationFiles,publicationPathspecs,isProjectPath,validateApplicationVersions,publicationStagePaths} from '../tools/publish-version.mjs';
 
 function fixture(t,{dirty=true,existingTag=false,runtimeAssets=true}={}){
-  const repositoryRoot=fs.mkdtempSync(path.join(os.tmpdir(),'m0-publication-')),projectRoot=path.join(repositoryRoot,'m0-local');
+  const repositoryRoot=fs.mkdtempSync(path.join(os.tmpdir(),'m0-publication-')),projectRoot=path.join(repositoryRoot,'sample-workbench');
   t.after(()=>fs.rmSync(repositoryRoot,{recursive:true,force:true}));
   const write=(name,value)=>{const file=path.join(projectRoot,name);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,typeof value==='string'?value:JSON.stringify(value));return file;};
   write('package.json',{version:'0.6.1'});write('package-lock.json',{version:'0.6.1',packages:{'':{version:'0.6.1'}}});
@@ -25,8 +25,8 @@ function fixture(t,{dirty=true,existingTag=false,runtimeAssets=true}={}){
       assert.equal(options.cwd,repositoryRoot,'Git commands must use the repository root');
       if(argv[0]==='branch')return 'main\n';
       if(argv[0]==='remote')return 'https://github.com/jinny-wj/astrix-agent.git\n';
-      if(argv[0]==='status')return (state.dirty?' M m0-local/source.mjs\0':'')+state.outside;
-      if(argv[0]==='ls-files'){assert.deepEqual(argv.slice(-2),['--','m0-local']);return ['package.json','package-lock.json','CHANGELOG.md','versions/index.json','versions/v0.6.1.md','source.mjs'].map(name=>'m0-local/'+name).join('\0')+'\0';}
+      if(argv[0]==='status')return (state.dirty?' M sample-workbench/source.mjs\0':'')+state.outside;
+      if(argv[0]==='ls-files'){assert.deepEqual(argv.slice(-2),['--','sample-workbench']);return ['package.json','package-lock.json','CHANGELOG.md','versions/index.json','versions/v0.6.1.md','source.mjs'].map(name=>'sample-workbench/'+name).join('\0')+'\0';}
       if(argv[0]==='rev-parse'&&argv[1]==='--verify'){
         if(argv.at(-1).startsWith('refs/remotes/origin/'))return state.head+'\n';
         if(!state.tag)throw Error('no tag');return state.head+'\n';
@@ -34,7 +34,7 @@ function fixture(t,{dirty=true,existingTag=false,runtimeAssets=true}={}){
       if(argv[0]==='rev-parse'&&argv[1]==='HEAD')return state.head+'\n';
       if(argv[0]==='rev-list')return state.head+'\n';
       if(argv[0]==='fetch'||argv[0]==='merge-base'||argv[0]==='push')return '';
-      if(argv[0]==='add'){state.staged=state.dirty?['m0-local/source.mjs']:[];return '';}
+      if(argv[0]==='add'){state.staged=state.dirty?['sample-workbench/source.mjs']:[];return '';}
       if(argv[0]==='diff')return state.staged.join('\0')+(state.staged.length?'\0':'');
       if(argv[0]==='commit'){state.dirty=false;state.staged=[];state.head='b'.repeat(40);return '';}
       if(argv[0]==='tag'){state.tag=true;return '';}
@@ -61,21 +61,21 @@ function fixture(t,{dirty=true,existingTag=false,runtimeAssets=true}={}){
 }
 
 test('monorepo layout separates public tag, runtime draft tag and artifact version suffix',()=>{
-  assert.deepEqual(publicationLayout('/repo/m0-local','/repo','0.6.1'),{prefix:'m0-local',pathspec:'m0-local',version:'0.6.1',versionFileSuffix:'v0.6.1',tag:'m0/v0.6.1',runtimeTag:'m0-runtime/v0.6.1'});
+  assert.deepEqual(publicationLayout('/repo/sample-workbench','/repo','0.6.1'),{prefix:'sample-workbench',pathspec:'sample-workbench',version:'0.6.1',versionFileSuffix:'v0.6.1',tag:'m0/v0.6.1',runtimeTag:'m0-runtime/v0.6.1'});
   assert.throws(()=>publicationLayout('/elsewhere','/repo','0.6.1'),/inside/);
-  assert.throws(()=>publicationLayout('/repo/m0-local','/repo','0.6.1/other'),/semantic/);
+  assert.throws(()=>publicationLayout('/repo/sample-workbench','/repo','0.6.1/other'),/semantic/);
 });
 
 test('porcelain parsing preserves spaces and checks both sides of renames',()=>{
-  assert.deepEqual(changedPaths(' M m0-local/a b.mjs\0R  m0-local/new.mjs\0客户端/old.mjs\0?? README.md\0'),['m0-local/a b.mjs','m0-local/new.mjs','客户端/old.mjs','README.md']);
+  assert.deepEqual(changedPaths(' M sample-workbench/a b.mjs\0R  sample-workbench/new.mjs\0客户端/old.mjs\0?? README.md\0'),['sample-workbench/a b.mjs','sample-workbench/new.mjs','客户端/old.mjs','README.md']);
 });
 
 test('release note links use the namespaced ref and monorepo directory',()=>{
-  const result=rewriteReleaseNotes('[Guide](../docs/接入.md) [Evidence](evidence/result.json) [Web](https://example.com) [Anchor](#x)',{repository:'jinny-wj/astrix-agent',tag:'m0/v0.6.1',prefix:'m0-local'});
-  assert.match(result,/blob\/m0%2Fv0\.6\.1\/m0-local\/docs\/%E6%8E%A5%E5%85%A5\.md/);
-  assert.match(result,/m0-local\/versions\/evidence\/result\.json/);
+  const result=rewriteReleaseNotes('[Guide](../docs/接入.md) [Evidence](evidence/result.json) [Web](https://example.com) [Anchor](#x)',{repository:'jinny-wj/astrix-agent',tag:'m0/v0.6.1',prefix:'sample-workbench'});
+  assert.match(result,/blob\/m0%2Fv0\.6\.1\/sample-workbench\/docs\/%E6%8E%A5%E5%85%A5\.md/);
+  assert.match(result,/sample-workbench\/versions\/evidence\/result\.json/);
   assert.ok(result.includes('[Web](https://example.com) [Anchor](#x)'));
-  assert.throws(()=>rewriteReleaseNotes('[Bad](../../../outside)',{repository:'x/y',tag:'m0/v1.0.0',prefix:'m0-local'}),/escapes/);
+  assert.throws(()=>rewriteReleaseNotes('[Bad](../../../outside)',{repository:'x/y',tag:'m0/v1.0.0',prefix:'sample-workbench'}),/escapes/);
 });
 
 test('default validation reads Git but never stages, tests, tags, pushes or calls GitHub',t=>{
@@ -85,10 +85,10 @@ test('default validation reads Git but never stages, tests, tags, pushes or call
   assert.ok(!fs.existsSync(path.join(f.projectRoot,'.release-assets/m0-v0.6.1.notes.md')));
 });
 
-test('publishing stages only M0, preserves unrelated tags, and keeps all runtime attachments draft-only',t=>{
+test('publishing stages only scoped source, preserves unrelated tags, and keeps all runtime attachments draft-only',t=>{
   const f=fixture(t),result=f.publish(['--publish']);
   assert.equal(result.commit,'b'.repeat(40));
-  assert.deepEqual(f.state.calls.find(call=>call.command==='git'&&call.argv[0]==='add').argv,['add','--all','--','m0-local']);
+  assert.deepEqual(f.state.calls.find(call=>call.command==='git'&&call.argv[0]==='add').argv,['add','--all','--','sample-workbench']);
   const push=f.state.calls.find(call=>call.command==='git'&&call.argv[0]==='push');
   assert.deepEqual(push.argv,['push','--atomic','-u','origin','main','refs/tags/m0/v0.6.1']);assert.ok(!push.argv.includes('--follow-tags'));
   const creates=f.state.calls.filter(call=>call.command==='gh'&&call.argv[1]==='create');
@@ -101,14 +101,14 @@ test('publishing stages only M0, preserves unrelated tags, and keeps all runtime
 });
 
 test('unrelated dirty or renamed files are rejected before any mutation',t=>{
-  const f=fixture(t);f.state.outside='R  m0-local/moved.mjs\0客户端/old.mjs\0';
-  assert.throws(()=>f.publish(['--publish']),/outside m0-local.*客户端\/old\.mjs/);
+  const f=fixture(t);f.state.outside='R  sample-workbench/moved.mjs\0客户端/old.mjs\0';
+  assert.throws(()=>f.publish(['--publish']),/outside sample-workbench.*客户端\/old\.mjs/);
   assert.ok(!f.state.calls.some(call=>call.command!=='git'||['add','commit','tag','fetch','push'].includes(call.argv[0])));
 });
 
 test('new outside changes created during tests stop staging and publication',t=>{
   const f=fixture(t);f.state.afterTest=()=>{f.state.outside=' M README.md\0';};
-  assert.throws(()=>f.publish(['--publish']),/outside m0-local.*README/);
+  assert.throws(()=>f.publish(['--publish']),/outside sample-workbench.*README/);
   assert.ok(!f.state.calls.some(call=>call.command==='git'&&['add','commit','tag','push'].includes(call.argv[0])));
 });
 
@@ -135,13 +135,13 @@ test('GitHub authentication failures are not treated as missing Releases',t=>{
 
 test('source publication rejects generated resources, private paths and symlinks',t=>{
   const f=fixture(t);
-  for(const name of ['public/app.js','plugins/recovered/plugin.js','frontend-tools/extra-assets/a.png','desktop/icon.icns','resources-manifest.json','.local-data/config.json']){
-    f.write(name,'fixture');assert.throws(()=>validatePublicationFiles({repositoryRoot:f.repositoryRoot,prefix:'m0-local',files:['m0-local/'+name]}),/Generated\/native|private\/runtime/);
+  for(const name of ['public/app.js','plugins/recovered/plugin.js','frontend-tools/extra-assets/a.png','desktop/icon.icns','resources-manifest.json','.local-data/config.json','.local-archive/state.json']){
+    f.write(name,'fixture');assert.throws(()=>validatePublicationFiles({repositoryRoot:f.repositoryRoot,prefix:'sample-workbench',files:['sample-workbench/'+name]}),/Generated\/native|private\/runtime/);
   }
   const link=path.join(f.projectRoot,'source-link.mjs');fs.symlinkSync('source.mjs',link);
-  assert.throws(()=>validatePublicationFiles({repositoryRoot:f.repositoryRoot,prefix:'m0-local',files:['m0-local/source-link.mjs']}),/non-regular/);
+  assert.throws(()=>validatePublicationFiles({repositoryRoot:f.repositoryRoot,prefix:'sample-workbench',files:['sample-workbench/source-link.mjs']}),/non-regular/);
   fs.symlinkSync('missing-file.mjs',path.join(f.projectRoot,'dangling.mjs'));
-  assert.throws(()=>validatePublicationFiles({repositoryRoot:f.repositoryRoot,prefix:'m0-local',files:['m0-local/dangling.mjs']}),/non-regular/);
+  assert.throws(()=>validatePublicationFiles({repositoryRoot:f.repositoryRoot,prefix:'sample-workbench',files:['sample-workbench/dangling.mjs']}),/non-regular/);
 });
 
 test('runtime allowlist excludes unrelated versions and installer files, and rejects links',t=>{
@@ -201,7 +201,7 @@ if(args[0]==='api'){
 });
 
 
-test('split layout publication explicitly scopes both application implementations and permits only legacy deletions',t=>{
+test('split layout publication explicitly scopes both applications and excludes the retired application directory',t=>{
   const repositoryRoot=fs.mkdtempSync(path.join(os.tmpdir(),'astrix-split-publication-'));t.after(()=>fs.rmSync(repositoryRoot,{recursive:true,force:true}));
   const projectRoot=path.join(repositoryRoot,'packages/astrix-workbench');
   const layout=publicationLayout(projectRoot,repositoryRoot,'0.7.0');
@@ -210,10 +210,13 @@ test('split layout publication explicitly scopes both application implementation
   for(const name of ['网页端/workbench/server/application.mjs','客户端/workbench/desktop/main.cjs','网页端/src/pages/WorkbenchPage.tsx','客户端/desktop/main.ts','packages/astrix-workbench/versions/v0.7.0.md','README.md']){
     write(name);assert.ok(isProjectPath(name,layout.prefix));validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:[name]});
   }
-  validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:['m0-local/server/index.mjs'],deletedLegacyPaths:new Set(['m0-local/server/index.mjs'])});
-  write('m0-local/server/index.mjs');assert.throws(()=>validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:['m0-local/server/index.mjs']}),/only be deleted/);
-  // A staged Git deletion can preserve the physical file as ignored user data.
-  validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:['m0-local/server/index.mjs'],deletedLegacyPaths:new Set(['m0-local/server/index.mjs'])});
+  for(const name of ['m0-local/server/index.mjs','m0-local/.local-data/account.json']){
+    assert.ok(!isProjectPath(name,layout.prefix));
+    assert.throws(()=>validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:[name]}),/outside/);
+    write(name);assert.throws(()=>validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:[name]}),/outside/);
+  }
+  assert.ok(!publicationPathspecs.includes('m0-local'));
+  assert.ok(publicationStagePaths(repositoryRoot,publicationPathspecs,['m0-local/server/index.mjs']).every(name=>!name.startsWith('m0-local')));
   for(const name of ['网页端/workbench/public/index.html','客户端/workbench/desktop/icon.icns','网页端/workbench/.local-data/account.json','客户端/workbench/diagnostics/report.json','packages/astrix-workbench/.release-assets/archive.tar.gz','客户端/src/.env','客户端/.workbench-bundle/workbench/public/index.html']){
     write(name);assert.throws(()=>validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:[name]}),/private\/runtime|Generated\/native|outside/);
   }
@@ -234,7 +237,7 @@ test('both application package versions and lockfiles must match the shared rele
 test('publication staging omits nonexistent optional configuration but retains tracked deletions',t=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'astrix-stage-paths-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   fs.mkdirSync(path.join(root,'客户端/workbench'),{recursive:true});
-  assert.deepEqual(publicationStagePaths(root,['客户端/workbench','package.json','README.md','m0-local'],['README.md','m0-local/server/index.mjs']),['客户端/workbench','README.md']);
+  assert.deepEqual(publicationStagePaths(root,['客户端/workbench','package.json','README.md'],['README.md']),['客户端/workbench','README.md']);
 });
 
 test('migrated generator verification output is ignored and rejected even if explicitly selected for publication',t=>{

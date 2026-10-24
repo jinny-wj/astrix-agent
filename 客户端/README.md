@@ -57,7 +57,7 @@ pnpm desktop:legacy
 
 ## 数据和端口
 
-完整工作台把可写状态与应用资源分开。开发模式兼容原 `m0-local/.local-data` 和 `.data/<profile>`；新工作区使用 `workbench/` 下的本地数据目录。正式安装的客户端使用 `~/Library/Application Support/Design Studio/workbench/` 下的工作台数据与独立 Electron profile，不向安装目录写项目、登录或编辑器缓存。原设计模式保留已有 `Design Studio` 数据目录。
+完整工作台把可写状态与应用资源分开。开发模式默认使用本目录的 `workbench/.local-data/` 保存项目、会话和模型配置，使用 `workbench/.data/<profile>/` 保存 Electron profile；网页端使用其自己的状态目录。启动时不会查找或回退到其他应用目录。正式安装的客户端使用 `~/Library/Application Support/Design Studio/workbench/` 下的工作台数据与独立 Electron profile，不向安装目录写项目、登录或编辑器缓存。原设计模式保留已有 `Design Studio` 数据目录。
 
 可通过 `ASTRIX_STATE_ROOT`、`ASTRIX_DATA_DIR`、`ASTRIX_PROFILE_ROOT` 和 `ASTRIX_WORKSPACE` 明确指定隔离位置；原设计模式的独立验收可设置 `ASTRIX_LEGACY_PROFILE_DIR` 和 `ASTRIX_LEGACY_PORT`（OAuth 配置仍需使用匹配的回调地址）。旧 `M0_LOCAL_*` 参数保留兼容。
 
