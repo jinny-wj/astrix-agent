@@ -1,9 +1,9 @@
 {
-  "name": "m0-local-reconstruction",
-  "version": "0.6.1",
+  "name": "astrix-workbench",
+  "version": "0.6.2",
   "private": true,
   "type": "module",
-  "description": "Local reconstruction using recovered M0 AI frontend assets and a replaceable local backend",
+  "description": "Astrix desktop workspace with real Figma, local agents, code editor and terminal",
   "main": "desktop/main.cjs",
   "scripts": {
     "prepare:plugins": "node plugins/prepare.mjs",

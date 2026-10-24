@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>本地设计画布 · M0</title>
+  <title>本地设计画布 · Astrix</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
     <button id="undo" title="撤销 ⌘Z" aria-label="撤销" disabled>↶</button><button id="redo" title="重做 ⇧⌘Z" aria-label="重做" disabled>↷</button>
     <button id="save" disabled>保存</button>
     <button id="collaborate" class="collab-button">版本与协作</button><button id="present" title="演示原型" aria-label="演示原型">▷</button>
-    <details id="file-menu"><summary>文件 ▾</summary><div class="menu"><button id="import">导入 JSON / SVG…</button><button id="export-schema">导出 M0Schema</button><button id="export-svg">导出 SVG</button><button id="export-document">导出画布 JSON</button><button id="reload">重新载入已保存画布</button><span>支持 Figma REST JSON / M0Schema / SVG<br>不连接 Figma 账户或在线文件</span></div></details>
+    <details id="file-menu"><summary>文件 ▾</summary><div class="menu"><button id="import">导入 JSON / SVG…</button><button id="export-schema">导出 设计 Schema</button><button id="export-svg">导出 SVG</button><button id="export-document">导出画布 JSON</button><button id="reload">重新载入已保存画布</button><span>支持 Figma REST JSON / 设计 Schema / SVG<br>不连接 Figma 账户或在线文件</span></div></details>
     <button id="generate" class="primary">生成原 KRN 代码</button>
     <input id="import-file" type="file" accept=".json,.svg,application/json,image/svg+xml" hidden>
     <input id="image-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
@@ -33,7 +33,7 @@
       <button data-tool="frame" title="画板 F">▣ <span>Frame</span></button><button data-tool="rectangle" title="矩形 R">▭ <span>矩形</span></button><button data-tool="ellipse" title="椭圆 O">◯ <span>椭圆</span></button><button data-tool="pen" title="钢笔 P">♢ <span>钢笔</span></button><button data-tool="text" title="文字 T">T <span>文字</span></button>
       <button id="import-image" title="导入本地图片" aria-label="导入本地图片">▧</button>
     </div>
-      <div id="empty-state"><div class="empty-symbol">▣</div><h2>从一个画板开始</h2><p>绘制形状、编排文字，再用原 KRN 插件生成源码。</p><button id="first-frame" class="primary">新建 390 × 640 画板</button><span>也可以从“文件”导入 Figma REST JSON 或 M0Schema</span></div>
+      <div id="empty-state"><div class="empty-symbol">▣</div><h2>从一个画板开始</h2><p>绘制形状、编排文字，再用原 KRN 插件生成源码。</p><button id="first-frame" class="primary">新建 390 × 640 画板</button><span>也可以从“文件”导入 Figma REST JSON 或 设计 Schema</span></div>
       <div class="stage-caption">本地画布 · Shift 多选 · 拖动空白框选 · 空格平移</div>
     </section>
     <aside class="inspector"><div class="panel-title"><strong>设计属性</strong><span id="selection-type"></span></div><div id="inspector-empty"><div>↖</div>选择图层以编辑属性<br><small>原 Figma 云画布未接入。<br>这里编辑和保存本地项目的 canvas.json。</small></div><form id="properties" hidden autocomplete="off">

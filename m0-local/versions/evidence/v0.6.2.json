@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "version": "0.6.2",
+  "date": "2026-10-24",
+  "scope": "Astrix product branding; no new cloud capabilities",
+  "verification": {
+    "backendNodeRegression": {
+      "passed": 53,
+      "failed": 0
+    },
+    "publicationChecks": {
+      "passed": 14,
+      "failed": 0
+    },
+    "isolatedDesktop": {
+      "passed": 18,
+      "failed": 0,
+      "assertions": {
+        "versionIs062": true,
+        "electronNameAstrix": true,
+        "isolatedProfile": true,
+        "freshFigmaCookieJar": true,
+        "homeDocumentTitleAstrix": true,
+        "mainWindowTitleAstrix": true,
+        "homeVisibleBrandAstrix": true,
+        "desktopInfoNameAstrix": true,
+        "settingsTitleAstrix": true,
+        "settingsHeaderAstrix": true,
+        "projectsTitleAstrix": true,
+        "projectsHeaderAstrix": true,
+        "figmaWorkspaceTitleAstrix": true,
+        "officialFigmaHomepageTarget": true,
+        "realNativeFigmaVisible": true,
+        "materializedPluginNameAstrix": true,
+        "pluginInternalIdPreserved": true,
+        "renderedPluginHeadingAstrix": true
+      },
+      "desktopErrors": 0
+    },
+    "frontendPreparation": {
+      "recoveredAssets": 270,
+      "originalEvidenceModified": false,
+      "storageProtocolAndSvgCompatibilityChecked": true
+    },
+    "releaseGate": "npm test is mandatory before source commit and tag creation"
+  },
+  "resources": [
+    {
+      "name": "M0-local-resources-v0.6.2.tar.gz",
+      "bytes": 49317771,
+      "sha256": "5dcee91f1b137d949b4489fe3de88fc04ee123eb625dac66ef70da96c775494d",
+      "files": 353
+    },
+    {
+      "name": "M0-AI-recovered-runtime-v0.6.2.tar.gz",
+      "bytes": 94865553,
+      "sha256": "0cb6f0e3ac1298f4abc96be623357faf319f43cc5e16e1bdcd93840ddc363d2c",
+      "files": 6286
+    }
+  ],
+  "compatibility": {
+    "existingStoragePathsPreserved": true,
+    "bridgeIdentityPreserved": true,
+    "historicalTagsPreserved": true,
+    "sourceTag": "m0/v0.6.2",
+    "runtimeDraftTag": "m0-runtime/v0.6.2"
+  },
+  "limits": [
+    "Existing user windows and account data were not changed by isolated verification. Restart the updated entry to show the new product name.",
+    "Desktop verification covers product branding, not cloud file writes, collaboration or model quality.",
+    "Shutdown-only background editor cancellation was excluded from editor functionality claims."
+  ]
+}

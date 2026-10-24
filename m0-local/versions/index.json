@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.6.1",
-  "recordedAt": "2026-10-23",
+  "currentVersion": "0.6.2",
+  "recordedAt": "2026-10-24",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
     "sourceTagPrefix": "m0/v",
@@ -115,6 +115,23 @@
         "Generated resources and recovered runtime are distributed separately through restricted draft m0-runtime/v0.6.1."
       ],
       "uiFeatureChanges": false
+    },
+    {
+      "version": "0.6.2",
+      "date": "2026-10-24",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.6.2",
+      "record": "versions/v0.6.2.md",
+      "evidence": [
+        "versions/evidence/v0.6.2.json"
+      ],
+      "changes": [
+        "Product-facing titles, Electron app name, local pages and Figma plugin renamed to Astrix.",
+        "Reuses existing Astrix brand assets; retains historical references and persistent compatibility IDs.",
+        "Provides versioned source and restricted runtime resources."
+      ],
+      "uiFeatureChanges": true
     }
   ],
   "repository": "https://github.com/jinny-wj/astrix-agent",

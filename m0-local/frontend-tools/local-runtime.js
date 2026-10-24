@@ -1,6 +1,22 @@
 /* Local integration for the recovered M0 browser UI. This is new source. */
 (() => {
   'use strict';
+  // Preserve Vue's static image nodes; use readable text in wordmark slots and
+  // the existing square Astrix icon for avatars. No user content is rewritten.
+  function installBranding() {
+    const marked=new WeakSet();
+    const refresh=()=>{
+      for(const image of document.querySelectorAll('img[src="/branding/astrix-logo-v1.png"]')){
+        if(marked.has(image))continue;marked.add(image);
+        const label=document.createElement('span');label.textContent='Astrix';label.className=image.className;
+        label.dataset.astrixWordmark='';label.setAttribute('aria-label','Astrix');
+        Object.assign(label.style,{display:'inline-flex',alignItems:'center',fontFamily:'Inter,-apple-system,BlinkMacSystemFont,sans-serif',fontSize:'16px',fontWeight:'700',lineHeight:'1',letterSpacing:'-.3px'});
+        image.alt='Astrix';image.style.display='none';image.after(label);
+      }
+    };
+    refresh();new MutationObserver(refresh).observe(document.body,{childList:true,subtree:true});
+  }
+  addEventListener('DOMContentLoaded',installBranding,{once:true});
   const nativeFetch = window.fetch.bind(window);
   const NativeXHR = window.XMLHttpRequest;
   const NativeWebSocket = window.WebSocket;
@@ -92,7 +108,7 @@
 
   // Rebuild only the necessary public runtime shape. No original account,
   // cached session, SSO value, or injected server JSON is used.
-  const user = { name: 'local-user', displayName: '本地用户', avatar: assetPrefix + 'm0-logo.svg' };
+  const user = { name: 'local-user', displayName: '本地用户', avatar: '/branding/astrix-dock.png' };
   localStorage.setItem('USER_INFO_RECORD_CACHE', JSON.stringify(user));
   localStorage.setItem('M0_APP_THEME', 'light');
   if (!['code', 'design'].includes(localStorage.getItem('M0Mode'))) localStorage.setItem('M0Mode', 'code');

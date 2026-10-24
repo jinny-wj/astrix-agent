@@ -1,11 +1,11 @@
-# M0 Local Figma Bridge
+# Astrix Figma Bridge
 
 这是基于 Astrix 固定提交的本地适配；上游文件及 Git blob 标识见 `SOURCES.json`，原执行器留在 `upstream-code.js` 供核对。运行入口只有适配后的 `code.js` 和 `ui.html`。
 
-1. 在 M0 本地项目的 Figma 面板生成一次性配对码。
+1. 在 Astrix 项目的 Figma 面板生成一次性配对码。
 2. Figma Desktop → Plugins → Development → Import plugin from manifest，选择本机数据目录 `figma-plugin/manifest.json`。
-3. 在目标 Figma 文件运行 M0 Local Figma Bridge，把配对码输入插件面板。
-4. M0 面板显示文件名、会话和实际选区后，方可读写。写命令入队不代表成功；必须收到插件执行回执。
+3. 在目标 Figma 文件运行 Astrix Figma Bridge，把配对码输入插件面板。
+4. Astrix 面板显示文件名、会话和实际选区后，方可读写。写命令入队不代表成功；必须收到插件执行回执。
 
 模板的 `id: "m0-local-figma-bridge"` 只是本地标记，不是 Figma 分配的插件 ID，不能用于发布。如果导入要求 ID，先在 Figma 的 **Create new plugin** 流程取得自己的 ID，再把它作为字符串填入上述生成目录的 `manifest.json`。服务会保留你填入的纯数字 ID；再次打开 metadata、准备插件或更换本机服务端口都不会把它覆盖为模板标记。其余运行代码和网络端口仍随本地项目更新。这里尚未实际验收 Figma 导入流程。
 

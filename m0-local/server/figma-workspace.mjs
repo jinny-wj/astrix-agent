@@ -17,7 +17,7 @@ export function normalizeFigmaWorkspaceURL(value){
 }
 
 export function createFigmaWorkspace({api,canvas,bridge,port,dataDir}){
-  async function resolve(projectId){const context=await canvas.target(projectId);if(context.projectId===null||context.projectId===undefined)throw fail('请先创建或打开 M0 项目，再连接 Figma 文件',409);return context;}
+  async function resolve(projectId){const context=await canvas.target(projectId);if(context.projectId===null||context.projectId===undefined)throw fail('请先创建或打开 Astrix 项目，再连接 Figma 文件',409);return context;}
   async function get(projectId){
     const context=await resolve(projectId),project=api.findProject(context.projectId);
     let binding={url:'',fileKey:null};

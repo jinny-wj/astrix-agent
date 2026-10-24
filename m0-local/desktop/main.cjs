@@ -21,7 +21,7 @@ baseURL.pathname = '/';
 baseURL.search = '';
 baseURL.hash = '';
 
-app.setName('M0 Local');
+app.setName('Astrix');
 const profile = process.env.M0_LOCAL_PROFILE || 'electron';
 if (!/^[a-zA-Z0-9_-]{1,80}$/.test(profile)) throw new Error('M0_LOCAL_PROFILE must be a simple local profile name');
 app.setPath('userData', path.join(projectRoot, '.data', profile));
@@ -79,7 +79,7 @@ async function localRPC(namespace, method, args = []) {
 
 function getInfo() {
   return {
-    name: 'M0 Local', version: require('../package.json').version, originalVersion: '3.9.5', isPackaged: app.isPackaged,
+    name: 'Astrix', version: require('../package.json').version, originalVersion: '3.9.5', isPackaged: app.isPackaged,
     platform: process.platform, arch: process.arch,
     runtime: { node: process.versions.node, electron: process.versions.electron, chrome: process.versions.chrome, v8: process.versions.v8 },
   };
@@ -253,7 +253,7 @@ async function openCanvasWindow(invite) {
     if(isLocalURL(details.url)){const url=new URL(details.url);allowed=url.pathname.startsWith('/local-canvas/')||url.pathname.startsWith('/__local/collaboration/');}
     callback({cancel:!allowed});
   });
-  const peer=new BrowserWindow({width:1440,height:940,minWidth:1000,minHeight:680,title:'M0 Local · 协作画布',backgroundColor:'#f7f8fb',show:false,webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,session:isolatedSession}});
+  const peer=new BrowserWindow({width:1440,height:940,minWidth:1000,minHeight:680,title:'Astrix · 协作画布',backgroundColor:'#f7f8fb',show:false,webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true,session:isolatedSession}});
   canvasWindows.add(peer);
   peer.once('closed',()=>canvasWindows.delete(peer));
   peer.once('ready-to-show',()=>peer.show());
@@ -275,7 +275,7 @@ async function createWindow() {
   });
   mainWindow = new BrowserWindow({
     width: 1480, height: 940, minWidth: 1000, minHeight: 680,
-    title: 'M0 Local', backgroundColor: '#f7f7f7',
+    title: 'Astrix', backgroundColor: '#f7f7f7',
     titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 17, y: 17 },
     show: false,
     webPreferences: {
@@ -397,7 +397,7 @@ if (!app.requestSingleInstanceLock()) {
   }).catch(async (error) => {
     diagnostics.errors.push({ type: 'startup', message: error.message });
     if (smokeTest) await writeSmokeResult({ loaded: false });
-    else dialog.showErrorBox('M0 Local 启动失败', error.message);
+    else dialog.showErrorBox('Astrix 启动失败', error.message);
     console.error(error);
     originalEditor?.dispose();
     figmaHost?.dispose();

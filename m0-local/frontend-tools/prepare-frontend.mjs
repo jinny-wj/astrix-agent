@@ -1,10 +1,14 @@
 import { readFile, writeFile, mkdir, copyFile, readdir, cp } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { rebrandWorkbench } from './branding.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(here, '..');
-const sourceRoot = path.resolve(projectRoot, '../M0-AI-recovered/web-assets/cache-recovered');
+const args=process.argv.slice(2);
+if(args.length && (args.length!==2 || args[0]!=='--source-root' || !args[1])) throw new Error('Usage: node frontend-tools/prepare-frontend.mjs [--source-root /path/to/M0-AI-recovered]');
+const recoveryRoot=path.resolve(args[1]||process.env.M0_RECOVERY_ROOT||path.join(projectRoot,'../M0-AI-recovered'));
+const sourceRoot = path.join(recoveryRoot,'web-assets/cache-recovered');
 const publicRoot = path.join(projectRoot, 'public');
 const manifest = JSON.parse(await readFile(path.join(sourceRoot, 'manifest.json'), 'utf8'));
 const resources = new Map();
@@ -53,6 +57,9 @@ function rewrite(text, name) {
   text = text.replace(/(SECRET_KEY\s*=\s*\{[^}]*?prod\s*:\s*["'])([^"']+)(["'])/g, redact);
   text = text.replace(/(["'])(?:sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{30,})(["'])/g,
     (_match, prefix, suffix) => { scrubbed++; return prefix + suffix; });
+  // This recovered vendor used a short local binding for its old image-search
+  // credential rather than a named credential property. Keep the service inert.
+  text=text.replace(/(const\s+[A-Za-z_$][\w$]*=)(["'])[A-Za-z0-9_-]{40,}\2(,[A-Za-z_$][\w$]*=`https:\/\/api\.pexels\.com\/v1\/search)/g,(_match,prefix,quote,suffix)=>{scrubbed++;return prefix+quote+quote+suffix;});
   if (scrubbed) scrubCounts[name] = scrubbed;
   if (name.endsWith('/assets/index-iLbwEgQT.js')) {
     const oldRoute = 'path:"/",redirect:()=>isInElectron(window)?"/aicode":"/welcome"';
@@ -109,7 +116,7 @@ function rewrite(text, name) {
     text=text.replace(canvasHost,canvasHost+localCanvas);
     patches.push({ file: name, purpose: 'Mount the project-bound real Figma workspace. Its empty host is covered by an isolated desktop WebContentsView; browser users open Figma normally and connect the Plugin Bridge. Preserve Code and chat.', matchCount: 2 });
   }
-  return text;
+  return rebrandWorkbench(text,name);
 }
 
 await mkdir(publicRoot, { recursive: true });
@@ -132,8 +139,13 @@ html = html.replace(/<script[^>]*src=["']\/accessproxy_statics\/[^"']+["'][^>]*>
 html = html.replace('<head>', '<head>\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>');
 html = html.replace(/<script type="module" crossorigin src="([^"]+)"><\/script>/,
   (_match, entry) => `<script type="module">await window.__m0LocalReady; await import(${JSON.stringify(entry)});</script>`);
-html = html.replace('<title>码灵</title>', '<title>M0 AI · 本地恢复版</title>');
+html = html.replace(/<title>[^<]*<\/title>/, '<title>Astrix</title>');
+html=html.replace(/(?:\/vendor\/[^"'\s<>]+\/)?m0-logo\.svg/g,'/branding/astrix-logo-v1.png');
+html=html.replace(/alt=(["'])M0\1/g,'alt="Astrix"');
 await writeFile(path.join(publicRoot, 'index.html'), html);
+await mkdir(path.join(publicRoot,'branding'),{recursive:true});
+await copyFile(path.join(here,'branding/astrix-logo-v1.png'),path.join(publicRoot,'branding/astrix-logo-v1.png'));
+await copyFile(path.join(here,'branding/astrix-dock.png'),path.join(publicRoot,'branding/astrix-dock.png'));
 await copyFile(path.join(here, 'local-runtime.js'), path.join(publicRoot, 'local-runtime.js'));
 await copyFile(path.join(here, 'workflow-monitor.js'), path.join(publicRoot, 'workflow-monitor.js'));
 await copyFile(path.join(here, 'local-codegen.html'), path.join(publicRoot, 'codegen.html'));

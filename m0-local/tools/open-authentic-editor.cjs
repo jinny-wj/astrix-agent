@@ -27,7 +27,7 @@ let finished = false;
 fs.mkdirSync(workspace, { recursive: true, mode: 0o700 });
 if (!fs.existsSync(readme)) fs.writeFileSync(readme, '# Authentic KSCode probe\n\nThis README belongs only to the isolated local editor test.\n', { mode: 0o600 });
 fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-app.setName('M0 Authentic Editor');
+app.setName('Astrix Editor');
 app.setPath('userData', path.join(sandbox, 'electron'));
 app.commandLine.appendSwitch('disable-background-networking');
 protocol.registerSchemesAsPrivileged([
@@ -110,7 +110,7 @@ app.whenReady().then(async () => {
   }));
   ipcMain.on('authentic-editor:blocked', (_event, value) => report.blocked.push({ process: 'renderer', ...value }));
   win = new BrowserWindow({
-    title: 'M0 Original KSCode · Isolated Probe', width: 1440, height: 940, show: true,
+    title: 'Astrix · KSCode', width: 1440, height: 940, show: true,
     webPreferences: {
       nodeIntegration: true, contextIsolation: false, sandbox: false,
       preload: path.join(__dirname, 'authentic-editor-preload.cjs'),

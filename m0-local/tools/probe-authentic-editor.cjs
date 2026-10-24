@@ -18,7 +18,7 @@ const reportFile = path.join(root, 'diagnostics', 'authentic-editor-server-probe
 const blocked = [];
 fs.mkdirSync(sandbox, { recursive: true, mode: 0o700 });
 fs.mkdirSync(path.dirname(reportFile), { recursive: true });
-app.setName('M0 Authentic Editor Probe');
+app.setName('Astrix Editor Probe');
 app.setPath('userData', path.join(sandbox, 'electron'));
 app.commandLine.appendSwitch('disable-background-networking');
 process.env.KSCODE_SOCKET_IPC_HANDLE = path.join(sandbox, 'editor.sock');

@@ -1,11 +1,19 @@
 {
-  "name": "M0 Local Figma Bridge",
+  "name": "Astrix Figma Bridge",
   "id": "m0-local-figma-bridge",
   "api": "1.0.0",
   "enablePrivatePluginApi": true,
   "main": "code.js",
   "ui": "ui.html",
-  "editorType": ["figma"],
+  "editorType": [
+    "figma"
+  ],
   "documentAccess": "dynamic-page",
-  "networkAccess": {"allowedDomains": ["http://127.0.0.1:4317", "http://localhost:4317"], "reasoning": "Paired local M0 commands and Figma execution receipts."}
+  "networkAccess": {
+    "allowedDomains": [
+      "http://127.0.0.1:4317",
+      "http://localhost:4317"
+    ],
+    "reasoning": "Paired local Astrix commands and Figma execution receipts."
+  }
 }

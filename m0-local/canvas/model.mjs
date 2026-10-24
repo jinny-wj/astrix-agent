@@ -184,7 +184,7 @@ export function importDesignJSON(input) {
     check(depth);const s=value.styles||{};
     const imageData=input.imageMap?.[value.imageId]?.dataURL;
     if(value.nodeType==='image'&&typeof imageData==='string'&&imageData.startsWith('data:image/svg+xml;base64,')){
-      const encoded=imageData.slice(26);if(encoded.length>700000||!/^[A-Za-z0-9+/]*={0,2}$/.test(encoded))throw new Error('M0Schema 的 SVG 素材无效或过大。');
+      const encoded=imageData.slice(26);if(encoded.length>700000||!/^[A-Za-z0-9+/]*={0,2}$/.test(encoded))throw new Error('设计 Schema 的 SVG 素材无效或过大。');
       const source=new TextDecoder().decode(Uint8Array.from(atob(encoded),c=>c.charCodeAt(0))),parsed=parseSVG(source),width=number(s.width,160),height=number(s.height,100),rootWidth=number(/<svg[^>]*\bwidth="([^"]+)"/.exec(source)?.[1],width),rootHeight=number(/<svg[^>]*\bheight="([^"]+)"/.exec(source)?.[1],height),sx=width/rootWidth,sy=height/rootHeight;
       const group={...createNode('group'),id:freshId(value.id),name:value.name||'SVG vector',x:number(s.left),y:number(s.top),width,height,opacity:limit(s.opacity,0,1,1),children:parsed.nodes.map(node=>({...node,id:newId(),x:node.x*sx,y:node.y*sy,width:node.width*sx,height:node.height*sy}))};
       return group;
@@ -195,7 +195,7 @@ export function importDesignJSON(input) {
     if(s.gradient?.length)warnings.add('渐变暂使用底色显示；没有复原完整 Figma 填充系统。');
     if(type==='image')node.imageData=validateImage(imageData);
     Object.assign(node,{textAlign:['left','center','right'].includes(s.textAlign)?s.textAlign:'left',lineHeight:number(s.lineHeight,node.fontSize*1.25),letterSpacing:number(s.letterSpacing)});
-    if(s.display==='flex')warnings.add('M0Schema 的自动布局按已有 left/top 导入；纯 flex 布局需要手动调整位置。');
+    if(s.display==='flex')warnings.add('设计 Schema 的自动布局按已有 left/top 导入；纯 flex 布局需要手动调整位置。');
     node.children=(value.children||[]).map(child=>m0(child,depth+1));return node;
   }
   function paint(paints,fallback='none') {
@@ -242,7 +242,7 @@ export function importDesignJSON(input) {
   else if(input?.document?.type)nodes=figma(input.document);
   else if(input?.type)nodes=figma(input);
   else if(input?.nodes&&typeof input.nodes==='object'&&!Array.isArray(input.nodes))nodes=Object.values(input.nodes).flatMap(item=>item?.document?figma(item.document):[]);
-  else throw new Error('请选择本地画布、M0Schema 或 Figma REST JSON；不支持 .fig 二进制文件。');
+  else throw new Error('请选择本地画布、设计 Schema 或 Figma REST JSON；不支持 .fig 二进制文件。');
   if(!nodes.length)throw new Error('JSON 中没有可导入的设计节点。');
   return {document:validateDocument({format:FORMAT,version:1,name,nodes}),warnings:[...warnings]};
 }

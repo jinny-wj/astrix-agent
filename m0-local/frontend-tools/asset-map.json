@@ -1085,8 +1085,10 @@
     }
   ],
   "credentialLiteralsRemoved": {
+    "/vendor/p5-live.wskwai.com/kcdn/cdn-kcdn112803/figma-api-inside/index.iife.1789527401890.js": 1,
     "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/kconf-store-BfoY3jWz.js": 1,
-    "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js": 2
+    "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js": 2,
+    "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/resize-container-CWxcyYgS.js": 2
   },
   "patches": [
     {

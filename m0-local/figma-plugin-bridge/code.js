@@ -1133,7 +1133,7 @@ async function applyCommand(command) {
   try {
     if(font){node.fontName=font;node.characters=command.characters;node.fontSize=command.fontSize||16}
     else node.resize(command.width,command.height)
-    node.name=command.name||'M0 '+node.type;node.x=command.x||0;node.y=command.y||0
+    node.name=command.name||'Astrix '+node.type;node.x=command.x||0;node.y=command.y||0
     if(command.fills&&command.fills.length)node.fills=solidPaints(command.fills)
     parent.appendChild(node);figma.currentPage.selection=[node];figma.viewport.scrollAndZoomIntoView([node])
     if(typeof figma.commitUndo==='function')figma.commitUndo()

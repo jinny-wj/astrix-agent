@@ -128,7 +128,7 @@ export function createFigmaBridge({dataDir,port=4317,resolveProject,commandTimeo
       command.targets=input.targets.map(target=>{if(!isObject(target))throw fail('目标无效');const nodeId=binding(target.nodeId,'nodeId'),expectedType=binding(target.expectedType,'expectedType');if(ids.has(nodeId))throw fail('目标重复');ids.add(nodeId);if(command.lock==='selection'&&(!selected.has(nodeId)||selected.get(nodeId).type!==expectedType))throw fail('目标不在已锁定选区或类型已变化',409);if(!Array.isArray(target.patches)||!target.patches.length||target.patches.length>20)throw fail('修改项数量无效');return {nodeId,expectedType,patches:target.patches.map(patch)};});
     }
     if(type==='create-frame'||type==='create-text'){
-      command.name=input.name===undefined?'M0 '+(type==='create-frame'?'Frame':'Text'):string(input.name,'名称');
+      command.name=input.name===undefined?'Astrix '+(type==='create-frame'?'Frame':'Text'):string(input.name,'名称');
       command.x=input.x===undefined?0:number(input.x,'x',-1e7,1e7);command.y=input.y===undefined?0:number(input.y,'y',-1e7,1e7);
       if(input.parentId)command.parentId=binding(input.parentId,'parentId');
       if(input.fills!==undefined){if(!Array.isArray(input.fills)||input.fills.length>10)throw fail('填充无效');command.fills=input.fills.map(color);}

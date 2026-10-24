@@ -1,14 +1,14 @@
-# M0 AI 本地运行项目
+# Astrix 本地工作台
 
-该工程使用已恢复的 M0 AI 工作台前端构建，补上独立的本地服务与 Electron 桌面壳。准备运行资源后可在本机启动，项目、会话、模型配置均保存在项目目录中，不需要原公司的 SSO。
+Astrix 工作台使用已恢复的 M0 AI 前端构建，补上独立的本地服务与 Electron 桌面壳。准备运行资源后可在本机启动，项目、会话、模型配置均保存在项目目录中，不需要原公司的 SSO。
 
-正式位置：[jinny-wj/astrix-agent/m0-local](https://github.com/jinny-wj/astrix-agent/tree/main/m0-local)，当前为 **0.6.1**。[版本总表](versions/index.json)保留全部阶段；0.1～0.5 为文档记录，应用源码从 0.6.0 开始保存。M0 使用 `m0/history/v版本号` 和 `m0/v版本号`，旧引用对应关系见[历史导入映射](docs/历史导入映射.json)。后续按[发布流程](docs/版本发布.md)逐版保存准确源码。Astrix 客户端安装包使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向 M0 源码记录，不代表新的 Astrix 安装包。
+正式位置：[jinny-wj/astrix-agent/m0-local](https://github.com/jinny-wj/astrix-agent/tree/main/m0-local)，当前为 **0.6.2**。[版本总表](versions/index.json)保留全部阶段；0.1～0.5 为文档记录，应用源码从 0.6.0 开始保存。版本标签沿用 `m0/history/v版本号` 和 `m0/v版本号` 以保持兼容，旧引用对应关系见[历史导入映射](docs/历史导入映射.json)。后续按[发布流程](docs/版本发布.md)逐版保存准确源码。Astrix 客户端安装包使用[原预览版固定入口](https://github.com/jinny-wj/astrix-agent/releases/tag/v0.1.0-preview.20260906)；仓库的 Latest 当前可能指向 M0 源码记录，不代表新的 Astrix 安装包。
 
-公开 Git 和 `m0/v0.6.1` Release 保存源码与文档。生成的 `public/`、插件转换器、额外静态资源和图标不放入 Git；它们与原编辑器、原 OpenCode、原 LangGraph 和 Skills 通过受限草稿 `m0-runtime/v0.6.1` 单独提供。请先按[运行包说明](docs/GitHub运行包.md)准备对应资源；原引擎恢复目录为 `astrix-agent/M0-AI-recovered/`。`npm ci` 只安装项目依赖，不会取得这些资源、原公司服务或登录资料。
+公开 Git 和 `m0/v0.6.2` Release 保存源码与文档。生成的 `public/`、插件转换器、额外静态资源和图标不放入 Git；它们与原编辑器、原 OpenCode、原 LangGraph 和 Skills 通过受限草稿 `m0-runtime/v0.6.2` 单独提供。请先按[运行包说明](docs/GitHub运行包.md)准备对应资源；原引擎恢复目录为 `astrix-agent/M0-AI-recovered/`。`npm ci` 只安装项目依赖，不会取得这些资源、原公司服务或登录资料。
 
 ## 启动
 
-新克隆后进入 M0 子目录安装依赖，按运行包说明准备资源后启动。资源齐备时也可双击 **启动M0.command**：
+新克隆后进入工作台子目录安装依赖，按运行包说明准备资源后启动。资源齐备时也可双击 **启动Astrix.command**：
 
 ```sh
 git clone https://github.com/jinny-wj/astrix-agent.git
@@ -110,7 +110,7 @@ npm run desktop -- --smoke-test
 
 ## 与原软件的关系
 
-这是以恢复构建为基础的本地重建工程，当前版本为 0.6.1。本版将 M0 合入 Astrix 并整理发布兼容，UI 和功能沿用 0.6.0。原前端源码地图、完整原始 monorepo、服务端与企业运行环境未取得，因此不能保证与原软件二进制或功能完全等同。修改和新增代码均与原始恢复证据分开保存。
+这是以恢复构建为基础的本地重建工程，当前版本为 0.6.2。本版将产品显示名称和品牌图统一为 Astrix；真实 Figma、Agent、编辑器与终端功能沿用既有整合。原前端源码地图、完整原始 monorepo、服务端与企业运行环境未取得，因此不能保证与原软件二进制或功能完全等同。修改和新增代码均与原始恢复证据分开保存。
 
 运行版会移除检测出的原内嵌凭据，重定向旧服务请求至本地，并限制页面联网。不要直接替换回原主进程或原 preload 期待本地兼容层自动生效。
 

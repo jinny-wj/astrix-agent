@@ -187,7 +187,7 @@ export function createDesignCloud({dataDir,resolveWorkspace,readCanvas,saveCanva
     const send=(data,status=200)=>{res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'});res.end(JSON.stringify(data));return true;};
     const html=(content,{download=false,readonly=false,prototype=false}={})=>{
       const headers={'content-type':'text/html; charset=utf-8','cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff'};
-      if(download)headers['content-disposition']='attachment; filename="m0-local-design.html"';
+      if(download)headers['content-disposition']='attachment; filename="astrix-design.html"';
       if(readonly)headers['content-security-policy']=prototype?PROTOTYPE_CSP:"default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'self'";
       res.writeHead(200,headers);res.end(content);return true;
     };

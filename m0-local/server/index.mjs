@@ -151,7 +151,7 @@ const app=http.createServer(async(req,res)=>{
     }
     if(url.pathname==='/__local/project/export'){
       if(req.method!=='GET')return json(res,{error:'Method not allowed'},405);
-      res.setHeader('Content-Disposition','attachment; filename="m0-local-project.json"');
+      res.setHeader('Content-Disposition','attachment; filename="astrix-project.json"');
       return json(res,await files.exportProject());
     }
     if(url.pathname==='/__local/project/import'){
@@ -214,7 +214,7 @@ app.on('upgrade',(req,socket)=>{
   socket.on('error',()=>{});
 });
 app.on('error',error=>{console.error(error.message);process.exitCode=1;});
-app.listen(port,'127.0.0.1',()=>console.log(`M0 Local: http://127.0.0.1:${port}/home\nSettings: http://127.0.0.1:${port}/__local/settings\nData: ${dataDir}`));
+app.listen(port,'127.0.0.1',()=>console.log(`Astrix: http://127.0.0.1:${port}/home\nSettings: http://127.0.0.1:${port}/__local/settings\nData: ${dataDir}`));
 let stopping=false;
 async function shutdown(){if(stopping)return;stopping=true;for(const response of events)response.end();figmaBridge.close();await collaboration.close();app.close(()=>process.exit(0));}
 process.on('SIGTERM',shutdown);process.on('SIGINT',shutdown);

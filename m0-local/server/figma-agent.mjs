@@ -38,7 +38,7 @@ export async function createFigmaAgentScope({bridge,workspaceService,projectId,c
     // Only our own successful native receipt advances the run's revision.
     // A later user selection upload still invalidates the next write.
     if(write&&Number.isInteger(ack.result?.selectionRevision))selectionRevision=ack.result.selectionRevision;
-    if(write&&['create-frame','create-text'].includes(command.type)&&typeof ack.result?.nodeId==='string')allowed.set(ack.result.nodeId,{id:ack.result.nodeId,name:command.name||'M0 '+command.type,type:command.type==='create-frame'?'FRAME':'TEXT'});
+    if(write&&['create-frame','create-text'].includes(command.type)&&typeof ack.result?.nodeId==='string')allowed.set(ack.result.nodeId,{id:ack.result.nodeId,name:command.name||'Astrix '+command.type,type:command.type==='create-frame'?'FRAME':'TEXT'});
     let data=ack.result?.data??ack.result??ack.data;
     const serialized=JSON.stringify(data);
     if(serialized?.length>48000)data={truncated:true,nodeId:command.nodeId,format:data?.format,mimeType:data?.mimeType,originalCharacters:serialized.length,preview:serialized.slice(0,32000),message:'导出已执行，但内容超过模型工具上下文限制；此预览不完整。请在 Design 操作面板下载原始导出，或使用生成原 KRN 代码保存完整项目。'};
@@ -66,7 +66,7 @@ export async function createFigmaAgentScope({bridge,workspaceService,projectId,c
         if(!patches.length)throw Error('图层修改不能为空');
         return {nodeId:node.id,expectedType:node.type,patches};
       });
-      return execute({type:'patch-nodes',targets,lock:'selection',executionMode:'atomic',summary:'M0 Agent 修改发送时锁定的选区'},true,operationSignal);
+      return execute({type:'patch-nodes',targets,lock:'selection',executionMode:'atomic',summary:'Astrix Agent 修改发送时锁定的选区'},true,operationSignal);
     }
     throw Error('未知 Figma 工具');
   }
@@ -92,7 +92,7 @@ export async function createFigmaMcpGateway(scope,{signal}={}){
     const response=result=>reply(200,{jsonrpc:'2.0',id:input.id,result});
     try{
       operationSignal.throwIfAborted();
-      if(input.method==='initialize')return response({protocolVersion:input.params?.protocolVersion||'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'M0 Figma Plugin Bridge',version:bridgeVersion}});
+      if(input.method==='initialize')return response({protocolVersion:input.params?.protocolVersion||'2024-11-05',capabilities:{tools:{listChanged:false}},serverInfo:{name:'Astrix Figma Plugin Bridge',version:bridgeVersion}});
       if(input.method==='ping')return response({});
       if(input.method==='tools/list')return response({tools:scope.tools.map(({function:f})=>({name:f.name,description:f.description,inputSchema:f.parameters}))});
       if(input.method==='tools/call'){

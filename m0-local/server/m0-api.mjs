@@ -75,7 +75,7 @@ export function createM0Api({ dataDir, workspaceRoot, port = 4317, getModelConfi
     const readme = path.join(projectPath, 'README.md');
     try {
       const title = String(projectName).replace(/[\r\n\x00-\x1f]/g, ' ').trim();
-      fs.writeFileSync(readme, `# ${title || '本地项目'}\n\n这是 M0 本地恢复版创建的项目，文件仅保存在这台电脑上。\n\n可在中央文件编辑器中编辑文件，或在配置模型后通过聊天处理此工作区。\n`, { encoding: 'utf8', flag: 'wx' });
+      fs.writeFileSync(readme, `# ${title || '本地项目'}\n\n这是 Astrix 创建的本地项目，文件仅保存在这台电脑上。\n\n可在中央文件编辑器中编辑文件，或在配置模型后通过聊天处理此工作区。\n`, { encoding: 'utf8', flag: 'wx' });
     } catch (cause) { if (cause.code !== 'EEXIST') throw cause; }
     return true;
   }
@@ -242,7 +242,7 @@ export function createM0Api({ dataDir, workspaceRoot, port = 4317, getModelConfi
       case 'workspace.updateAndRestart': { const result = selectWorkspace(first); if (!result.success) throw error(result.error); return true; }
       case 'cli.getVersion': return '3.9.5-local';
       case 'cli.getPorts': return { nestjs: port, websocket: port, opencode: port, proxy: port };
-      case 'app.getInfo': return { name: 'M0 AI Local', version: '3.9.5-local', isPackaged: false, platform: process.platform, arch: process.arch, runtime: { node: process.versions.node, electron: '', chrome: '', v8: process.versions.v8 } };
+      case 'app.getInfo': return { name: 'Astrix', version: '3.9.5-local', isPackaged: false, platform: process.platform, arch: process.arch, runtime: { node: process.versions.node, electron: '', chrome: '', v8: process.versions.v8 } };
       case 'app.getHomedir': return localHome;
       case 'app.getMainWindowBounds': return null;
       case 'app.getPreloadPath': return '';
@@ -306,7 +306,7 @@ export function createM0Api({ dataDir, workspaceRoot, port = 4317, getModelConfi
       if (req.method === 'POST') return send(selectWorkspace(body.path));
       return send({ path: state.workspace, history: state.history });
     }
-    if (route === '/info' || route === '/info/version') return send({ version: '3.9.5-local', name: 'M0 AI Local', adapter: 'local-reconstruction' });
+    if (route === '/info' || route === '/info/version') return send({ version: '3.9.5-local', name: 'Astrix', adapter: 'local-reconstruction' });
     if (route === '/project/container_available') return send({ status: 200, ...await executionStatus() });
     if (route === '/prompt/preset') return send([]);
     if (route === '/coolux/business-space/list') return send({ list: [{ id: 'local', name: '本地空间', description: '仅保存在本机；尚未连接 Figma 或企业资产', local: true }], total: 1, page: 1, pageSize: 20 });

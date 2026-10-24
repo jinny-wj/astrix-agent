@@ -173,7 +173,7 @@ export function createCanvasCollaboration(options){
     const remoteURL=item.gatewayUrls?.[0]||(gateway.enabled&&gateway.urls?.[0]?new URL('/local-canvas/index.html?invite='+encodeURIComponent(token),gateway.urls[0]).href:null);
     item.localURL=localURL.href;item.shareURL=remoteURL||new URL(item.url||localURL.href,location.href).href;invites.unshift(item);renderInvites();return item;
   }
-  function downloadDraft(){const url=URL.createObjectURL(new Blob([JSON.stringify(options.getDocument(),null,2)],{type:'application/json'})),anchor=node('a');anchor.href=url;anchor.download='m0-unsynced-design.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function downloadDraft(){const url=URL.createObjectURL(new Blob([JSON.stringify(options.getDocument(),null,2)],{type:'application/json'})),anchor=node('a');anchor.href=url;anchor.download='astrix-unsynced-design.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   toggle.onclick=()=>{status();if(!dialog.open)dialog.showModal();};start.onclick=()=>void join().then(()=>{applyView('join');}).catch(errorMessage);
   reconnect.onclick=()=>void resync().then(()=>{connectEvents();return flush();}).catch(errorMessage);
   download.onclick=downloadDraft;reload.onclick=()=>void request('state?sessionToken='+encodeURIComponent(session.sessionToken)).then(snapshot=>{state.reset(snapshot);connected=true;applyView('reset');}).catch(errorMessage);

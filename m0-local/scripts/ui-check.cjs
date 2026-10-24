@@ -15,7 +15,7 @@ if (parsedURL.protocol !== 'http:' || !['127.0.0.1', 'localhost', '[::1]'].inclu
 const origin = parsedURL.origin;
 const result = { startedAt: new Date().toISOString(), url, stage, events: [], console: [], network: [] };
 let win;
-app.setName('M0 Local UI Check');
+app.setName('Astrix UI Check');
 app.setPath('userData', path.join(root, '.local-data', 'ui-check-electron'));
 app.commandLine.appendSwitch('disable-background-networking');
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

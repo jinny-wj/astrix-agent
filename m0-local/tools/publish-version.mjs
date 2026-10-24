@@ -10,7 +10,7 @@ const secretPatterns=[/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----(?:\s|\\
 export function publicationLayout(projectRoot,repositoryRoot,version){
   if(!semanticVersion.test(version))throw Error('package.json needs a semantic version');
   const relative=path.relative(repositoryRoot,projectRoot);
-  if(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative))throw Error('M0 project must be inside its Git repository');
+  if(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative))throw Error('Astrix project must be inside its Git repository');
   const prefix=relative.split(path.sep).join('/');
   return {prefix,pathspec:prefix||'.',version,versionFileSuffix:'v'+version,tag:'m0/v'+version,runtimeTag:'m0-runtime/v'+version};
 }
@@ -42,7 +42,7 @@ export function rewriteReleaseNotes(notes,{repository,tag,prefix}){
 
 export function validatePublicationFiles({repositoryRoot,prefix,files}){
   for(const name of new Set(files)){
-    if(!isProjectPath(name,prefix))throw Error('Git returned a file outside the M0 project: '+name);
+    if(!isProjectPath(name,prefix))throw Error('Git returned a file outside the Astrix project: '+name);
     const relative=prefix?name.slice(prefix.length+1):name;
     const file=path.join(repositoryRoot,name);
     // Deleted files may be removed, but a dangling link must still be rejected.
@@ -89,7 +89,7 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
   const assertScopedChanges=()=>{
     const names=changedPaths(gitRaw('status','--porcelain=v1','-z','--untracked-files=all'));
     const outside=names.filter(name=>!isProjectPath(name,prefix));
-    if(outside.length)throw Error('Commit or set aside changes outside '+(prefix||'M0')+' before publishing: '+outside.join(', '));
+    if(outside.length)throw Error('Commit or set aside changes outside '+(prefix||'Astrix')+' before publishing: '+outside.join(', '));
     return names;
   };
   const changes=assertScopedChanges();
@@ -114,7 +114,7 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
     validatePublicationFiles({repositoryRoot,prefix,files:latestFiles});
     run('git',['add','--all','--',pathspec],{cwd:repositoryRoot,stdio:'inherit'});
     const staged=gitRaw('diff','--cached','--name-only','-z').split('\0').filter(Boolean);
-    if(staged.some(name=>!isProjectPath(name,prefix)))throw Error('Refusing to commit staged changes outside the M0 project');
+    if(staged.some(name=>!isProjectPath(name,prefix)))throw Error('Refusing to commit staged changes outside the Astrix project');
     if(staged.length)run('git',['commit','-m','release: '+tag],{cwd:repositoryRoot,stdio:'inherit'});
     assertScopedChanges();
     run('git',['tag','-a',tag,'-F',note],{cwd:repositoryRoot,stdio:'inherit'});
@@ -134,7 +134,7 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
   };
   let release=viewRelease(tag);
   if(!release){
-    try{run('gh',['release','create',tag,'--repo',repository,'--verify-tag','--title','M0 '+versionFileSuffix,'--notes-file',notesFile,'--latest=false'],{stdio:'inherit'});}
+    try{run('gh',['release','create',tag,'--repo',repository,'--verify-tag','--title','Astrix '+versionFileSuffix,'--notes-file',notesFile,'--latest=false'],{stdio:'inherit'});}
     catch(error){if(!viewRelease(tag))throw error;}
     release=viewRelease(tag);
   }
@@ -144,10 +144,10 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
 
   if(assets.length){
     const runtimeNotes=path.join(assetsDir,'m0-runtime-'+versionFileSuffix+'.notes.md');
-    fs.writeFileSync(runtimeNotes,'# M0 '+versionFileSuffix+' 私有运行资源\n\n仅为未发布草稿，供仓库有权限的维护者下载。不得将此草稿发布为公开安装包。\n\n对应源码：'+commit+'\n公开版本记录：https://github.com/'+repository+'/releases/tag/'+encodeURIComponent(tag)+'\n\n这些附件与公开源码分开保存，不含个人项目、登录状态或模型配置。准备步骤和适用平台以源码文档与清单为准。\n');
+    fs.writeFileSync(runtimeNotes,'# Astrix '+versionFileSuffix+' 私有运行资源\n\n仅为未发布草稿，供仓库有权限的维护者下载。不得将此草稿发布为公开安装包。\n\n对应源码：'+commit+'\n公开版本记录：https://github.com/'+repository+'/releases/tag/'+encodeURIComponent(tag)+'\n\n这些附件与公开源码分开保存，不含个人项目、登录状态或模型配置。准备步骤和适用平台以源码文档与清单为准。\n');
     let draft=viewRelease(runtimeTag);
     if(!draft){
-      try{run('gh',['release','create',runtimeTag,'--repo',repository,'--draft','--target',commit,'--title','M0 runtime '+versionFileSuffix+' · draft only','--notes-file',runtimeNotes,'--latest=false'],{stdio:'inherit'});}
+      try{run('gh',['release','create',runtimeTag,'--repo',repository,'--draft','--target',commit,'--title','Astrix runtime '+versionFileSuffix+' · draft only','--notes-file',runtimeNotes,'--latest=false'],{stdio:'inherit'});}
       catch(error){if(!viewRelease(runtimeTag))throw error;}
       draft=viewRelease(runtimeTag);
     }
