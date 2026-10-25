@@ -23,7 +23,10 @@ async function request(value,route,body,auth=true){
   const headers={};if(body)headers['content-type']='application/json';if(auth)headers.authorization='Bearer '+value.credentials.token;
   const controller=typeof AbortController==='function'?new AbortController():null;if(controller)value.connection.controllers.add(controller);
   const timer=controller&&typeof setTimeout==='function'?setTimeout(()=>controller.abort(),10000):null;
-  try{const response=await fetch(value.origin+'/__local/figma/bridge/'+route,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined,...(controller?{signal:controller.signal}:{})});const result=await response.json();if(!current(value,auth))throw Error('连接已切换，已忽略原请求结果');if(!response.ok)throw Object.assign(Error(result.error||'请求失败 '+response.status),{status:response.status});return result;}
+  // The manifest permits localhost development URLs. Keep the original
+  // canonical origin for pairing/storage/receipts; change transport only.
+  const transport=new URL(value.origin+'/__local/figma/bridge/'+route);transport.hostname='localhost';
+  try{const response=await fetch(transport.href,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined,...(controller?{signal:controller.signal}:{})});const result=await response.json();if(!current(value,auth))throw Error('连接已切换，已忽略原请求结果');if(!response.ok)throw Object.assign(Error(result.error||'请求失败 '+response.status),{status:response.status});return result;}
   finally{if(timer!==null)clearTimeout(timer);if(controller)value.connection.controllers.delete(controller);}
 }
 function persist(connection){const credentials={...connection.credentials,base:connection.origin,...scope()};saved[connection.origin]=credentials;parent.postMessage({pluginMessage:{type:'save-pairing',endpoint:connection.origin,credentials}},'*');}
@@ -79,9 +82,14 @@ for(const connection of connections){
   $('disconnect'+connection.suffix).onclick=()=>{const origin=connection.origin;cancel(connection);delete saved[origin];parent.postMessage({pluginMessage:{type:'clear-pairing',endpoint:origin}},'*');$('pair'+connection.suffix).disabled=false;status(connection,'已断开此端；另一连接不受影响');};
 }
 window.onmessage=event=>{
-  if(event.source!==parent)return;const message=event.data?.pluginMessage;if(!message)return;
+  // Figma Desktop delivers plugin messages from its top-level official frame;
+  // older hosts deliver directly from parent. Require the actual window
+  // identity as well as Figma's exact origin for the wrapped desktop route.
+  const direct=event.source===parent,figmaWrapper=typeof top!=='undefined'&&event.source===top&&event.origin==='https://www.figma.com';
+  if(!direct&&!figmaWrapper)return;const message=event.data?.pluginMessage;if(!message||typeof message!=='object'||Array.isArray(message)||typeof message.type!=='string')return;
   if(message.type==='bridge-ready')restore(message);
   if(message.type==='selection-snapshot'){
+    const received=message.snapshot;if(!received||typeof received!=='object'||Array.isArray(received)||!Array.isArray(received.nodes)||typeof received.sessionId!=='string'||!Number.isSafeInteger(received.revision)||received.revision<0||(received.fileKey!==undefined&&typeof received.fileKey!=='string'))return;
     const previous=snapshot;snapshot=message.snapshot;
     if($('document-status'))$('document-status').textContent=snapshot.fileKey?(snapshot.documentName||'当前 Figma 文件'):'无法读取文件标识，请检查开发插件权限';
     if(!snapshot.fileKey){for(const connection of connections){cancel(connection);status(connection,'无法读取真实文件标识');}return;}

@@ -17,7 +17,7 @@
 
 支持当前选区/节点上下文、显式选中节点、PNG/SVG/JSON_REST_V1 导出、创建 Frame/Text、批量属性修改。Schema 导出返回供恢复 KRN 生成器使用的 `nodeTree/imageMap/componentsMap`：简单 View/Text 保留节点结构，图片、复杂矢量、旋转、混合文字及效果以真实 Figma PNG 保留外观，`metadata.notes` 列出栅格化子树。捕获的是布局位置，不是完整 Figma 组件/约束往返转换。
 
-`enablePrivatePluginApi` 允许本地开发插件读取 `figma.fileKey`。正式发布到 Web 编辑器时需组织私有插件；普通 Community 插件不能直接沿用此私有文件键协议。普通 Figma 嵌入 iframe 不是插件宿主。这里未宣称真实 Figma 账号端到端验证通过；HTTP 和插件代码 VM 测试不能替代实际编辑器联调。
+`enablePrivatePluginApi` 允许本地开发插件读取 `figma.fileKey`。正式发布到 Web 编辑器时需组织私有插件；普通 Community 插件不能直接沿用此私有文件键协议。普通 Figma 嵌入 iframe 不是插件宿主。0.7.4已另行完成官方Desktop插件与两端的真实只读联调；HTTP和插件VM测试仍不能替代新设备、其他文件或写入能力的实际验收。
 
 官方参考：
 
@@ -45,3 +45,7 @@ await ui.tick();
 ```
 
 选区至多同步 100 个节点，摘要文字每层 500 字；截断状态保留在快照。JSON/Schema 导出上限 3 MB，PNG/SVG 单次 2 MB；复杂设计应缩小目标。服务端最多 100 个待执行命令、回执最多保留 500 条记录；重启服务会清空队列与回执。配对凭据可恢复，必须重新上报真实选区后才在线。
+
+## 真实宿主兼容
+
+0.7.4的开发manifest用`allowedDomains: ["none"]`关闭普通外网访问，仅在`devAllowedDomains`放行指定localhost端口；HTTP传输使用localhost，逻辑连接及旧配对键继续兼容127回环地址。主线程消息既支持直接parent宿主，也支持来源窗口为top且origin精确等于官方Figma域的Desktop封装；其他身份、来源或畸形选区均拒绝。正式创建/导入、双端配对与真实只读回执已在本机验收，个人插件ID和配对不会分发。

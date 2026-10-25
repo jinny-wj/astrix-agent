@@ -15,14 +15,15 @@ export function createPluginHarness(fileKey="FigmaFile_123",{storage=new Map()}=
 
 /** Runs the actual plugin iframe script against a caller's real local HTTP
  * server. The Figma scene is the explicit fixture above, never a real account. */
-export async function createPluginUiHarness({plugin,baseUrl,endpoints=[baseUrl,'http://127.0.0.1:5273'],fetchImpl=fetch}){
+export async function createPluginUiHarness({plugin,baseUrl,endpoints=[baseUrl,'http://127.0.0.1:5273'],fetchImpl=fetch,hostEnvelope='parent',hostOrigin='https://www.figma.com'}){
   const html=await fs.readFile(new URL('./ui.html',import.meta.url),'utf8'),script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
-  const elements=new Map(['base','code','status','log','pair','disconnect','base-web','code-web','status-web','pair-web','disconnect-web'].map(id=>[id,{value:id==='base'?baseUrl:id==='base-web'?(endpoints[1]||''):'',textContent:'',disabled:false}]));
-  const errors=[],intervals=[],parent={postMessage(message){Promise.resolve(plugin.figma.ui.onmessage(message.pluginMessage)).catch(error=>errors.push(error));}};
-  const window={},context=vm.createContext({__ASTRIX_BRIDGE_ENDPOINTS__:endpoints,document:{getElementById:id=>elements.get(id)},window,parent,URL,URLSearchParams,crypto:globalThis.crypto,AbortController,AbortSignal,setTimeout,clearTimeout,console,setInterval(fn){intervals.push(fn)},fetch:(url,options={})=>fetchImpl(url,{...options,headers:{...options.headers,origin:'null'}})});
-  plugin.figma.ui.postMessage=value=>queueMicrotask(()=>{try{window.onmessage({source:parent,data:{pluginMessage:value}})}catch(error){errors.push(error)}});
+  const elements=new Map(['base','code','status','log','pair','disconnect','base-web','code-web','status-web','pair-web','disconnect-web','document-status'].map(id=>[id,{value:id==='base'?baseUrl:id==='base-web'?(endpoints[1]||''):'',textContent:'',disabled:false}]));
+  const errors=[],intervals=[],requests=[],parent={postMessage(message){Promise.resolve(plugin.figma.ui.onmessage(message.pluginMessage)).catch(error=>errors.push(error));}};
+  const window={},top={},other={},context=vm.createContext({__ASTRIX_BRIDGE_ENDPOINTS__:endpoints,document:{getElementById:id=>elements.get(id)},window,parent,top,URL,URLSearchParams,crypto:globalThis.crypto,AbortController,AbortSignal,setTimeout,clearTimeout,console,setInterval(fn){intervals.push(fn)},fetch:(url,options={})=>{requests.push(String(url));return fetchImpl(url,{...options,headers:{...options.headers,origin:'null'}});}});
+  function deliver(value,{sender=hostEnvelope,origin=hostOrigin,wrapped=true}={}){return window.onmessage({source:sender==='top'?top:sender==='parent'?parent:sender==='other'?other:null,origin,data:wrapped?{pluginMessage:value}:value});}
+  plugin.figma.ui.postMessage=value=>queueMicrotask(()=>{try{deliver(value)}catch(error){errors.push(error)}});
   new vm.Script(script,{filename:'actual-figma-plugin-ui.js'}).runInContext(context);
   await new Promise(resolve=>setTimeout(resolve,0));
   function card(endpoint=baseUrl){return elements.get('base-web').value===endpoint?'-web':'';}
-  return {elements,errors,async pair(code,{endpoint=baseUrl}={}){const suffix=card(endpoint);elements.get('base'+suffix).value=endpoint;await elements.get('base'+suffix).onchange?.();elements.get('code'+suffix).value=code;await elements.get('pair'+suffix).onclick();},async tick(){for(const fn of intervals)await fn()},async disconnect({endpoint=baseUrl}={}){await elements.get('disconnect'+card(endpoint)).onclick();},statusFor:endpoint=>elements.get('status'+card(endpoint)).textContent,get log(){return elements.get('log').textContent},get status(){return elements.get('status').textContent}};
+  return {elements,errors,requests,deliver,async pair(code,{endpoint=baseUrl}={}){const suffix=card(endpoint);elements.get('base'+suffix).value=endpoint;await elements.get('base'+suffix).onchange?.();elements.get('code'+suffix).value=code;await elements.get('pair'+suffix).onclick();},async tick(){for(const fn of intervals)await fn()},async disconnect({endpoint=baseUrl}={}){await elements.get('disconnect'+card(endpoint)).onclick();},statusFor:endpoint=>elements.get('status'+card(endpoint)).textContent,get log(){return elements.get('log').textContent},get status(){return elements.get('status').textContent}};
 }

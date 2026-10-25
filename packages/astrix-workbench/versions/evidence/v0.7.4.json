@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.4",
+  "recordedAt": "2026-10-25",
+  "recordType": "source-release",
+  "status": "source-build-and-real-double-endpoint-read-only-verification-complete",
+  "sources": [
+    {
+      "path": ".release-assets/publication-v0.7.4.log",
+      "distribution": "local-only",
+      "bytes": 1904,
+      "sha256": "6edb56faea0c4d5a107949626f98526dd98c20521ebfdc87cd3c97dea2b3057f"
+    },
+    {
+      "path": ".release-assets/publication-validation-v0.7.4.log",
+      "distribution": "local-only",
+      "bytes": 457,
+      "sha256": "c8abaae68a7d209abade94c3b3fd05eeb26874e5eaa3e47b1a9c1ecab02ad292"
+    },
+    {
+      "path": ".release-assets/shared-v0.7.4.log",
+      "distribution": "local-only",
+      "bytes": 21251,
+      "sha256": "b8788cf48743fd982f2a82c1dc7ca7881c3570767251828da891015c418009e5"
+    },
+    {
+      "path": ".release-assets/web-tests-v0.7.4.log",
+      "distribution": "local-only",
+      "bytes": 4479,
+      "sha256": "8dde7f8ede9c679cc703a167a1825b136eafd68d391750224ae9dac660f1602a"
+    },
+    {
+      "path": ".release-assets/web-build-v0.7.4.log",
+      "distribution": "local-only",
+      "bytes": 52402,
+      "sha256": "844897d9507ed9906b5f8cd14209e68e4d027308d8b8c7f4d6963aea81acf578"
+    },
+    {
+      "path": ".release-assets/figma-sender-v0.7.4.log",
+      "distribution": "local-only",
+      "bytes": 3047,
+      "sha256": "15575faef83b975a01000f2c3ac68b5f626f2a5d2709d3e63ffd99cc2e3144f9"
+    },
+    {
+      "path": ".release-assets/client-build-v0.7.4.json",
+      "distribution": "local-only",
+      "bytes": 1407,
+      "sha256": "13789e069898bfdcfba6367e417ea6a5ca86de53c882b7c004076e8f375b26ae"
+    },
+    {
+      "path": ".release-assets/figma-real-readonly-v0.7.4.json",
+      "distribution": "local-only",
+      "bytes": 1494,
+      "sha256": "9cd9812288b8bb7c72bc9aee7615a06e305c7d74b9eb1c6f584abe7e9308b3ee"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.4.json",
+      "distribution": "local-only",
+      "bytes": 8558,
+      "sha256": "937c2356d9435514323173ce78869d52f89b35429b09a5e4d56047e6b65acfb8"
+    }
+  ],
+  "validation": {
+    "publicationTargeted": {
+      "command": "node --test test/version-publication.test.mjs",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "fakeGitAndGitHubRunnerOnly": true
+    },
+    "applicationVersionSync": {
+      "desktop": "0.7.4",
+      "web": "0.7.4",
+      "shared": "0.7.4",
+      "sharedLockRootVersionsMatch": true,
+      "applicationDependencyLocksChanged": false
+    },
+    "historicalRecordsPreserved": {
+      "status": "passed",
+      "range": "0.1.0 through 0.7.3",
+      "byteIdenticalFiles": 25,
+      "unchangedExistingLedgerEntries": 12,
+      "existingTagsMatchedOrigin": 13,
+      "comparison": "current historical files and ledger entries against HEAD before this version; existing local tag objects against origin"
+    },
+    "officialDevelopmentPluginCreation": {
+      "status": "completed-by-release-owner",
+      "personalIdIncluded": false,
+      "storage": "local state only"
+    },
+    "manifestNetworkCorrection": {
+      "status": "passed-in-official-Figma",
+      "externalDomains": [
+        "none"
+      ],
+      "developmentNetwork": "specified localhost ports only",
+      "logicalPairingOriginsPreserved": true,
+      "numericPluginIdPreserved": true
+    },
+    "clientBuild": {
+      "status": "passed",
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed"
+    },
+    "webBuild": {
+      "status": "passed",
+      "tests": 44,
+      "failed": 0,
+      "typecheck": "passed",
+      "viteBuild": "passed"
+    },
+    "officialFigmaPluginImport": {
+      "status": "passed",
+      "createdWithOfficialNewPluginFlow": true,
+      "importedCanonicalGeneratedManifest": true,
+      "formalNumericIdConfigured": true,
+      "personalIdIncluded": false
+    },
+    "desktopFigmaLogin": {
+      "status": "official-canvas-readable; separate-view-login-not-asserted",
+      "readOnlyScope": true
+    },
+    "webFigmaLogin": {
+      "status": "official-canvas-readable; separate-view-login-not-asserted",
+      "readOnlyScope": true
+    },
+    "simultaneousLiveBridge": {
+      "status": "passed-in-real-Figma",
+      "desktopOnline": true,
+      "webOnline": true,
+      "sameRealFileAndPluginSession": true,
+      "realSelectionVerified": true,
+      "selectionSequence": [
+        2,
+        1,
+        2
+      ],
+      "originalSelectionRestored": true,
+      "sameActualNodeIdsAndRevision": true,
+      "realReadReceiptVerified": true,
+      "readOnlyReceipts": [
+        {
+          "surface": "desktop",
+          "commandIdMatched": true,
+          "realReceiptCompleted": true,
+          "ok": true,
+          "changedNodeCount": 0
+        },
+        {
+          "surface": "web",
+          "commandIdMatched": true,
+          "realReceiptCompleted": true,
+          "ok": true,
+          "changedNodeCount": 0
+        }
+      ],
+      "actualDocumentWriteCommandsSent": 0,
+      "gui": {
+        "desktopGuiBridgeOnline": true,
+        "selectedNodes": 2,
+        "nativeFigmaHost": true,
+        "phase": "ready",
+        "webGuiBridgeOnline": true,
+        "webSelectedNodes": 2
+      },
+      "keptRunning": true
+    },
+    "modelConfiguration": {
+      "changedByThisWork": false,
+      "realModelConfiguredByThisWork": false,
+      "realCompletionInvokedByThisWork": false
+    },
+    "publicationValidation": {
+      "command": "npm run release",
+      "status": "passed",
+      "mode": "validate-only",
+      "version": "0.7.4",
+      "tag": "m0/v0.7.4",
+      "runtimeTag": "m0-runtime/v0.7.4",
+      "gitMutation": false,
+      "remoteMutation": false
+    },
+    "staticChecks": {
+      "gitDiffCheck": "passed"
+    },
+    "officialHostMessages": {
+      "status": "passed-in-official-Figma",
+      "officialTopSourceAndExactOriginChecked": true,
+      "legacyDirectParentCompatible": true,
+      "malformedMessageAndSelectionRejected": true
+    },
+    "sharedVerification": {
+      "status": "passed",
+      "nodeAndCanvas": 164,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "pluginProtocolRegression": {
+      "status": "passed",
+      "count": 26,
+      "realWrapperAndIdentityOriginSchemaNegativeCases": true,
+      "localhostTransport": true,
+      "independentPairingAndReceiptRouting": true,
+      "startupPairingAndSelectionDocumentWrites": 0,
+      "scope": "local HTTP and Plugin API fixtures, separate from real-file verification below"
+    },
+    "liveApplications": [
+      {
+        "surface": "desktop",
+        "online": true,
+        "version": "0.7.4",
+        "selectedNodes": 2,
+        "selectionRevision": 6,
+        "modelMode": "demo",
+        "aiFigmaWriteEnabled": false
+      },
+      {
+        "surface": "web",
+        "online": true,
+        "version": "0.7.4",
+        "selectedNodes": 2,
+        "selectionRevision": 6,
+        "modelMode": "demo",
+        "aiFigmaWriteEnabled": false
+      }
+    ]
+  },
+  "releaseDisplay": {
+    "commitSubject": "release: Astrix v0.7.4",
+    "sourceTag": "m0/v0.7.4",
+    "runtimeTag": "m0-runtime/v0.7.4",
+    "historyRewrite": false
+  },
+  "runtimeDistribution": {
+    "release": "m0-runtime/v0.7.4",
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "generated-and-independently-verified",
+    "attachments": [
+      {
+        "file": "M0-local-resources-v0.7.4.manifest.json",
+        "bytes": 133402,
+        "sha256": "afa5799ef8179dfe17595646d8881492029f7c9213e728c437ee161847170cd7"
+      },
+      {
+        "file": "M0-local-resources-v0.7.4.sha256",
+        "bytes": 99,
+        "sha256": "57551114818ba2f87181dc1e178635712af548e519e310607e6fbc067418ec95"
+      },
+      {
+        "file": "M0-local-resources-v0.7.4.tar.gz",
+        "bytes": 49326226,
+        "sha256": "8a1a8ef620f488d5b0e79f22b15a90253df8813ab1d7d839bb7888601604e691"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.4.manifest.json",
+        "bytes": 3549832,
+        "sha256": "e142b0457c5955c409d2a376b302c2b2c7e3f873cf0aa524ac8748137ec65bd8"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.4.sha256",
+        "bytes": 104,
+        "sha256": "52693fe75190222db7947a529c0f61a3887f22217a924fe6e12da2840a128114"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.4.tar.gz",
+        "bytes": 94864760,
+        "sha256": "ee3fb7f694293473823f11f23112e31041b7129268883063fccd85c8ac7091ba"
+      }
+    ],
+    "verifiedRecords": 6639,
+    "currentPublicFilesVerified": 323,
+    "personalIdStateAndScreenshotsExcluded": true
+  },
+  "limits": [
+    "This verifies the current real file through the official Desktop development plugin, both local endpoints and read-only receipts; it does not assert cloud editing or separate browser login.",
+    "No real model was configured or invoked, and no real document write command was sent.",
+    "Other files and fresh installations still need their own authorization, official plugin import and pairing.",
+    "Personal plugin ID, document names/URLs, accounts, raw receipts, screenshots and pairing credentials are excluded from the public record."
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "personalPluginIdIncluded": false,
+    "documentLinksIncluded": false,
+    "accountInformationIncluded": false,
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  }
+}

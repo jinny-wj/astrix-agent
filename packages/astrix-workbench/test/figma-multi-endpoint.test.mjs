@@ -8,6 +8,7 @@ import {createFigmaBridge} from '../../../网页端/workbench/server/figma-bridg
 import {createPluginHarness,createPluginUiHarness} from '../../../网页端/workbench/figma-plugin-bridge/test-harness.mjs';
 
 const FILE='MultiEndpointFile_123',delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const canonicalOrigin=value=>{const url=new URL(value);if(url.hostname==='localhost')url.hostname='127.0.0.1';return url.origin;};
 async function until(action){for(let count=0;count<200;count++){const value=await action();if(value)return value;await delay(5);}throw Error('Multi-endpoint fixture did not settle');}
 async function endpoint(t,projectId){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'astrix-bridge-endpoint-')),workspace=path.join(directory,'project');await fs.mkdir(workspace);
@@ -26,7 +27,10 @@ test('prepared plugin allows only the two fixed loopback services and its curren
   const one=await endpoint(t,1),prepared=await one.service.preparePlugin();
   const expected=[4317,5273,one.port];
   const manifest=JSON.parse(await fs.readFile(prepared.manifestPath,'utf8'));
-  assert.deepEqual(manifest.networkAccess.allowedDomains,expected.flatMap(port=>['http://127.0.0.1:'+port,'http://localhost:'+port]));
+  assert.deepEqual(manifest.networkAccess.allowedDomains,['none']);
+  assert.deepEqual(manifest.networkAccess.devAllowedDomains,expected.map(port=>'http://localhost:'+port));
+  const template=JSON.parse(await fs.readFile(new URL('../../../网页端/workbench/figma-plugin-bridge/manifest.json',import.meta.url),'utf8'));
+  assert.deepEqual(template.networkAccess.allowedDomains,['none']);assert.deepEqual(template.networkAccess.devAllowedDomains,['http://localhost:4317','http://localhost:5273']);
   assert.deepEqual(prepared.endpoints,expected.map(port=>'http://127.0.0.1:'+port));
   const html=await fs.readFile(path.join(prepared.pluginDirectory,'ui.html'),'utf8');
   assert.ok(html.includes('globalThis.__ASTRIX_BRIDGE_ENDPOINTS__='+JSON.stringify(prepared.endpoints)));
@@ -45,6 +49,7 @@ test('one plugin independently pairs two projects and fans out the same real fix
   const current=await until(async()=>{const contexts=await Promise.all([one.context(plugin),two.context(plugin)]);return contexts.every(context=>context?.nodes[0]?.id===plugin.frame.id)&&contexts;});
   assert.equal(current[0].selectionRevision,current[1].selectionRevision);
   const saved=plugin.storage.get('astrix-figma-bridge-pairings-v2');assert.equal(saved.version,2);assert.deepEqual(Object.keys(saved.endpoints).sort(),[one.origin,two.origin].sort());
+  assert.ok(ui.requests.length>0&&ui.requests.every(value=>new URL(value).hostname==='localhost'),'actual HTTP transport must match the development manifest, while stored origins remain compatible');
   assert.notEqual(saved.endpoints[one.origin].token,saved.endpoints[two.origin].token);
   const leaked=await two.request('pull?'+new URLSearchParams({fileKey:FILE,sessionId:plugin.id}),undefined,saved.endpoints[one.origin].token);assert.equal(leaked.status,403);
   assert.ok(!ui.log.includes(saved.endpoints[one.origin].token));assert.equal(ui.errors.length,0);
@@ -58,7 +63,7 @@ test('one plugin independently pairs two projects and fans out the same real fix
 
 test('each endpoint pull and acknowledgement returns only to its originating local service',async t=>{
   const one=await endpoint(t,1),two=await endpoint(t,2),plugin=createPluginHarness(FILE),traffic=[];
-  const ui=await createPluginUiHarness({plugin,baseUrl:one.origin,endpoints:[one.origin,two.origin],fetchImpl:async(url,options)=>{const target=new URL(url);if(target.pathname.endsWith('/ack'))traffic.push({origin:target.origin,ids:JSON.parse(options.body).results.map(result=>result.id)});return fetch(url,options);}});
+  const ui=await createPluginUiHarness({plugin,baseUrl:one.origin,endpoints:[one.origin,two.origin],fetchImpl:async(url,options)=>{const target=new URL(url);if(target.pathname.endsWith('/ack'))traffic.push({origin:canonicalOrigin(target),ids:JSON.parse(options.body).results.map(result=>result.id)});return fetch(url,options);}});
   await ui.pair(await one.code());await ui.pair(await two.code(),{endpoint:two.origin});await until(async()=>(await one.context(plugin))&&(await two.context(plugin)));
   const first=one.service.execute({projectId:1,fileKey:FILE,sessionId:plugin.id,type:'get-node',nodeId:plugin.text.id}),second=two.service.execute({projectId:2,fileKey:FILE,sessionId:plugin.id,type:'get-node',nodeId:plugin.frame.id});
   const results=Promise.all([first,second]);await delay(5);await ui.tick();const [a,b]=await results;
@@ -73,7 +78,7 @@ test('a blocked endpoint does not hold another endpoint selection, pull or recei
   const one=await endpoint(t,1),two=await endpoint(t,2),plugin=createPluginHarness(FILE);let block=false,release;
   const blocked=new Promise(resolve=>release=resolve);
   t.after(()=>release());
-  const ui=await createPluginUiHarness({plugin,baseUrl:one.origin,endpoints:[one.origin,two.origin],fetchImpl:async(url,options)=>{if(block&&new URL(url).origin===one.origin)await blocked;return fetch(url,options);}});
+  const ui=await createPluginUiHarness({plugin,baseUrl:one.origin,endpoints:[one.origin,two.origin],fetchImpl:async(url,options)=>{if(block&&canonicalOrigin(url)===one.origin)await blocked;return fetch(url,options);}});
   await ui.pair(await one.code());await ui.pair(await two.code(),{endpoint:two.origin});await until(async()=>(await one.context(plugin))&&(await two.context(plugin)));
   block=true;plugin.page.selection=[plugin.frame];plugin.publish();
   await until(async()=>{const current=await two.context(plugin);return current?.nodes[0]?.id===plugin.frame.id;});
@@ -125,4 +130,29 @@ test('disconnect cancels its queued scene batch while the other origin still com
   await plugin.figma.ui.onmessage({type:'cancel-connection',connectionId:one});release();await Promise.all([running,cancelled,independent]);
   const skipped=plugin.messages.find(message=>message.dispatchId==='cancelled'),receipt=plugin.messages.find(message=>message.dispatchId==='independent');
   assert.equal(skipped.results.length,0);assert.equal(receipt.results[0].ok,true);assert.equal(plugin.text.characters,'Initial');assert.equal(plugin.undos,0);
+});
+
+test('official top-frame envelopes pair both services and fan out the actual fixture selection',async t=>{
+  const one=await endpoint(t,1),two=await endpoint(t,2),plugin=createPluginHarness(FILE),ui=await createPluginUiHarness({plugin,baseUrl:one.origin,endpoints:[one.origin,two.origin],hostEnvelope:'top'});
+  assert.equal(ui.elements.get('document-status').textContent,'Real file fixture');
+  await ui.pair(await one.code());await ui.pair(await two.code(),{endpoint:two.origin});
+  await until(async()=>(await one.context(plugin))&&(await two.context(plugin)));
+  plugin.page.selection=[plugin.frame];plugin.publish();
+  await until(async()=>{const contexts=await Promise.all([one.context(plugin),two.context(plugin)]);return contexts.every(context=>context?.nodes[0]?.id===plugin.frame.id);});
+  assert.equal(ui.errors.length,0);assert.deepEqual(plugin.documentWrites,{relaunchData:0,createFrame:0,createText:0,commitUndo:0});
+});
+
+test('a top sender needs the exact official origin and that origin never substitutes for window identity',async t=>{
+  const one=await endpoint(t,1),plugin=createPluginHarness(FILE),ui=await createPluginUiHarness({plugin,baseUrl:one.origin,hostEnvelope:'top'});await ui.pair(await one.code());
+  const initial=await until(()=>one.context(plugin)),spoof={...plugin.snapshot(),documentName:'Must not replace the document',nodes:[{id:plugin.frame.id,type:'FRAME'}]};
+  for(const sender of [{sender:'top',origin:'https://www.figma.com.evil.invalid'},{sender:'top',origin:'https://figma.com'},{sender:'top',origin:'null'},{sender:'other',origin:'https://www.figma.com'},{sender:'null',origin:'https://www.figma.com'}])assert.doesNotThrow(()=>ui.deliver({type:'selection-snapshot',snapshot:spoof},sender));
+  await ui.tick();const current=await one.context(plugin);assert.equal(current.selectionRevision,initial.selectionRevision);assert.equal(current.nodes[0].id,plugin.text.id);assert.equal(ui.elements.get('document-status').textContent,'Real file fixture');assert.equal(ui.errors.length,0);
+});
+
+test('malformed trusted wrappers and selection schemas cannot crash the UI or replace live context',async t=>{
+  const one=await endpoint(t,1),plugin=createPluginHarness(FILE),ui=await createPluginUiHarness({plugin,baseUrl:one.origin,hostEnvelope:'top'});await ui.pair(await one.code());const initial=await until(()=>one.context(plugin));
+  for(const value of [null,undefined,[],{},'invalid',{pluginMessage:null},{pluginMessage:[]},{pluginMessage:'invalid'},{pluginMessage:{type:7}}])assert.doesNotThrow(()=>ui.deliver(value,{wrapped:false}));
+  const valid={...plugin.snapshot(),documentName:'Must not replace the document'};
+  for(const snapshot of [null,[],{}, {...valid,nodes:{}},{...valid,sessionId:8},{...valid,revision:-1},{...valid,revision:1.5},{...valid,revision:Number.MAX_SAFE_INTEGER+1},{...valid,fileKey:{}}])assert.doesNotThrow(()=>ui.deliver({type:'selection-snapshot',snapshot}));
+  await ui.tick();const current=await one.context(plugin);assert.equal(current.selectionRevision,initial.selectionRevision);assert.equal(current.nodes[0].id,plugin.text.id);assert.equal(ui.elements.get('document-status').textContent,'Real file fixture');assert.equal(ui.errors.length,0);
 });

@@ -84,7 +84,10 @@ export function createFigmaBridge({dataDir,port=4317,resolveProject,commandTimeo
             // overwrite it during polling, upgrades or a local port change.
             if(typeof current.id==='string'&&/^[0-9]{1,128}$/.test(current.id))manifest.id=current.id;
           }
-          manifest.networkAccess.allowedDomains=bridgePorts.flatMap(value=>[`http://127.0.0.1:${value}`,`http://localhost:${value}`]);text=JSON.stringify(manifest,null,2)+'\n';
+          // Figma's development manifest accepts localhost with explicit ports,
+          // but rejects IP-literal domain patterns, including 127.0.0.1.
+          manifest.networkAccess.allowedDomains=['none'];
+          manifest.networkAccess.devAllowedDomains=bridgePorts.map(value=>`http://localhost:${value}`);text=JSON.stringify(manifest,null,2)+'\n';
         }
         // Figma watches development files. Polling metadata must not trigger
         // hot reloads or replace an otherwise unchanged plugin entry point.
