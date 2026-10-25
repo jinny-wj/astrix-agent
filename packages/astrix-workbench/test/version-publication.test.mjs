@@ -208,7 +208,7 @@ test('split layout publication explicitly scopes both applications and excludes 
   const layout=publicationLayout(projectRoot,repositoryRoot,'0.7.0');
   assert.deepEqual(layout.pathspec,publicationPathspecs);assert.throws(()=>publicationLayout(repositoryRoot,repositoryRoot,'0.7.0'),/entire repository/);
   const write=(name)=>{const file=path.join(repositoryRoot,name);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'source');return name;};
-  for(const name of ['网页端/workbench/server/application.mjs','客户端/workbench/desktop/main.cjs','网页端/src/pages/WorkbenchPage.tsx','客户端/desktop/main.ts','packages/astrix-workbench/versions/v0.7.0.md','README.md']){
+  for(const name of ['网页端/workbench/server/application.mjs','客户端/workbench/desktop/main.cjs','网页端/src/pages/WorkbenchPage.tsx','客户端/desktop/main.ts','客户端/.env.example','packages/astrix-workbench/versions/v0.7.0.md','README.md']){
     write(name);assert.ok(isProjectPath(name,layout.prefix));validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:[name]});
   }
   for(const name of ['m0-local/server/index.mjs','m0-local/.local-data/account.json']){
@@ -218,7 +218,7 @@ test('split layout publication explicitly scopes both applications and excludes 
   }
   assert.ok(!publicationPathspecs.includes('m0-local'));
   assert.ok(publicationStagePaths(repositoryRoot,publicationPathspecs,['m0-local/server/index.mjs']).every(name=>!name.startsWith('m0-local')));
-  for(const name of ['网页端/workbench/public/index.html','客户端/workbench/desktop/icon.icns','网页端/workbench/.local-data/account.json','客户端/workbench/diagnostics/report.json','packages/astrix-workbench/.release-assets/archive.tar.gz','客户端/src/.env','客户端/.workbench-bundle/workbench/public/index.html']){
+  for(const name of ['网页端/workbench/public/index.html','客户端/workbench/desktop/icon.icns','网页端/workbench/.local-data/account.json','客户端/workbench/diagnostics/report.json','packages/astrix-workbench/.release-assets/archive.tar.gz','客户端/.env','客户端/.env.local','网页端/.env.local','客户端/src/.env','客户端/.workbench-bundle/workbench/public/index.html']){
     write(name);assert.throws(()=>validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:[name]}),/private\/runtime|Generated\/native|outside/);
   }
   assert.throws(()=>validatePublicationFiles({repositoryRoot,prefix:layout.prefix,files:['docs/reference/private.pdf']}),/outside/);

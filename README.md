@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.4](https://img.shields.io/badge/Workbench-v0.7.4-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.4.md)
+[![Workbench v0.7.5](https://img.shields.io/badge/Workbench-v0.7.5-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.5.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -105,7 +105,7 @@ cd astrix-agent
 
 ### 3. 准备工作台运行资源
 
-公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.4 资源并在仓库根目录还原。资源采用两端目录布局，下载与当前版本匹配的资源后再启动。
+公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.5 资源并在仓库根目录还原。资源采用两端目录布局，下载与当前版本匹配的资源后再启动。
 
 ### 4. 启动 macOS 客户端
 
@@ -153,7 +153,7 @@ pnpm dev
 
 在 Design 中打开真实 Figma 文件。客户端使用隔离的官方 Figma 登录会话；网页版在浏览器打开官方页面。随后在工作台生成配对码，在目标文件运行 **Astrix Figma Bridge** 并完成配对。只有插件的实际回执才能证明图层修改成功。详细步骤见[工作台指南](packages/astrix-workbench/README.md)。
 
-单个插件为客户端与网页版提供独立连接：每端分别配对，凭据按本地服务隔离，命令回执只回到发起它的服务。0.7.4 修正官方开发插件的本地网络白名单。官方插件导入、两端登录及同一文件的实际同时联通，须按[本版验证记录](packages/astrix-workbench/versions/evidence/v0.7.4.json)逐项验收；当前不据此宣称真实 Bridge 已在线。个人插件 ID 留在本地状态，本轮连接工作不配置或调用模型。
+单个插件为客户端与网页版提供独立连接：每端分别配对，命令回执只回到发起它的服务。0.7.4 已完成官方插件导入及双端真实只读验证；0.7.5 为两端工作区补上独立的 OAuth 状态、授权和文件读取验证入口。OAuth、画布网页登录与 Bridge 配对分别验收，实际结果见[本版验证记录](packages/astrix-workbench/versions/evidence/v0.7.5.json)，配置步骤见[Figma OAuth 说明](packages/astrix-workbench/docs/Figma-OAuth.md)。个人配置只留本机，本轮不配置或调用模型。
 
 ### 原设计界面的 OAuth 连接
 

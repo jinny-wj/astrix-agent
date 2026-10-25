@@ -164,7 +164,7 @@ await copyFile(path.join(here, 'local-runtime.js'), path.join(publicRoot, 'local
 await copyFile(path.join(here, 'workflow-monitor.js'), path.join(publicRoot, 'workflow-monitor.js'));
 await copyFile(path.join(here, 'local-codegen.html'), path.join(publicRoot, 'codegen.html'));
 await copyFile(path.join(here, 'local-codegen.js'), path.join(publicRoot, 'codegen.js'));
-for (const file of ['figma-workspace.html','figma-workspace.js','figma-workspace.css']) await copyFile(path.join(here,file),path.join(publicRoot,file));
+for (const file of ['figma-workspace.html','figma-workspace.js','figma-workspace.css','figma-oauth-complete.html','figma-oauth-complete.js']) await copyFile(path.join(here,file),path.join(publicRoot,file));
 await mkdir(path.join(publicRoot,'local-canvas'),{recursive:true});
 for (const file of await readdir(path.join(projectRoot,'canvas'))) {
   if (['index.html','style.css','app.mjs','model.mjs'].includes(file) || /^(?:vector-|collab).*\.mjs$/.test(file) && !file.endsWith('.test.mjs'))

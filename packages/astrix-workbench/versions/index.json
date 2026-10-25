@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.4",
+  "currentVersion": "0.7.5",
   "recordedAt": "2026-10-25",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -219,6 +219,17 @@
         "Verifies official plugin creation/import, real simultaneous pairing, 2-to-1-to-2 selection sync and read-only receipts on both surfaces without model configuration or document writes."
       ],
       "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.5",
+      "date": "2026-10-25",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.5",
+      "record": "versions/v0.7.5.md",
+      "evidence": [
+        "versions/evidence/v0.7.5.json"
+      ]
     }
   ],
   "repository": "https://github.com/jinny-wj/astrix-agent",

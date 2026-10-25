@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.5",
+  "recordedAt": "2026-10-25",
+  "recordType": "source-release",
+  "status": "source-build-and-real-double-endpoint-oauth-verification-complete; target-file-api-denied",
+  "sources": [
+    {
+      "path": ".release-assets/shared-v0.7.5.log",
+      "distribution": "local-only",
+      "bytes": 22068,
+      "sha256": "f197065566d525165536c42968fa61156229dc7b1c1527ee6265df8f1c2a2310"
+    },
+    {
+      "path": ".release-assets/web-tests-v0.7.5.log",
+      "distribution": "local-only",
+      "bytes": 3798,
+      "sha256": "761834397ba06a5a07a6cba4a248bad54816f0724666fa87abbf88a4ef8a6f1e"
+    },
+    {
+      "path": ".release-assets/web-build-v0.7.5.log",
+      "distribution": "local-only",
+      "bytes": 52734,
+      "sha256": "fcb99d989e7cc0c5094ffd3a74089df244211707b0be879f29767979a5bd83e5"
+    },
+    {
+      "path": ".release-assets/client-build-v0.7.5.log",
+      "distribution": "local-only",
+      "bytes": 450,
+      "sha256": "65ffd4b6355fba986f499f06efacd8ae9117ef9515226178866657965753ed3a"
+    },
+    {
+      "path": ".release-assets/oauth-desktop-types-final.log",
+      "distribution": "local-only",
+      "bytes": 136,
+      "sha256": "2f79031e6966ddf2781e087b834f2fb4bde64d5533f2612b80d0422319426e19"
+    },
+    {
+      "path": ".release-assets/oauth-desktop-bundle-final.log",
+      "distribution": "local-only",
+      "bytes": 763,
+      "sha256": "6e412147ff6051c9303d184f681431ad5863665a556a09d7fe5c076164e7b697"
+    },
+    {
+      "path": ".release-assets/oauth-retained-tests-final.log",
+      "distribution": "local-only",
+      "bytes": 881,
+      "sha256": "732bc9a003fb2b5a9b2c1771df499fee838fc5b6f40169bb4542fc0d2e3799f8"
+    },
+    {
+      "path": ".release-assets/publication-targeted-v0.7.5.log",
+      "distribution": "local-only",
+      "bytes": 1905,
+      "sha256": "4b5f654c4f3b2394515b568dbba74d466ae791d4e84d504e11090662f3bb96dc"
+    },
+    {
+      "path": ".release-assets/oauth-fixture-isolation-v0.7.5.log",
+      "distribution": "local-only",
+      "bytes": 2159,
+      "sha256": "759660402a429b3bac52936e0d1fe84d85170f28c316aa93fb811c6774127839"
+    },
+    {
+      "path": ".release-assets/oauth-staged-v0.7.5.json",
+      "distribution": "local-only",
+      "bytes": 2602,
+      "sha256": "99814e9e0660229435a7507b26a430fbe7f3add19ad78a860684f15aafdec361"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.5.json",
+      "distribution": "local-only",
+      "bytes": 10261,
+      "sha256": "cc47dbd37b8821e200976c08e850eeb213edf977c78796c37d8547ec3dcae7af"
+    },
+    {
+      "path": ".release-assets/oauth-real-desktop-v0.7.5.json",
+      "distribution": "local-only",
+      "bytes": 477,
+      "sha256": "9afa4d143f93e3fc05897e4dae35b9c3d933b9973cb533c0cc577176cd387616"
+    },
+    {
+      "path": ".release-assets/oauth-real-web-v0.7.5.json",
+      "distribution": "local-only",
+      "bytes": 382,
+      "sha256": "7c063683cf6db5adf0a095d999e40216d56213291c0855ff13b26097795367dd"
+    }
+  ],
+  "validation": {
+    "shared": {
+      "nodeAndCanvas": 171,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "web": {
+      "tests": 44,
+      "build": "passed"
+    },
+    "desktop": {
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed"
+    },
+    "oauthFixtures": {
+      "newTests": 7,
+      "existingDesktopTests": 5,
+      "existingWebTests": 3,
+      "status": "passed",
+      "realAccountUsed": false,
+      "standardFigmaErrorAndOfficialRefreshProtocolVerified": true
+    },
+    "publicationBoundary": {
+      "tests": 18,
+      "status": "passed",
+      "actualLocalEnvironmentFilesExcluded": true
+    },
+    "stagedRuntime": {
+      "status": "passed",
+      "stagedFileCount": 6691,
+      "oauthFilesVerified": 9,
+      "temporaryIsolatedRuntime": "passed",
+      "privateStateExcluded": true
+    },
+    "officialOAuthApps": {
+      "createdInOfficialConsole": true,
+      "appCount": 2,
+      "state": "draft",
+      "ownerAndDeveloperTermsConfirmedByAccountHolder": true,
+      "independentApplications": true,
+      "callbacksConfigured": true,
+      "readScopes": [
+        "current_user:read",
+        "file_content:read",
+        "file_metadata:read"
+      ],
+      "credentialsStoredLocallyOnly": true,
+      "localEnvironmentPermissions": "0600"
+    },
+    "accountConsent": {
+      "status": "completed-in-official-browser-after-owner-confirmation",
+      "bothSurfacesAuthenticated": true,
+      "profileReceivedFromOfficialApi": true,
+      "desktopHandoffToOriginalWorkbenchSession": true,
+      "authorizationSurvivedDesktopAndWebRestart": true,
+      "realFileReadsVerified": false
+    },
+    "liveApplications": [
+      {
+        "surface": "desktop",
+        "version": "0.7.5",
+        "configured": true,
+        "authenticated": true,
+        "guiConnected": true
+      },
+      {
+        "surface": "web",
+        "version": "0.7.5",
+        "configured": true,
+        "authenticated": true,
+        "guiConnected": true,
+        "browser": "Chrome"
+      }
+    ],
+    "currentBridge": {
+      "pairedStatePreserved": true,
+      "online": false,
+      "reason": "official desktop is showing another file; no current-file online claim"
+    },
+    "modelConfiguration": {
+      "changedByThisWork": false,
+      "realModelConfiguredByThisWork": false,
+      "realModelInvokedByThisWork": false,
+      "mode": "demo",
+      "aiFigmaWriteEnabled": false
+    },
+    "documentWriteCommandsSent": 0,
+    "historicalRecordsPreserved": {
+      "versionFiles": 27,
+      "existingLedgerEntries": 13,
+      "existingTags": 14,
+      "status": "passed"
+    },
+    "fixtureEnvironmentIsolation": {
+      "status": "passed",
+      "isolatedServers": 4,
+      "explicitAnonymousOAuthAssertions": true
+    },
+    "realFileApi": {
+      "status": "denied-by-Figma",
+      "metadataTransportStatus": 207,
+      "perFileMetadataStatus": 403,
+      "fileContentStatus": 403,
+      "upstreamMessages": [
+        "Permission denied",
+        "Request denied"
+      ],
+      "fileReadSucceeded": false,
+      "websiteReadonlyVisible": true,
+      "accountOrFilePermissionsChanged": false
+    }
+  },
+  "runtimeDistribution": {
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "generated-and-independently-verified",
+    "attachments": [
+      {
+        "name": "M0-local-resources-v0.7.5.tar.gz",
+        "bytes": 49326605,
+        "sha256": "b2be4f0ffa350320db96ef4df2fbb9ad9c21829d1546e2a6398b8248a1017978"
+      },
+      {
+        "name": "M0-local-resources-v0.7.5.manifest.json",
+        "bytes": 134034,
+        "sha256": "476b0ce523ad1f532b493f45bfc5b1f27e7dfd3c4c7dce7dc357832ee8ccff0e"
+      },
+      {
+        "name": "M0-local-resources-v0.7.5.sha256",
+        "bytes": 99,
+        "sha256": "8ab9feff69f723eaaa0ee240cf2ef6bc39822bf7fdad119b2891517218fd4ff2"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.5.tar.gz",
+        "bytes": 94865663,
+        "sha256": "e91a8dcbebf68c60f127f5ed02aceba6b0800132c2115b8fb13423e57cde4174"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.5.manifest.json",
+        "bytes": 3549832,
+        "sha256": "bb38913c70a9f00394ada070f7056fc6783a8e251f0effe37c582701ad3fc3d8"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.5.sha256",
+        "bytes": 104,
+        "sha256": "04dd61a9c0475d0e817daeaca19bc7a4729a4f9c791ba6a125b878d46f23fff9"
+      }
+    ],
+    "verifiedRecords": 6641,
+    "currentPublicFilesVerified": 325
+  },
+  "releaseDisplay": {
+    "commitSubject": "release: Astrix v0.7.5",
+    "sourceTag": "m0/v0.7.5",
+    "runtimeTag": "m0-runtime/v0.7.5",
+    "historyRewrite": false
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "accountIdentifiersIncluded": false,
+    "personalPluginIdIncluded": false,
+    "documentLinksIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "limits": [
+    "Both local applications completed official OAuth and retained their authenticated sessions after restart. The validation file APIs were denied by Figma; successful file API reads are not asserted.",
+    "The selected file has no currently online Bridge session; paired state is preserved, and past Bridge verification is not counted as a current live connection.",
+    "The web OAuth session is in the current Chrome browser. OAuth does not sign the embedded canvas into the Figma website or add file permissions.",
+    "No model was configured or invoked, no real document write command was sent, and no Figma file sharing permissions were changed."
+  ]
+}

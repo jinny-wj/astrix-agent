@@ -33,7 +33,7 @@ export function changedPaths(porcelain){
 export const publicationPathspecs=[
   'packages/astrix-workbench','客户端/workbench','网页端/workbench',
   '客户端/src','客户端/desktop','客户端/server','客户端/scripts','网页端/src','网页端/server',
-  '客户端/启动Astrix.command','网页端/启动Astrix网页版.command','客户端/package.json','客户端/pnpm-lock.yaml','客户端/README.md','客户端/AGENTS.md','客户端/vite.config.ts','客户端/tsconfig.json','客户端/tsconfig.desktop.json','客户端/tsconfig.node.json',
+  '客户端/启动Astrix.command','网页端/启动Astrix网页版.command','客户端/.env.example','客户端/package.json','客户端/pnpm-lock.yaml','客户端/README.md','客户端/AGENTS.md','客户端/vite.config.ts','客户端/tsconfig.json','客户端/tsconfig.desktop.json','客户端/tsconfig.node.json',
   '网页端/package.json','网页端/pnpm-lock.yaml','网页端/README.md','网页端/AGENTS.md','网页端/vite.config.ts','网页端/tsconfig.json','网页端/tsconfig.node.json',
   'README.md','AGENTS.md','.gitignore','.github/workflows/m0-release.yml','客户端/.gitignore','网页端/.gitignore','客户端/index.html','网页端/index.html','网页端/design.html',
   'package.json','package-lock.json','pnpm-workspace.yaml','pnpm-lock.yaml'

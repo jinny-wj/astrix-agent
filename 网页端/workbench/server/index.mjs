@@ -1,9 +1,12 @@
 import http from 'node:http';
 import {createWorkbenchApplication} from './application.mjs';
+import {createWorkbenchFigmaOAuth} from './figma-oauth-config.mjs';
 import layoutConfig from '../../../packages/astrix-workbench/layout.cjs';
 export const root=layoutConfig.getLayout().webRoot;
 const application=createWorkbenchApplication();
-const app=http.createServer(application.handle);
+const layout=layoutConfig.getLayout();
+const figmaOAuth=createWorkbenchFigmaOAuth({applicationRoot:application.identity.surface==='desktop'?layout.desktopRoot+'/..':layout.webRoot+'/..',port:application.port,dataDir:application.paths.dataDir,surface:application.identity.surface});
+const app=http.createServer((request,response)=>figmaOAuth(request,response,()=>void application.handle(request,response)));
 app.on('upgrade',(req,socket)=>{if(!application.handleUpgrade(req,socket))socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');});
 app.on('error',error=>{console.error(error.message);process.exitCode=1;void application.close();});
 app.listen(application.port,'127.0.0.1',()=>console.log('Astrix: http://127.0.0.1:'+application.port+'/home'));

@@ -2,6 +2,7 @@
 const $=id=>document.getElementById(id);
 let projectId=new URLSearchParams(location.search).get('projectId')||'';
 const state={url:'',fileKey:'',sessions:[],sessionId:'',selection:null,online:false,native:false,host:null,polling:false,commandBusy:false,snapshot:null,exportData:null,aiWrite:false,ready:false,phase:'loading'};
+let oauthFlight=null,oauthSession={configured:false,authenticated:false,user:null};
 let disposed=false,directNative=window.m0LocalDesktop?.figmaHost||null,hostShown=false,hostPending=false,hostWanted=false,noticeTimer,contextKey='',savedURL='',pollFlight=null,directVersion=0,directInFlightVersion=0,persistTail=Promise.resolve();
 const hostAcks=new Map();
 const query=extra=>{const params=new URLSearchParams(extra);if(projectId)params.set('projectId',projectId);return params.toString();};
@@ -9,6 +10,30 @@ async function api(route,options={}){const response=await fetch(route,{...option
 const bridge=(route,extra)=>'/__local/figma/bridge/'+route+'?'+query(extra);
 const emit=(type,payload={})=>{if(parent!==window)parent.postMessage({source:'m0-local-figma',type,payload:{...payload,projectId}},location.origin);};
 function notice(message,error=false){clearTimeout(noticeTimer);$('notice').textContent=message;$('notice').classList.toggle('error',error);$('notice').hidden=false;noticeTimer=setTimeout(()=>$('notice').hidden=true,error?10000:5000);}
+async function pollOAuth(){
+  if(disposed||oauthFlight)return oauthFlight;
+  oauthFlight=(async()=>{try{
+    oauthSession=await api('/api/auth/figma/session');
+    $('oauth-status').textContent=oauthSession.authenticated?'OAuth 已连接'+(oauthSession.user?.name?' · '+oauthSession.user.name:''):oauthSession.configured?'OAuth 未连接':'OAuth 待配置';
+    $('connect-oauth').textContent=oauthSession.authenticated?'重新授权 Figma':'连接 Figma 账号';
+    $('connect-oauth').disabled=!oauthSession.configured;
+    $('verify-oauth').hidden=!oauthSession.authenticated;
+    $('verify-oauth').disabled=!state.fileKey;
+  }catch{$('oauth-status').textContent='OAuth 状态不可用';$('connect-oauth').disabled=true;$('verify-oauth').hidden=true;}
+  })();try{return await oauthFlight;}finally{oauthFlight=null;}
+}
+$('connect-oauth').onclick=()=>{
+  if(!oauthSession.configured)return;
+  const params=new URLSearchParams({returnTo:'/figma-oauth-complete.html',...(state.native||directNative||(parent!==window&&parent.m0LocalDesktop?.isDesktop)?{handoff:'1'}:{direct:'1'})});
+  window.open('/api/auth/figma/start?'+params,'_blank');
+  notice('请在浏览器中完成 Figma 授权，连接状态会自动更新。');
+};
+$('verify-oauth').onclick=async()=>{
+  const fileKey=state.fileKey;if(!fileKey||!oauthSession.authenticated)return;
+  $('verify-oauth').disabled=true;
+  try{const data=await api('/api/auth/figma/file-metadata?keys='+encodeURIComponent(fileKey));const item=data.files?.find(item=>item.key===fileKey);if(!item)throw Error(data.errors?.[0]?.message||'未能读取当前设计稿。');notice('OAuth 只读验证成功：'+item.name+'。设计稿未被修改。');}
+  catch(error){notice('OAuth 只读验证失败：'+error.message,true);}finally{$('verify-oauth').disabled=!state.fileKey;}
+};
 function parseURL(value){const url=new URL(value||'https://www.figma.com/files');if(url.protocol!=='https:'||url.username||url.password||!(url.hostname==='www.figma.com'||url.hostname==='figma.com'||url.hostname==='figma.new'))throw Error('请使用正常的 https://www.figma.com 文件链接。');const match=url.pathname.match(/^\/(?:design|file|board|proto|slides)\/([A-Za-z0-9_-]+)/);return{url:url.href,fileKey:match?.[1]||''};}
 function context(){const selection=state.selection;if(!state.online||!state.fileKey||!state.sessionId||!selection)return{projectId,fileKey:'',sessionId:'',targetNodeIds:[]};return{projectId,fileKey:state.fileKey,sessionId:state.sessionId,selectionRevision:selection.revision,targetNodeIds:(selection.nodes||[]).map(node=>node.id||node.nodeId).filter(Boolean),nodes:(selection.nodes||[]).map(node=>({id:node.id||node.nodeId,name:node.name||'',type:node.type||'',...(node.characters!==undefined?{characters:String(node.characters).slice(0,4000)}:{})}))};}
 function publishContext(){const value=context(),key=JSON.stringify(value);if(key===contextKey)return;contextKey=key;emit('context',value);dispatchEvent(new CustomEvent('m0-local-figma-context',{detail:value}));}
@@ -31,7 +56,7 @@ async function persistURL(url){
   if(!projectId||savedURL===url||!parseURL(url).fileKey)return;
   persistTail=persistTail.catch(()=>{}).then(async()=>{if(state.url!==url)return;const saved=await api('/__local/figma/workspace?'+query(),{method:'PUT',body:JSON.stringify({url})});savedURL=saved.url||url;});return persistTail;
 }
-function setTargetURL(value,{persist=false}={}){const parsed=parseURL(value),changed=state.fileKey!==parsed.fileKey;state.url=parsed.url;state.fileKey=parsed.fileKey;if(document.activeElement!==$('file-url'))$('file-url').value=parsed.url;if(changed){state.sessionId='';state.selection=null;state.online=false;renderSelection();}if(persist)void persistURL(parsed.url).catch(error=>notice(error.message,true));return parsed;}
+function setTargetURL(value,{persist=false}={}){const parsed=parseURL(value),changed=state.fileKey!==parsed.fileKey;state.url=parsed.url;state.fileKey=parsed.fileKey;if(document.activeElement!==$('file-url'))$('file-url').value=parsed.url;if(changed){state.sessionId='';state.selection=null;state.online=false;renderSelection();}$('verify-oauth').disabled=!state.fileKey;if(persist)void persistURL(parsed.url).catch(error=>notice(error.message,true));return parsed;}
 function updateHostStatus(status){if(!state.ready||!status||disposed)return;if(status.projectId!==undefined&&status.projectId!==null&&String(status.projectId)!==String(projectId))return;state.host=status;if(status.url)try{setTargetURL(status.url,{persist:true});}catch{}$('host-status').textContent=status.error?'Figma 页面加载失败：'+status.error:status.loading?'Figma 正在加载…':status.title?'Figma · '+status.title:'Figma 页面已打开 · 登录与插件状态独立';if(status.error){$('host-description').textContent='真实 Figma 页面加载失败，可重试或在外部 Figma 打开。';notice(status.error,true);}}
 async function hostRequest(action,url=state.url){
   if(!state.ready&&['show','resume','openExternal','revealBridgePlugin'].includes(action))return;
@@ -73,5 +98,5 @@ function projectControls(enabled){for(const id of ['file-url','open-file','open-
 function requireProject(unavailable=false){state.phase='project-required';state.ready=false;$('workspace-title').textContent=unavailable?'请重新选择项目':'先选择 Astrix 项目';$('host-description').textContent=unavailable?'当前项目不存在或目录不可用，请回到工作台选择可用项目。':'Figma 文件与 Plugin Bridge 会绑定到当前项目。';$('workspace-help').textContent='创建或打开一个项目后，再切换到 Design 连接真实 Figma。';$('host-status').textContent='请先选择项目';$('bridge-status').textContent='选择项目后连接 Bridge';$('ai-status').textContent='选择项目后读取 AI 权限';$('selection-title').textContent='尚未选择项目';$('selection-summary').textContent='请先创建或打开 Astrix 项目。';$('choose-project').hidden=false;$('placeholder-open').hidden=true;projectControls(false);publishContext();emit('ready');}
 async function initialize(){projectControls(false);try{let workspace;try{workspace=await api('/__local/figma/workspace?'+query());}catch(error){if(error.status===409||error.status===404){requireProject(error.status===404);return;}throw error;}if(workspace.projectId!==null&&workspace.projectId!==undefined){projectId=String(workspace.projectId);const url=new URL(location.href);url.searchParams.set('projectId',projectId);history.replaceState(null,'',url);}savedURL=workspace.url||'';setTargetURL(savedURL||'https://www.figma.com/files');const metadata=await api('/__local/figma/metadata?'+query());$('plugin-directory').value=metadata.pluginDirectory||'';$('bridge-base').value=metadata.baseURL||location.origin;const model=await api('/__local/model');state.aiWrite=model.allowFigmaWriteTools===true;$('ai-status').textContent=state.aiWrite?'AI 写入已授权':'AI 写入关闭 · 手动操作可用';state.ready=true;state.phase='ready';projectControls(true);emit('ready');if(directNative){renderNative(await directNative.available()===true);directNative.onStatus?.(status=>{if(!hostPending||directInFlightVersion===directVersion)updateHostStatus(status);});}else if(parent===window)renderNative(false);await poll();}catch(error){state.ready=false;state.phase='error';notice(error.message,true);$('host-status').textContent='工作区初始化失败';$('bridge-status').textContent='Bridge 状态不可用';$('ai-status').textContent='AI 权限状态不可用';$('selection-title').textContent='工作区尚未就绪';$('selection-summary').textContent='请检查本地服务后刷新重试。';emit('ready');}}
 new ResizeObserver(()=>{if(directNative)void updateDirectHost();else emit('host-request',{action:'layout'});}).observe($('figma-native-host'));addEventListener('visibilitychange',()=>{if(document.hidden){if(directNative)void directNative.hide();else emit('host-request',{action:'hide'});}else if(!document.querySelector('dialog[open]'))void hostRequest('show');});addEventListener('pagehide',()=>{disposed=true;if(directNative)void directNative.hide();else emit('host-request',{action:'hide'});emit('context',{fileKey:'',sessionId:'',targetNodeIds:[]});});
-setInterval(()=>void poll(),1600);void initialize();
-window.m0FigmaWorkspace=Object.freeze({getStatus:()=>({projectId,fileKey:state.fileKey,url:state.url,sessionId:state.sessionId,online:state.online,native:state.native,selection:structuredClone(state.selection),host:structuredClone(state.host),aiWrite:state.aiWrite,commandBusy:state.commandBusy,phase:state.phase}),getContext:context});
+setInterval(()=>void poll(),1600);setInterval(()=>void pollOAuth(),5000);addEventListener('focus',()=>void pollOAuth());void pollOAuth();void initialize();
+window.m0FigmaWorkspace=Object.freeze({getStatus:()=>({projectId,fileKey:state.fileKey,url:state.url,sessionId:state.sessionId,online:state.online,native:state.native,selection:structuredClone(state.selection),host:structuredClone(state.host),aiWrite:state.aiWrite,commandBusy:state.commandBusy,phase:state.phase,oauth:{configured:oauthSession.configured,authenticated:oauthSession.authenticated,user:oauthSession.user?{handle:oauthSession.user.name}:null}}),getContext:context});

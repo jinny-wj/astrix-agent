@@ -295,6 +295,7 @@ export async function startDesktopServer({
   const agentWorkspace = prepareAgentWorkspace(dataDirectory, agentResourcesDirectory)
 
   const activeOAuthOptions = figmaOAuth ?? oauthOptions()
+  let activeOAuthMiddleware = createFigmaOAuthMiddleware(activeOAuthOptions)
   let activeModelApi = modelApi ?? null
   const middlewares: Middleware[] = [
     createDesktopStatusMiddleware(),
@@ -307,7 +308,7 @@ export async function startDesktopServer({
     }),
     createFigmaBridgeMiddleware(),
     createWebCaptureMiddleware(agentWorkspace),
-    createFigmaOAuthMiddleware(activeOAuthOptions),
+    (request, response, next) => activeOAuthMiddleware(request, response, next),
     createFigmaRecentsMiddleware(),
     createStaticMiddleware(appRoot),
   ]
@@ -343,7 +344,10 @@ export async function startDesktopServer({
   if (address && typeof address === 'object') boundPort = address.port
   return {
     origin: `http://${host}:${boundPort}`,
-    configureFigmaOAuth: (options) => { Object.assign(activeOAuthOptions, options) },
+    configureFigmaOAuth: (options) => {
+      Object.assign(activeOAuthOptions, options)
+      activeOAuthMiddleware = createFigmaOAuthMiddleware(activeOAuthOptions)
+    },
     configureModelApi: (settings) => { activeModelApi = settings },
     close: () =>
       new Promise<void>((resolvePromise, reject) => {

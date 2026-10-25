@@ -45,10 +45,12 @@ before(async()=>{
   const reservation=http.createServer();await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));
   const port=reservation.address().port;await new Promise(resolve=>reservation.close(resolve));base=`http://127.0.0.1:${port}`;
   let output='';
-  child=spawn(process.execPath,['server/index.mjs'],{cwd:root,env:{...process.env,M0_LOCAL_PORT:String(port),M0_LOCAL_DATA_DIR:path.join(temp,'data'),M0_LOCAL_WORKSPACE:workspaceA},stdio:['ignore','ignore','pipe']});
+  child=spawn(process.execPath,['server/index.mjs'],{cwd:root,env:{...process.env,ASTRIX_PORT:String(port),ASTRIX_DATA_DIR:path.join(temp,'data'),ASTRIX_WORKSPACE:workspaceA,FIGMA_OAUTH_CLIENT_ID:'',FIGMA_OAUTH_CLIENT_SECRET:'',FIGMA_OAUTH_REDIRECT_URI:''},stdio:['ignore','ignore','pipe']});
   child.stderr.on('data',chunk=>output=(output+String(chunk)).slice(-4000));
   let ready=false;for(let i=0;i<80;i++){try{if((await fetch(base+'/__local/health')).ok){ready=true;break;}}catch{}if(child.exitCode!==null)break;await delay(50);}
   assert.ok(ready,'preview test server started: '+output);
+  const oauth=await fetch(base+'/api/auth/figma/session');assert.equal(oauth.status,200);
+  assert.deepEqual(await oauth.json(),{configured:false,authenticated:false,user:null},'preview fixture must not use application OAuth credentials or sessions');
 });
 after(async()=>{child?.kill('SIGTERM');await delay(100);await fs.rm(temp,{recursive:true,force:true});});
 

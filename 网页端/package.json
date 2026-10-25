@@ -3,7 +3,7 @@
   "description": "Astrix 网页工作台与设计界面",
   "author": "Astrix",
   "private": true,
-  "version": "0.7.4",
+  "version": "0.7.5",
   "type": "module",
   "scripts": {
     "test": "node --experimental-strip-types --test server/*.test.ts server/agent/*.test.ts src/services/*.test.ts browser-extension/*.test.js",

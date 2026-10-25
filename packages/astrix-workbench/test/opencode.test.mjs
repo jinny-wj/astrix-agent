@@ -66,11 +66,13 @@ test('recovered OpenCode runs real read/write tools, resumes sessions and serves
   const reservation=http.createServer();await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));
   const port=reservation.address().port;await new Promise(resolve=>reservation.close(resolve));
   const origin=`http://127.0.0.1:${port}`;
-  const child=spawn(process.execPath,['server/index.mjs'],{cwd:layout.webRoot,env:{...process.env,M0_LOCAL_PORT:String(port),M0_LOCAL_DATA_DIR:appData,M0_LOCAL_WORKSPACE:workspace},stdio:'ignore'});
+  const child=spawn(process.execPath,['server/index.mjs'],{cwd:layout.webRoot,env:{...process.env,ASTRIX_PORT:String(port),ASTRIX_DATA_DIR:appData,ASTRIX_WORKSPACE:workspace,FIGMA_OAUTH_CLIENT_ID:'',FIGMA_OAUTH_CLIENT_SECRET:'',FIGMA_OAUTH_REDIRECT_URI:''},stdio:'ignore'});
   t.after(()=>{child.kill('SIGTERM');});
   let ready=false;
   for(let i=0;i<80;i++){try{if((await fetch(origin+'/__local/health')).ok){ready=true;break;}}catch{}await new Promise(resolve=>setTimeout(resolve,50));}
   assert.ok(ready);
+  const oauth=await fetch(origin+'/api/auth/figma/session');assert.equal(oauth.status,200);
+  assert.deepEqual(await oauth.json(),{configured:false,authenticated:false,user:null},'OpenCode fixture must not use application OAuth credentials or sessions');
   const post=async(route,body)=>fetch(origin+route,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
   const project=await(await post('/api/project/v2/create',{mode:'code',projectPath:workspace,projectName:'Original engine test'})).json();
   const localSession=await(await post('/api/session/v2/create',{projectId:project.id})).json();

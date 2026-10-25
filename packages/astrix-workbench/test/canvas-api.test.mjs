@@ -18,8 +18,10 @@ async function request(route,method='GET',body){const r=await fetch(origin+route
 before(async()=>{
   temp=await fs.mkdtemp(path.join(os.tmpdir(),'m0-canvas-api-'));
   const reservation=http.createServer();await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));const port=reservation.address().port;await new Promise(resolve=>reservation.close(resolve));origin=`http://127.0.0.1:${port}`;
-  child=spawn(process.execPath,['server/index.mjs'],{cwd:root,env:{...process.env,M0_LOCAL_PORT:String(port),M0_LOCAL_DATA_DIR:path.join(temp,'data'),M0_LOCAL_WORKSPACE:path.join(temp,'workspace')},stdio:'ignore'});
+  child=spawn(process.execPath,['server/index.mjs'],{cwd:root,env:{...process.env,ASTRIX_PORT:String(port),ASTRIX_DATA_DIR:path.join(temp,'data'),ASTRIX_WORKSPACE:path.join(temp,'workspace'),FIGMA_OAUTH_CLIENT_ID:'',FIGMA_OAUTH_CLIENT_SECRET:'',FIGMA_OAUTH_REDIRECT_URI:''},stdio:'ignore'});
   let ready=false;for(let i=0;i<100;i++){try{if((await fetch(origin+'/__local/health')).ok){ready=true;break;}}catch{}await delay(40);}assert.ok(ready);
+  const oauth=await fetch(origin+'/api/auth/figma/session');assert.equal(oauth.status,200);
+  assert.deepEqual(await oauth.json(),{configured:false,authenticated:false,user:null},'canvas fixture must not use application OAuth credentials or sessions');
   first=(await request('/api/project/v2/create','POST',{mode:'code',projectName:'画布项目A'})).data;
   second=(await request('/api/project/v2/create','POST',{mode:'code',projectName:'画布项目B'})).data;
 });

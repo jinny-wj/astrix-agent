@@ -11,6 +11,7 @@ const path = require('node:path');
 const { OriginalEditorManager, registerOriginalEditorSchemes } = require('./original-editor.cjs');
 const { navigateAndWait } = require('./local-navigation.cjs');
 const { FigmaHostManager, isTrustedLocalMainFrame } = require('./figma-host.cjs');
+const {isOAuthStartURL,createOAuthWindow}=require('./figma-oauth-window.cjs');
 
 const {getLayout,getStatePaths}=require('../../../packages/astrix-workbench/layout.cjs');
 const layout=getLayout(),projectRoot=layout.desktopRoot;
@@ -45,6 +46,7 @@ registerOriginalEditorSchemes();
 
 let mainWindow;
 const canvasWindows = new Set();
+const oauthWindows = new Set();
 let childServer;
 let originalEditor;
 let figmaHost;
@@ -128,6 +130,13 @@ function openLocalPage(url) {
   navigationTail = operation;
   operation.then(() => pendingNavigations.delete(url), () => pendingNavigations.delete(url));
   return operation;
+}
+
+function openFigmaOAuthWindow(url){
+  const window=createOAuthWindow({electron:require('electron'),mainWindow,baseURL,url});
+  oauthWindows.add(window);
+  window.once('closed',()=>oauthWindows.delete(window));
+  return window;
 }
 
 function installBridge() {
@@ -348,6 +357,7 @@ async function createWindow() {
   });
   mainWindow.once('closed', () => { originalEditor?.dispose();figmaHost?.dispose(); });
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if(isOAuthStartURL(url,baseURL)){openFigmaOAuthWindow(url);return{action:'deny'};}
     navigationTrace('window-open',{url});
     if (isCanvasInviteURL(url)) {
       openCanvasWindow(new URL(url).searchParams.get('invite')).catch(error => dialog.showErrorBox('协作窗口未打开',error.message));

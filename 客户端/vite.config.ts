@@ -55,6 +55,8 @@ export default defineConfig(({ mode }) => {
       figmaBridgePlugin(),
       webCapturePlugin(),
       figmaOAuthPlugin({
+        cookieNamespace: 'desktop_5273',
+        allowedOrigin: 'http://127.0.0.1:5273',
         clientId: env.FIGMA_OAUTH_CLIENT_ID?.trim() ?? '',
         clientSecret: env.FIGMA_OAUTH_CLIENT_SECRET?.trim() ?? '',
         redirectUri:

@@ -20,11 +20,13 @@ before(async()=>{
   temp=await fs.mkdtemp(path.join(os.tmpdir(),'m0-local-test-'));
   const reservation=http.createServer();await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));
   const port=reservation.address().port;await new Promise(resolve=>reservation.close(resolve));base=`http://127.0.0.1:${port}`;
-  child=spawn(process.execPath,['server/index.mjs'],{cwd:root,env:{...process.env,M0_LOCAL_PORT:String(port),M0_LOCAL_DATA_DIR:path.join(temp,'data'),M0_LOCAL_WORKSPACE:path.join(temp,'workspace')},stdio:['ignore','ignore','pipe']});
+  child=spawn(process.execPath,['server/index.mjs'],{cwd:root,env:{...process.env,ASTRIX_PORT:String(port),ASTRIX_DATA_DIR:path.join(temp,'data'),ASTRIX_WORKSPACE:path.join(temp,'workspace'),FIGMA_OAUTH_CLIENT_ID:'',FIGMA_OAUTH_CLIENT_SECRET:'',FIGMA_OAUTH_REDIRECT_URI:''},stdio:['ignore','ignore','pipe']});
   let startupError='';child.stderr.on('data',chunk=>{startupError=(startupError+String(chunk)).slice(-3000);});
   let ready=false;
   for(let i=0;i<60;i++){try{if((await fetch(base+'/__local/health')).ok){ready=true;break;}}catch{}if(child.exitCode!==null)break;await delay(50);}
   assert.ok(ready,'test server started'+(startupError?'\n'+startupError:''));
+  const oauth=await fetch(base+'/api/auth/figma/session');assert.equal(oauth.status,200);
+  assert.deepEqual(await oauth.json(),{configured:false,authenticated:false,user:null},'local fixture must not use application OAuth credentials or sessions');
   mock=http.createServer(async(req,res)=>{let text='';for await(const b of req)text+=b;const input=JSON.parse(text);assert.equal(input.model,'local-test');res.setHeader('content-type','application/json');res.end(JSON.stringify({choices:[{message:{role:'assistant',content:'模型连接测试成功'}}]}));});
   await new Promise(resolve=>mock.listen(0,'127.0.0.1',resolve));mockURL=`http://127.0.0.1:${mock.address().port}/v1`;
 });
