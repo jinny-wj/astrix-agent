@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.3",
+  "recordedAt": "2026-10-25",
+  "recordType": "source-release",
+  "status": "source-and-real-canvas-view-verified; official-bridge-awaiting-user-plugin-id-and-pairing",
+  "sources": [
+    {
+      "path": ".release-assets/publication-v0.7.3.log",
+      "distribution": "local-only",
+      "bytes": 1910,
+      "sha256": "a0a609f84c82b0be78413f6b077c5a1a62daad010f499b88460bc274d96e88d2"
+    },
+    {
+      "path": ".release-assets/publication-validation-v0.7.3.log",
+      "distribution": "local-only",
+      "bytes": 457,
+      "sha256": "da79ffd78224c2cacba1fe7ccd4fdc164b3fc476f154e542a1192be2b87c62bd"
+    },
+    {
+      "path": ".release-assets/shared-v0.7.3.log",
+      "distribution": "local-only",
+      "bytes": 20921,
+      "sha256": "d91f76840d1352039bf4328b480432dd9b6dd55898dce53fffdedd52876d35b6"
+    },
+    {
+      "path": ".release-assets/web-tests-v0.7.3.log",
+      "distribution": "local-only",
+      "bytes": 4477,
+      "sha256": "932c95a5fade61051aae9a2cc2953f54e1c7d411f0478ae2fa120842b7439dcb"
+    },
+    {
+      "path": ".release-assets/web-build-v0.7.3.log",
+      "distribution": "local-only",
+      "bytes": 52402,
+      "sha256": "1d13409a0a22731c3bb6f1edc121623c3202c856a33307b81c28864a2192a843"
+    },
+    {
+      "path": ".release-assets/client-build-v0.7.3.json",
+      "distribution": "local-only",
+      "bytes": 1369,
+      "sha256": "2bea07e3b9ed63beabbb1b25908ee0e08ee85438707a50817419711ec17c2ac6"
+    },
+    {
+      "path": ".release-assets/figma-live-v0.7.3.json",
+      "distribution": "local-only",
+      "bytes": 1395,
+      "sha256": "68f0c8b5953b7cba38dbf931f71b4e24e68e3df947faeea9bf38ca4dc0c88f51"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.3.json",
+      "distribution": "local-only",
+      "bytes": 8495,
+      "sha256": "bdd652c98f009b421a42e3912c37124759e6fbb6b83365c02251073f125b1999"
+    }
+  ],
+  "validation": {
+    "publicationTargeted": {
+      "command": "node --test test/version-publication.test.mjs",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "fakeGitAndGitHubRunnerOnly": true
+    },
+    "applicationVersionSync": {
+      "desktop": "0.7.3",
+      "web": "0.7.3",
+      "shared": "0.7.3",
+      "sharedLockRootVersionsMatch": true,
+      "applicationDependencyLocksChanged": false
+    },
+    "historicalRecordsPreserved": {
+      "status": "passed",
+      "range": "0.1.0 through 0.7.2",
+      "byteIdenticalFiles": 23,
+      "unchangedExistingLedgerEntries": 11,
+      "existingTagsMatchedOrigin": 12,
+      "comparison": "current historical files and ledger entries against HEAD before this version; existing local tag objects against origin"
+    },
+    "multiEndpointProtocolTests": {
+      "status": "passed",
+      "pluginAndBridge": 23,
+      "newMultiEndpointChecks": 8,
+      "agentAndWorkspaceTargeted": 13,
+      "modelTransport": "test fixture only",
+      "figmaNodes": "Plugin API VM fixtures",
+      "startupPairingSelectionDocumentWrites": 0,
+      "covers": [
+        "per-endpoint pairing, storage migration and selection fanout",
+        "source-bound pull and ack, offline isolation",
+        "identical command IDs across origins and disconnect cancellation"
+      ],
+      "realDocumentEndToEnd": false
+    },
+    "officialFigmaPluginImport": {
+      "status": "waiting-for-Figma-assigned-development-plugin-id-and-import",
+      "generatedPluginFilesPrepared": true,
+      "assignedIdConfigured": false
+    },
+    "desktopFigmaLogin": {
+      "status": "guest-read-only-view; separate-login-not-verified"
+    },
+    "webFigmaLogin": {
+      "status": "guest-read-only-view; separate-login-not-verified"
+    },
+    "targetDocumentEditPermission": {
+      "status": "not-asserted",
+      "editRequested": false,
+      "connectorReportedEditAccess": false,
+      "boundary": "User explicitly chose read-only viewing and connection verification."
+    },
+    "simultaneousLiveBridge": {
+      "status": "waiting-for-official-plugin-and-pairing",
+      "desktopOnline": false,
+      "webOnline": false,
+      "desktopOnlineSessions": 0,
+      "webOnlineSessions": 0,
+      "realExecutionReceiptVerified": false
+    },
+    "modelConfiguration": {
+      "changedByThisWork": false,
+      "realModelConfiguredByThisWork": false,
+      "realCompletionInvokedByThisWork": false
+    },
+    "publicationValidation": {
+      "command": "npm run release",
+      "status": "passed",
+      "mode": "validate-only",
+      "version": "0.7.3",
+      "tag": "m0/v0.7.3",
+      "runtimeTag": "m0-runtime/v0.7.3",
+      "gitMutation": false,
+      "remoteMutation": false
+    },
+    "staticChecks": {
+      "gitDiffCheck": "passed"
+    },
+    "sharedVerification": {
+      "status": "passed",
+      "nodeAndCanvas": 161,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "webVerification": {
+      "tests": 44,
+      "failed": 0,
+      "build": "passed",
+      "typecheck": "passed",
+      "resourcePrepare": "passed"
+    },
+    "desktopBuild": {
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed"
+    },
+    "liveApplications": [
+      {
+        "surface": "desktop",
+        "version": "0.7.3",
+        "modelMode": "demo",
+        "aiFigmaWriteEnabled": false,
+        "actualFileBound": true,
+        "officialCanvasVisuallyConfirmed": true,
+        "figmaViewMode": "guest-read-only",
+        "pluginFilesPrepared": true,
+        "hasFigmaAssignedNumericId": false,
+        "loopbackAllowedDomainCount": 4,
+        "paired": false,
+        "onlineSessions": 0,
+        "keptRunning": true
+      },
+      {
+        "surface": "web",
+        "version": "0.7.3",
+        "modelMode": "demo",
+        "aiFigmaWriteEnabled": false,
+        "actualFileBound": true,
+        "officialCanvasVisuallyConfirmed": true,
+        "figmaViewMode": "guest-read-only",
+        "pluginFilesPrepared": true,
+        "hasFigmaAssignedNumericId": false,
+        "loopbackAllowedDomainCount": 4,
+        "paired": false,
+        "onlineSessions": 0,
+        "keptRunning": true
+      }
+    ],
+    "realCanvasView": {
+      "desktop": "visually-confirmed",
+      "web": "visually-confirmed",
+      "sameDocumentBound": true,
+      "readOnlyRequest": true,
+      "realDesignMutated": false,
+      "screenshotsPublished": false
+    }
+  },
+  "releaseDisplay": {
+    "commitSubject": "release: Astrix v0.7.3",
+    "sourceTag": "m0/v0.7.3",
+    "runtimeTag": "m0-runtime/v0.7.3",
+    "historyRewrite": false
+  },
+  "runtimeDistribution": {
+    "release": "m0-runtime/v0.7.3",
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "generated-and-verified",
+    "attachments": [
+      {
+        "file": "M0-local-resources-v0.7.3.manifest.json",
+        "bytes": 133402,
+        "sha256": "e2a3bd122adbae4b714317ea25e86123e86830a6d9e5efad0ec9d6841b9849d2"
+      },
+      {
+        "file": "M0-local-resources-v0.7.3.sha256",
+        "bytes": 99,
+        "sha256": "93d9d6b1ae79d63a33e37469458dc42c67c517805b021a6416c4c6b6ac8cec97"
+      },
+      {
+        "file": "M0-local-resources-v0.7.3.tar.gz",
+        "bytes": 49326293,
+        "sha256": "3605697d24e335e0f6370b4811b275996efeacd619749ca0795ca8e7c3631b21"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.3.manifest.json",
+        "bytes": 3549832,
+        "sha256": "b82a1afda12c0872df747daf455f1cdb781a445769ff0f20fd5a282923d07368"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.3.sha256",
+        "bytes": 104,
+        "sha256": "aa15d011727766c0d9ebdb15ea9e29f5d941f570c82c2b1a4d32e140b51803e0"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.3.tar.gz",
+        "bytes": 94862706,
+        "sha256": "d1777e94f383eced704ad06cdc4f740992737009c058843fb250d55a9710f19f"
+      }
+    ],
+    "verifiedRecords": 6639,
+    "currentPublicFilesVerified": 323,
+    "userStateAndScreenshotsExcluded": true
+  },
+  "limits": [
+    "Actual official canvases were viewed in guest read-only mode; login or edit permission is not inferred.",
+    "Real Bridge online sessions are zero until the user completes the Figma-assigned plugin ID/import/run and per-endpoint pairing. No real-plugin execution receipt has been verified.",
+    "No real-model configuration, completion or actual document mutation was performed.",
+    "User document names, URLs, accounts, generated per-user manifests, pairing credentials and screenshots are excluded from this public record."
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  }
+}

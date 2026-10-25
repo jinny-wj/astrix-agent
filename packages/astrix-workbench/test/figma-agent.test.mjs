@@ -110,7 +110,7 @@ test('multi-Agent workflow enforces each task write policy and carries actual na
 test('closing a scoped MCP gateway cancels its pending native write before resumed UI polling can mutate Figma',async t=>{
   const f=await fixture(t,{leaseMs:5}),scope=await f.scope(true),gateway=await createFigmaMcpGateway(scope.forRole(false));t.after(()=>gateway.close());await f.pausePump();
   const config=gateway.config.m0_figma,request=fetch(config.url,{method:'POST',headers:{'content-type':'application/json',...config.headers},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'figma_update_nodes',arguments:{updates:[{nodeId:'1:1',text:'Must never execute after gateway close'}]}}})}).then(response=>response.json()).catch(error=>({networkError:error.message}));
-  const credentials=[...f.plugin.storage.values()][0],query=new URLSearchParams({fileKey:f.context.fileKey,sessionId:f.context.sessionId});
+  const saved=[...f.plugin.storage.values()][0],credentials=saved.version===2?saved.endpoints[f.origin]:saved,query=new URLSearchParams({fileKey:f.context.fileKey,sessionId:f.context.sessionId});
   // Observe the actual queued command without delivering it to the plugin
   // scene. The short lease expires before UI polling is resumed below.
   const command=await until(async()=>{const response=await fetch(f.origin+'/__local/figma/bridge/pull?'+query,{headers:{origin:'null',authorization:'Bearer '+credentials.token}});return (await response.json()).commands?.[0];});

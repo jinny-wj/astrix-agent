@@ -1,17 +1,95 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><style>body{font:13px -apple-system,sans-serif;margin:16px;background:#f5f5f8;color:#252334}h2{font-size:17px}label{display:block;margin:10px 0}input{box-sizing:border-box;width:100%;padding:8px;border:1px solid #ccc;border-radius:5px}button{padding:8px 12px;margin-right:8px;border:0;border-radius:5px;background:#7055bd;color:white}#log{height:190px;overflow:auto;white-space:pre-wrap;background:white;padding:10px}#status{color:#7055bd}</style>
-<h2>Astrix · Figma 桥接</h2><p id="status">正在读取真实 Figma 文件…</p><label>本机服务<input id="base" value="http://127.0.0.1:4317"></label><label>Astrix 页面显示的配对码<input id="code" placeholder="12 位配对码" autocomplete="off"></label><button id="pair">配对当前文件</button><button id="disconnect">断开并清除凭据</button><pre id="log"></pre>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><style>body{font:13px -apple-system,sans-serif;margin:16px;background:#f5f5f8;color:#252334}h2{font-size:17px;margin:0 0 8px}h3{font-size:14px;margin:0 0 8px}section{background:white;border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0}label{display:block;margin:7px 0}input{box-sizing:border-box;width:100%;padding:7px;border:1px solid #ccc;border-radius:5px}button{padding:8px 10px;margin-right:6px;border:0;border-radius:5px;background:#7055bd;color:white}button:disabled{opacity:.5}#log{height:80px;overflow:auto;white-space:pre-wrap;background:white;padding:10px}.status{color:#7055bd;margin:8px 0 0}.hint{color:#625e6b;font-size:12px}</style>
+<h2>Astrix · Figma 桥接</h2><p id="document-status">正在读取真实 Figma 文件…</p><p class="hint">两个连接分别配对；选区会同步到所有已连接的本机工作台。</p>
+<section><h3>客户端</h3><label>本机服务<input id="base" value="http://127.0.0.1:4317"></label><label>客户端显示的配对码<input id="code" placeholder="12 位配对码" autocomplete="off"></label><button id="pair">配对当前文件</button><button id="disconnect">断开此端</button><p id="status" class="status">尚未连接</p></section>
+<section><h3>网页端</h3><label>本机服务<input id="base-web" value="http://127.0.0.1:5273"></label><label>网页端显示的配对码<input id="code-web" placeholder="12 位配对码" autocomplete="off"></label><button id="pair-web">配对当前文件</button><button id="disconnect-web">断开此端</button><p id="status-web" class="status">尚未连接</p></section><pre id="log"></pre>
+<!-- ASTRIX_BRIDGE_ENDPOINTS -->
 <script>
-const $=id=>document.getElementById(id);let snapshot=null,credentials=null,restored=false,authorized=false,resuming=null,busy=false,upload=Promise.resolve(),lastUpload=0;const logs=[];
-function log(text){logs.unshift(new Date().toLocaleTimeString()+' '+String(text));$('log').textContent=logs.slice(0,30).join('\n')}
-function base(){const u=new URL($('base').value.trim());if(u.protocol!=='http:'||!['127.0.0.1','localhost','[::1]'].includes(u.hostname)||u.username||u.password||u.pathname!=='/'||u.search||u.hash)throw Error('仅允许本机 HTTP 服务');return u.origin}
-async function request(path,body,auth=true){const headers={};if(body)headers['content-type']='application/json';if(auth){if(!credentials||!snapshot)throw Error('请先配对');headers.authorization='Bearer '+credentials.token}const r=await fetch(base()+'/__local/figma/bridge/'+path,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined});const value=await r.json();if(!r.ok)throw Object.assign(Error(value.error||'请求失败 '+r.status),{status:r.status});return value}
-const scope=()=>({fileKey:snapshot.fileKey,sessionId:snapshot.sessionId});
-function persist(){parent.postMessage({pluginMessage:{type:'save-pairing',credentials:{...credentials,base:base(),...scope()}}},'*')}
-function publish(){if(!authorized||!credentials||!snapshot)return;const current=snapshot;upload=upload.catch(()=>{}).then(()=>request('selection',{...scope(),snapshot:current})).then(()=>{lastUpload=Date.now();$('status').textContent='已配对 · '+snapshot.documentName+' · '+snapshot.nodes.length+' 个选中图层'}).catch(error=>{log(error.message);if(error.status===401||error.status===403){credentials=null;authorized=false;$('status').textContent='凭据失效，请重新配对'}})}
-async function resume(){if(resuming)return resuming;if(!restored||!snapshot||!credentials)return;if(credentials.fileKey!==snapshot.fileKey){credentials=null;authorized=false;log('保存的凭据属于其他文件，请为当前文件配对');return}resuming=(async()=>{try{if(credentials.base)$('base').value=credentials.base;const value=await request('pair',{token:credentials.token,...scope()},false);credentials={...value,base:base()};authorized=true;persist();publish()}catch(error){credentials=null;authorized=false;log('恢复配对失败：'+error.message)}})().finally(()=>resuming=null);return resuming}
-$('pair').onclick=async()=>{if(!snapshot?.fileKey){log('没有 fileKey；请使用 Desktop 开发插件或组织私有插件');return}try{credentials=await request('pair',{code:$('code').value.trim(),...scope()},false);authorized=true;$('code').value='';persist();publish();log('已绑定当前 Figma 文件')}catch(error){log(error.message)}};
-$('disconnect').onclick=()=>{credentials=null;authorized=false;parent.postMessage({pluginMessage:{type:'clear-pairing'}},'*');$('status').textContent='已断开；可在 Astrix 页面撤销配对令牌'};
-window.onmessage=event=>{if(event.source!==parent)return;const m=event.data?.pluginMessage;if(!m)return;if(m.type==='bridge-ready'){credentials=m.credentials;restored=true;void resume()}if(m.type==='selection-snapshot'){snapshot=m.snapshot;if(!snapshot.fileKey){$('status').textContent='无法读取 fileKey；请检查私有 API / 开发插件权限';return}if(authorized&&credentials&&credentials.sessionId===snapshot.sessionId)publish();else if(restored)void resume()}if(m.type==='ack-results'&&authorized&&credentials){void upload.then(()=>request('ack',{...scope(),results:m.results})).then(()=>log('收到真实执行回执：'+m.results.map(r=>r.ok?'成功':'失败 '+(r.message||'')).join('；'))).catch(error=>log('回执提交失败，将按相同命令 ID 重试：'+error.message))}};
-setInterval(async()=>{if(!authorized||!credentials||!snapshot||busy)return;busy=true;try{await upload;if(Date.now()-lastUpload>5000){publish();await upload}const q=new URLSearchParams(scope());const value=await request('pull?'+q);if(value.commands?.length)parent.postMessage({pluginMessage:{type:'apply-commands',commands:value.commands}},'*')}catch(error){log(error.message)}finally{busy=false}},1000);
+const $=id=>document.getElementById(id);
+const configured=globalThis.__ASTRIX_BRIDGE_ENDPOINTS__||['http://127.0.0.1:4317','http://127.0.0.1:5273'];
+function loopback(value){const u=new URL(value);if(u.protocol!=='http:'||!['127.0.0.1','localhost'].includes(u.hostname)||u.username||u.password||u.pathname!=='/'||u.search||u.hash||!u.port)throw Error('仅允许清单中的本机 HTTP 服务');return 'http://127.0.0.1:'+u.port;}
+const allowed=new Set(configured.map(loopback));
+function endpoint(value){const origin=loopback(String(value).trim());if(!allowed.has(origin))throw Error('此服务不在插件本机白名单中，请使用对应工作台生成的插件');return origin;}
+let snapshot=null,restored=false,sequence=0;const saved={},pending=new Map(),logs=[];
+const connections=['','-web'].filter((suffix,index)=>$('base'+suffix)&&($('base'+suffix).value||configured[index])).map((suffix,index)=>({suffix,label:index?'网页端':'客户端',origin:'',credentials:null,authorized:false,generation:0,controllers:new Set(),upload:Promise.resolve(),lastUpload:0,busy:false,resuming:null,pairing:false}));
+function status(connection,text){$('status'+connection.suffix).textContent=text;}
+function log(connection,text){logs.unshift(new Date().toLocaleTimeString()+' '+(connection?connection.label+'：':'')+String(text));$('log').textContent=logs.slice(0,30).join('\n');}
+function scope(value=snapshot){return{fileKey:value.fileKey,sessionId:value.sessionId};}
+function ticket(connection){return{connection,origin:connection.origin,generation:connection.generation,credentials:connection.credentials,...scope()};}
+function current(value,authorized=false){const c=value.connection;return c.generation===value.generation&&c.origin===value.origin&&c.credentials===value.credentials&&snapshot?.fileKey===value.fileKey&&snapshot?.sessionId===value.sessionId&&(!authorized||c.authorized);}
+function cancel(connection){const previous=connection.origin;connection.generation++;for(const controller of connection.controllers)controller.abort();connection.controllers.clear();connection.authorized=false;connection.credentials=null;connection.upload=Promise.resolve();connection.lastUpload=0;connection.busy=false;connection.resuming=null;connection.pairing=false;$('pair'+connection.suffix).disabled=false;for(const [id,value]of pending)if(value.ticket.connection===connection)pending.delete(id);if(previous)parent.postMessage({pluginMessage:{type:'cancel-connection',connectionId:previous}},'*');}
+function selectedEndpoint(connection){const origin=endpoint($('base'+connection.suffix).value);if(connections.some(other=>other!==connection&&other.origin===origin&&(other.authorized||other.credentials||other.pairing)))throw Error('此本机服务已在另一连接中使用');return origin;}
+async function request(value,route,body,auth=true){
+  if(!current(value,auth))throw Error('连接已切换，原请求未继续');
+  const headers={};if(body)headers['content-type']='application/json';if(auth)headers.authorization='Bearer '+value.credentials.token;
+  const controller=typeof AbortController==='function'?new AbortController():null;if(controller)value.connection.controllers.add(controller);
+  const timer=controller&&typeof setTimeout==='function'?setTimeout(()=>controller.abort(),10000):null;
+  try{const response=await fetch(value.origin+'/__local/figma/bridge/'+route,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined,...(controller?{signal:controller.signal}:{})});const result=await response.json();if(!current(value,auth))throw Error('连接已切换，已忽略原请求结果');if(!response.ok)throw Object.assign(Error(result.error||'请求失败 '+response.status),{status:response.status});return result;}
+  finally{if(timer!==null)clearTimeout(timer);if(controller)value.connection.controllers.delete(controller);}
+}
+function persist(connection){const credentials={...connection.credentials,base:connection.origin,...scope()};saved[connection.origin]=credentials;parent.postMessage({pluginMessage:{type:'save-pairing',endpoint:connection.origin,credentials}},'*');}
+function failed(connection,value,error){if(!current(value))return;log(connection,error.name==='AbortError'?'本机请求已中止或超时':error.message);if(error.status===401||error.status===403){cancel(connection);status(connection,'连接失效，请重新配对');}}
+function publish(connection){
+  if(!connection.authorized||!connection.credentials||!snapshot)return connection.upload;
+  const value=ticket(connection),selection=snapshot;
+  connection.upload=connection.upload.catch(()=>{}).then(()=>request(value,'selection',{fileKey:value.fileKey,sessionId:value.sessionId,snapshot:selection})).then(()=>{if(!current(value,true))return;connection.lastUpload=Date.now();status(connection,'已配对 · '+selection.documentName+' · '+selection.nodes.length+' 个选中图层');}).catch(error=>failed(connection,value,error));
+  return connection.upload;
+}
+async function resume(connection){
+  if(!restored||!snapshot||!connection.credentials)return;if(connection.resuming)return connection.resuming;
+  if(connection.credentials.fileKey!==snapshot.fileKey){cancel(connection);status(connection,'保存的连接属于其他文件，请为当前文件配对');return;}
+  const value=ticket(connection),operation=(async()=>{try{const result=await request(value,'pair',{token:value.credentials.token,fileKey:value.fileKey,sessionId:value.sessionId},false);if(!current(value))return;connection.credentials={...result,base:connection.origin};connection.authorized=true;persist(connection);await publish(connection);}catch(error){if(current(value)){cancel(connection);status(connection,'恢复连接失败，请重新配对');log(connection,'恢复连接失败：'+(error.name==='AbortError'?'请求超时':error.message));}}})();
+  connection.resuming=operation;try{await operation;}finally{if(connection.resuming===operation)connection.resuming=null;}
+}
+function change(connection){const origin=selectedEndpoint(connection);if(origin===connection.origin)return;cancel(connection);connection.origin=origin;$('base'+connection.suffix).value=origin;connection.credentials=saved[origin]||null;status(connection,'尚未连接');if(connection.credentials)void resume(connection);}
+async function pair(connection){
+  if(!snapshot?.fileKey){log(connection,'无法读取文件标识，请使用 Figma Desktop 开发插件或组织私有插件');return;}
+  try{const origin=selectedEndpoint(connection);cancel(connection);connection.origin=origin;$('base'+connection.suffix).value=origin;connection.pairing=true;$('pair'+connection.suffix).disabled=true;const value=ticket(connection);try{const result=await request(value,'pair',{code:$('code'+connection.suffix).value.trim(),fileKey:value.fileKey,sessionId:value.sessionId},false);if(!current(value))return;connection.credentials={...result,base:origin};connection.authorized=true;$('code'+connection.suffix).value='';persist(connection);await publish(connection);log(connection,'已绑定当前真实 Figma 文件');}catch(error){if(current(value)){status(connection,'配对未完成');log(connection,error.name==='AbortError'?'配对请求超时':error.message);}}finally{if(connection.generation===value.generation){connection.pairing=false;$('pair'+connection.suffix).disabled=false;}}}
+  catch(error){log(connection,error.message);}
+}
+async function poll(connection){
+  if(!connection.authorized||!connection.credentials||!snapshot||connection.busy)return;
+  const value=ticket(connection);connection.busy=true;
+  try{await connection.upload;if(!current(value,true))return;if(Date.now()-connection.lastUpload>5000)await publish(connection);if(!current(value,true))return;const result=await request(value,'pull?'+new URLSearchParams({fileKey:value.fileKey,sessionId:value.sessionId}));if(!current(value,true)||!result.commands?.length)return;
+    const commands=result.commands;if(commands.some(command=>command.fileKey!==value.fileKey||command.sessionId!==value.sessionId||typeof command.id!=='string'))throw Error('服务返回了不属于当前文件会话的命令');
+    const dispatchId=connection.generation+'-'+Date.now().toString(36)+'-'+(++sequence);pending.set(dispatchId,{ticket:value,ids:new Set(commands.map(command=>command.id))});while(pending.size>100)pending.delete(pending.keys().next().value);
+    parent.postMessage({pluginMessage:{type:'apply-commands',connectionId:value.origin,dispatchId,commands}},'*');
+  }catch(error){failed(connection,value,error);}finally{if(connection.generation===value.generation)connection.busy=false;}
+}
+async function acknowledge(message){
+  const dispatch=pending.get(message.dispatchId);if(!dispatch||message.connectionId!==dispatch.ticket.origin)return;pending.delete(message.dispatchId);
+  const value=dispatch.ticket,connection=value.connection;if(!current(value,true))return;
+  if(!Array.isArray(message.results)||message.results.some(result=>!dispatch.ids.has(result.id)||result.fileKey!==value.fileKey||result.sessionId!==value.sessionId)){log(connection,'已拒绝不属于原连接的执行回执');return;}
+  try{await connection.upload;await request(value,'ack',{fileKey:value.fileKey,sessionId:value.sessionId,results:message.results});if(current(value,true))log(connection,'收到真实执行回执：'+message.results.map(result=>result.ok?'成功':'失败 '+(result.message||'')).join('；'));}
+  catch(error){if(current(value,true))log(connection,'回执提交失败，将由原服务按相同命令 ID 重试');}
+}
+function restore(message){
+  const pairings=message.pairings?.endpoints||message.pairings||{};
+  for(const [key,value]of Object.entries(pairings)){try{const origin=endpoint(key);if(value&&typeof value.token==='string')saved[origin]={...value,base:origin};}catch{}}
+  if(message.credentials?.base)try{const origin=endpoint(message.credentials.base);if(!saved[origin])saved[origin]={...message.credentials,base:origin};}catch{}
+  restored=true;
+  for(const connection of connections){if(saved[connection.origin])connection.credentials=saved[connection.origin];}
+  for(const [origin,credentials]of Object.entries(saved)){if(connections.some(connection=>connection.credentials&&connection.origin===origin))continue;const spare=connections.find(connection=>!connection.credentials);if(spare){spare.origin=origin;$('base'+spare.suffix).value=origin;spare.credentials=credentials;}}
+  for(const connection of connections)void resume(connection);
+}
+for(const connection of connections){
+  const input=$('base'+connection.suffix);if(!connection.suffix&&input.value==='http://127.0.0.1:4317'&&allowed.size>2)input.value=[...allowed].find(origin=>!['http://127.0.0.1:4317','http://127.0.0.1:5273'].includes(origin));
+  connection.origin=endpoint(input.value);input.value=connection.origin;
+  input.onchange=()=>{try{change(connection);}catch(error){input.value=connection.origin;log(connection,error.message);}};
+  $('pair'+connection.suffix).onclick=()=>pair(connection);
+  $('disconnect'+connection.suffix).onclick=()=>{const origin=connection.origin;cancel(connection);delete saved[origin];parent.postMessage({pluginMessage:{type:'clear-pairing',endpoint:origin}},'*');$('pair'+connection.suffix).disabled=false;status(connection,'已断开此端；另一连接不受影响');};
+}
+window.onmessage=event=>{
+  if(event.source!==parent)return;const message=event.data?.pluginMessage;if(!message)return;
+  if(message.type==='bridge-ready')restore(message);
+  if(message.type==='selection-snapshot'){
+    const previous=snapshot;snapshot=message.snapshot;
+    if($('document-status'))$('document-status').textContent=snapshot.fileKey?(snapshot.documentName||'当前 Figma 文件'):'无法读取文件标识，请检查开发插件权限';
+    if(!snapshot.fileKey){for(const connection of connections){cancel(connection);status(connection,'无法读取真实文件标识');}return;}
+    for(const connection of connections){if(previous&&(previous.fileKey!==snapshot.fileKey||previous.sessionId!==snapshot.sessionId))cancel(connection);if(connection.authorized&&connection.credentials?.sessionId===snapshot.sessionId)void publish(connection);else if(restored)void resume(connection);}
+  }
+  if(message.type==='ack-results')void acknowledge(message);
+  if(message.type==='pairing-storage-error')log(connections.find(connection=>connection.origin===message.endpoint),'本机配对未能保存，重新打开插件后需再次连接');
+};
+setInterval(()=>Promise.all(connections.map(connection=>poll(connection))),1000);
 parent.postMessage({pluginMessage:{type:'ui-ready'}},'*');
 </script></html>

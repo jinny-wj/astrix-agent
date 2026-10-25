@@ -3,7 +3,7 @@
   "description": "Astrix macOS 工作台：真实 Figma、Agent、原生编辑器、终端与扩展",
   "author": "Design Studio WJ",
   "private": true,
-  "version": "0.7.2",
+  "version": "0.7.3",
   "type": "module",
   "main": "dist-electron/main.mjs",
   "scripts": {

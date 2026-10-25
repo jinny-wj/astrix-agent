@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.2",
+  "currentVersion": "0.7.3",
   "recordedAt": "2026-10-25",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -183,6 +183,23 @@
         "Uses release: Astrix vVERSION as the release commit subject, preserving existing history and compatibility tags.",
         "Runs and verifies both applications at 0.7.2, including the desktop native editor, real PTY and extensions.",
         "Adds truthful project-required Figma states and local Design-home entries; removes an unavailable corporate manual link."
+      ],
+      "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.3",
+      "date": "2026-10-25",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.3",
+      "record": "versions/v0.7.3.md",
+      "evidence": [
+        "versions/evidence/v0.7.3.json"
+      ],
+      "changes": [
+        "Adds independent desktop and web endpoint pairings to one Figma plugin.",
+        "Routes each command receipt back to its originating endpoint without sharing pairing credentials between services.",
+        "Records official plugin import, each surface login and simultaneous live connectivity separately; model configuration remains unchanged."
       ],
       "uiFeatureChanges": true
     }

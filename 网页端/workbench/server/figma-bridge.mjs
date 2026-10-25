@@ -43,6 +43,8 @@ function patch(value){
  * complete a command; accepting an HTTP command never represents a write. */
 export function createFigmaBridge({dataDir,port=4317,resolveProject,commandTimeoutMs=45000,selectionTTL=15000,leaseMs=8000}={}){
   if(!dataDir)throw Error('Figma bridge requires dataDir');
+  if(!Number.isInteger(port)||port<1||port>65535)throw Error('Figma bridge requires a valid local port');
+  const bridgePorts=[...new Set([4317,5273,port])],endpoints=bridgePorts.map(value=>`http://127.0.0.1:${value}`);
   const pluginDirectory=path.resolve(dataDir,'figma-plugin'),storeDir=path.resolve(dataDir,'figma-bridge');
   const codes=new Map(),sessions=new Map(),commands=new Map(),waiters=new Map(),attempts=new Map();
   let storePromise,storeQueue=Promise.resolve(),pluginPreparation,closed=false;
@@ -66,7 +68,11 @@ export function createFigmaBridge({dataDir,port=4317,resolveProject,commandTimeo
       await directory(pluginDirectory);
       for(const name of ['code.js','ui.html','manifest.json','SOURCES.json','README.md']){
         let text=await fs.readFile(path.join(sourceDir,name),'utf8');
-        if(name==='ui.html')text=text.replaceAll('http://127.0.0.1:4317',`http://127.0.0.1:${port}`);
+        if(name==='ui.html'){
+          const marker='<!-- ASTRIX_BRIDGE_ENDPOINTS -->';
+          if(text.split(marker).length!==2)throw fail('Figma 插件端点配置标记无效',409);
+          text=text.replace(marker,'<script>globalThis.__ASTRIX_BRIDGE_ENDPOINTS__='+JSON.stringify(endpoints)+'</script>');
+        }
         const file=path.join(pluginDirectory,name);await regular(file);let handle,existing;
         try{handle=await fs.open(file,constants.O_RDONLY|constants.O_NOFOLLOW);existing=await handle.readFile('utf8');}catch(error){if(error.code!=='ENOENT')throw error;}finally{await handle?.close();}
         if(name==='manifest.json'){
@@ -78,14 +84,14 @@ export function createFigmaBridge({dataDir,port=4317,resolveProject,commandTimeo
             // overwrite it during polling, upgrades or a local port change.
             if(typeof current.id==='string'&&/^[0-9]{1,128}$/.test(current.id))manifest.id=current.id;
           }
-          manifest.networkAccess.allowedDomains=[`http://127.0.0.1:${port}`,`http://localhost:${port}`];text=JSON.stringify(manifest,null,2)+'\n';
+          manifest.networkAccess.allowedDomains=bridgePorts.flatMap(value=>[`http://127.0.0.1:${value}`,`http://localhost:${value}`]);text=JSON.stringify(manifest,null,2)+'\n';
         }
         // Figma watches development files. Polling metadata must not trigger
         // hot reloads or replace an otherwise unchanged plugin entry point.
         if(existing===text)continue;
         const temporary=file+'.'+randomUUID()+'.tmp';try{await fs.writeFile(temporary,text,{mode:0o600,flag:'wx'});await fs.rename(temporary,file);}finally{await fs.unlink(temporary).catch(error=>{if(error.code!=='ENOENT')throw error;});}
       }
-      return {pluginDirectory,manifestPath:path.join(pluginDirectory,'manifest.json')};
+      return {pluginDirectory,manifestPath:path.join(pluginDirectory,'manifest.json'),endpoints};
     })().finally(()=>pluginPreparation=undefined);return pluginPreparation;
   }
   function sessionKey(fileKey,sessionId){return fileKey+'\0'+sessionId;}

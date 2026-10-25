@@ -1,6 +1,6 @@
 {
   "name": "@astrix/workbench-common",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": true,
   "type": "module",
   "description": "Shared paths, version records, packaging and cross-platform verification for Astrix desktop and web",

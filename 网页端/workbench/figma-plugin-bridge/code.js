@@ -4,15 +4,7 @@
  * Design Studio bridge and applies structured write commands through the
  * Plugin API (Figma REST cannot write ordinary design nodes).
  */
-figma.showUI(__html__, { width: 420, height: 480 })
-
-try {
-  figma.root.setRelaunchData({
-    relaunch: '继续连接 Design Studio 写回',
-  })
-} catch {
-  // Older Figma builds may not support relaunch data.
-}
+figma.showUI(__html__, { width: 440, height: 660 })
 
 const BRIDGE_SESSION_ID = [
   'figma',
@@ -1039,6 +1031,59 @@ async function applyPatchCommand(command) {
 
 
 const M0_PAIRING_KEY = 'm0-local-figma-bridge-v1'
+const ASTRIX_PAIRINGS_KEY = 'astrix-figma-bridge-pairings-v2'
+let pairingStatePromise
+let pairingWrites = Promise.resolve()
+let bridgeExecutions = Promise.resolve()
+const connectionEpochs = new Map()
+
+// The plugin main sandbox does not expose browser URL APIs. Match only the
+// two loopback host spellings; the UI and manifest enforce the port whitelist.
+function pairingEndpoint(value) {
+  const match = /^http:\/\/(127\.0\.0\.1|localhost):([1-9][0-9]{0,4})\/?$/.exec(value || '')
+  if (!match || Number(match[2]) > 65535) return null
+  return 'http://127.0.0.1:' + Number(match[2])
+}
+function storedPairing(value, endpoint) {
+  const origin = pairingEndpoint(endpoint || value?.base)
+  if (!origin || !value || typeof value.token !== 'string' || value.token.length > 256
+    || typeof value.fileKey !== 'string' || typeof value.sessionId !== 'string') return null
+  if (value.base && pairingEndpoint(value.base) !== origin) return null
+  return { ...value, base: origin }
+}
+async function pairingState() {
+  if (!pairingStatePromise) pairingStatePromise = (async () => {
+    const saved = await figma.clientStorage.getAsync(ASTRIX_PAIRINGS_KEY)
+    const state = { version: 2, endpoints: {} }
+    if (saved?.version === 2 && saved.endpoints && typeof saved.endpoints === 'object') {
+      for (const endpoint of Object.keys(saved.endpoints).slice(0,32)) {
+        const value = storedPairing(saved.endpoints[endpoint], endpoint)
+        if (value) state.endpoints[value.base] = value
+      }
+    }
+    const previous = storedPairing(await figma.clientStorage.getAsync(M0_PAIRING_KEY))
+    if (previous) {
+      if (!state.endpoints[previous.base]) state.endpoints[previous.base] = previous
+      // Commit the complete new map before removing the old single-end record.
+      await figma.clientStorage.setAsync(ASTRIX_PAIRINGS_KEY, state)
+      await figma.clientStorage.deleteAsync(M0_PAIRING_KEY)
+    }
+    return state
+  })().catch(error => { pairingStatePromise = undefined; throw error })
+  return pairingStatePromise
+}
+function updatePairings(action) {
+  const operation = pairingWrites.catch(() => {}).then(async () => {
+    const state = await pairingState()
+    const next = { version: 2, endpoints: { ...state.endpoints } }
+    action(next.endpoints)
+    await figma.clientStorage.setAsync(ASTRIX_PAIRINGS_KEY, next)
+    pairingStatePromise = Promise.resolve(next)
+    return next
+  })
+  pairingWrites = operation
+  return operation
+}
 function assertBridgeBinding(command) {
   if (!currentFileKey()) throw new Error('当前插件无法读取 fileKey；请用 Desktop 开发插件或组织私有插件')
   if (command.fileKey !== currentFileKey() || command.sessionId !== BRIDGE_SESSION_ID) throw new Error('文件或插件会话不匹配，已拒绝命令')
@@ -1141,14 +1186,15 @@ async function applyCommand(command) {
   }catch(error){try{node.remove()}catch{}throw error}
 }
 
-async function executeCommand(command) {
+async function executeCommand(command, connectionId = 'legacy') {
   assertBridgeBinding(command)
   const commandId = command && typeof command.id === 'string' ? command.id : ''
-  if (commandId && processedResults.has(commandId)) {
-    return processedResults.get(commandId)
+  const cacheKey = connectionId + '\0' + commandId
+  if (commandId && processedResults.has(cacheKey)) {
+    return processedResults.get(cacheKey)
   }
-  if (commandId && processingCommands.has(commandId)) {
-    return processingCommands.get(commandId)
+  if (commandId && processingCommands.has(cacheKey)) {
+    return processingCommands.get(cacheKey)
   }
 
   const execution = (async () => {
@@ -1163,7 +1209,7 @@ async function executeCommand(command) {
     }
 
     if (commandId) {
-      processedResults.set(commandId, result)
+      processedResults.set(cacheKey, result)
       if (processedResults.size > 100) {
         const oldestId = processedResults.keys().next().value
         processedResults.delete(oldestId)
@@ -1172,11 +1218,11 @@ async function executeCommand(command) {
     return result
   })()
 
-  if (commandId) processingCommands.set(commandId, execution)
+  if (commandId) processingCommands.set(cacheKey, execution)
   try {
     return await execution
   } finally {
-    if (commandId) processingCommands.delete(commandId)
+    if (commandId) processingCommands.delete(cacheKey)
   }
 }
 
@@ -1184,20 +1230,55 @@ figma.ui.onmessage = async (msg) => {
   if (!msg || typeof msg !== 'object') return
 
   if (msg.type === 'ui-ready') {
-    const credentials=await figma.clientStorage.getAsync(M0_PAIRING_KEY)
-    figma.ui.postMessage({type:'bridge-ready',credentials:credentials||null})
+    const state = await pairingState()
+    figma.ui.postMessage({type:'bridge-ready',credentials:null,pairings:state})
     publishSelection()
     return
   }
-  if(msg.type==='save-pairing'){if(msg.credentials&&msg.credentials.fileKey===currentFileKey()&&msg.credentials.sessionId===BRIDGE_SESSION_ID)await figma.clientStorage.setAsync(M0_PAIRING_KEY,msg.credentials);return}
-  if(msg.type==='clear-pairing'){await figma.clientStorage.deleteAsync(M0_PAIRING_KEY);return}
+  if (msg.type === 'save-pairing') {
+    const value = storedPairing(msg.credentials, msg.endpoint)
+    if (value && value.fileKey === currentFileKey() && value.sessionId === BRIDGE_SESSION_ID) {
+      try { await updatePairings(endpoints => { endpoints[value.base] = value }) }
+      catch { figma.ui.postMessage({type:'pairing-storage-error',endpoint:value.base}) }
+    }
+    return
+  }
+  if (msg.type === 'clear-pairing') {
+    const endpoint = msg.endpoint === undefined ? null : pairingEndpoint(msg.endpoint)
+    if (msg.endpoint !== undefined && !endpoint) return
+    try {
+      await updatePairings(endpoints => {
+        if (endpoint) delete endpoints[endpoint]
+        else for (const key of Object.keys(endpoints)) delete endpoints[key]
+      })
+      if (!endpoint) await figma.clientStorage.deleteAsync(M0_PAIRING_KEY)
+    } catch { figma.ui.postMessage({type:'pairing-storage-error',endpoint}) }
+    return
+  }
+  if (msg.type === 'cancel-connection') {
+    const endpoint = pairingEndpoint(msg.connectionId)
+    if (endpoint) connectionEpochs.set(endpoint, (connectionEpochs.get(endpoint) || 0) + 1)
+    return
+  }
 
   if (msg.type === 'apply-commands') {
-    const results = []
-    for (const command of msg.commands || []) {
-      try{results.push(await executeCommand(command))}catch(error){results.push(resultFor(command||{}, {ok:false,message:String(error.message||error)}))}
-    }
-    figma.ui.postMessage({ type: 'ack-results', results })
+    const connectionId = msg.connectionId === undefined ? 'legacy' : pairingEndpoint(msg.connectionId)
+    if (!connectionId || !Array.isArray(msg.commands) || msg.commands.length > 10) return
+    if (connectionId !== 'legacy' && (typeof msg.dispatchId !== 'string' || msg.dispatchId.length > 160)) return
+    const epoch = connectionEpochs.get(connectionId) || 0
+    // Serialize scene mutations from both services. A disconnect cancels work
+    // that has not started; an already executed Plugin API call is not undone.
+    const operation = bridgeExecutions.catch(() => {}).then(async () => {
+      const results = []
+      for (const command of msg.commands) {
+        if ((connectionEpochs.get(connectionId) || 0) !== epoch) break
+        try { results.push(await executeCommand(command, connectionId)) }
+        catch (error) { results.push(resultFor(command||{}, {ok:false,message:String(error.message||error)})) }
+      }
+      figma.ui.postMessage({type:'ack-results',results,...(connectionId!=='legacy'?{connectionId,dispatchId:msg.dispatchId}:{})})
+    })
+    bridgeExecutions = operation
+    await operation
   }
 }
 
