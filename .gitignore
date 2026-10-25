@@ -51,7 +51,7 @@ docs/reference/
 # 战报 skill 的真实密钥，只用 example 入库
 skills/battle-report/references/api-config.json
 
-# M0 generated distributions and optional recovered runtime (private assets)
+# Astrix generated distributions and optional recovered runtime (private assets)
 /M0-AI-recovered/
 
 # Physically split workbench resources and local state (layout 2)

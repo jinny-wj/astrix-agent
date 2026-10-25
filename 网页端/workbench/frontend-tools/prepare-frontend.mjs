@@ -91,6 +91,18 @@ function rewrite(text, name) {
       (_match, fn) => { count++; return `(typeof ${fn}==="function"&&${fn}())`; });
     if (count !== 4) throw new Error('Recovered material-icon cleanup changed; expected four optional cleanup calls');
     patches.push({ file: name, purpose: 'Guard four calls to absent optional material/skill icon cleanup functions so leaving home does not throw.', matchCount: count });
+    // This warning belongs to the old corporate background-canvas login flow.
+    // Keep its authorization failure truthful; offer the explicit local flow.
+    const warning='(openBlock(),createBlock(be,{key:0,status:"warning",subtitle:unref(te)},{extra:withCtx(()=>[createVNode(ce,{type:"primary",onClick:unref(V)},{default:withCtx(()=>[...s[127]||(s[127]=[createTextVNode("重新获取",-1)])]),_:1},8,["onClick"])]),_:1},8,["subtitle"]))';
+    const warningMatch='!unref(T)&&unref(te)?'+warning;
+    if(text.split(warningMatch).length!==2)throw new Error('Recovered Figma home warning changed');
+    const entry='(openBlock(),createElementBlock("section",{key:0,"data-m0-local-figma-entry":"",style:"padding:24px;text-align:center;color:#697180"},[createBaseVNode("strong",{style:"display:block;font-size:16px;color:#394559"},"选择项目后连接真实 Figma"),createBaseVNode("p",null,"在本地项目的 Design 中打开官方 Figma，并配对目标文件的 Plugin Bridge。原企业后台列表未接入。"),createBaseVNode("button",{type:"button","data-m0-create-figma-project":"",style:"padding:8px 14px;border:0;border-radius:6px;background:#0d99ff;color:white;cursor:pointer"},"创建本地项目"),createBaseVNode("a",{href:"/__local/projects",style:"margin-left:16px;color:#435edf"},"选择已有项目"),createBaseVNode("a",{href:"/figma-workspace.html",style:"margin-left:16px;color:#435edf"},"打开真实 Figma 工作区")]))';
+    text=text.replace(warningMatch,'!unref(T)&&unref(te)?(window.__M0_LOCAL_RUNTIME__&&unref(te)==="Figma 后台画布需要在桌面端使用")?'+entry+':'+warning);
+    const manual=/createBaseVNode\("a",\{class:"workspace-manual-link",href:"https:\/\/docs\.corp\.kuaishou\.com\/[^"\s]+",target:"_blank",rel:"noopener noreferrer"\}," 资产库使用手册 ",-1\)/g;
+    const manualMatches=[...text.matchAll(manual)];
+    if(manualMatches.length!==1)throw new Error('Recovered asset-library help entry changed');
+    text=text.replace(manual,'createCommentVNode("Local asset-library manual unavailable",!0)');
+    patches.push({file:name,purpose:'Replace only the unsupported corporate background-Figma warning with explicit local project/Figma links; remove its retry and the unavailable corporate asset-library manual. Keep original SSO authorization unchanged.',matchCount:2});
   }
   if (name.endsWith('/assets/index-v2-BGt4TMzj.js')) {
     const editorComponent = 'Np=Ze({__name:"index",setup(n){';

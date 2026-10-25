@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.2",
+  "recordedAt": "2026-10-25",
+  "recordType": "source-release",
+  "status": "source-and-dual-application-verification-complete",
+  "sources": [
+    {
+      "path": ".release-assets/publication-v0.7.2.log",
+      "distribution": "local-only",
+      "bytes": 1908,
+      "sha256": "23318b3616809174cf32340db0d0e6df9b0665ac64e474b49b73c51850f6cd9a"
+    },
+    {
+      "path": ".release-assets/publication-validation-v0.7.2.log",
+      "distribution": "local-only",
+      "bytes": 457,
+      "sha256": "a04500b87d9c6fc2898f3156f99ecee4eb2c8c0f0d15a4125025dbc34080a3b6"
+    },
+    {
+      "path": ".release-assets/full-v0.7.2.log",
+      "distribution": "local-only",
+      "bytes": 20043,
+      "sha256": "9e43493a0494d257b743bf0b14a5574111daf933a1b5125dda12b9de49040ed0"
+    },
+    {
+      "path": ".release-assets/client-live-v0.7.2.json",
+      "distribution": "local-only",
+      "bytes": 663,
+      "sha256": "418268fa965e51868b2272503a0eec023bf0d53cadf89cfb0da67705d689050c"
+    },
+    {
+      "path": ".release-assets/web-live-v0.7.2.json",
+      "distribution": "local-only",
+      "bytes": 6995,
+      "sha256": "42cd596c2698ea018cebe02101f9ea44bd0b1156384a58b504c976700e11ed1d"
+    },
+    {
+      "path": ".release-assets/web-gui-v0.7.2.json",
+      "distribution": "local-only",
+      "bytes": 724,
+      "sha256": "b0aaaf25c99592dde1fb8a11bc1d98992fa461bf245bde621ef415c176095ead"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.2.json",
+      "distribution": "local-only",
+      "bytes": 8432,
+      "sha256": "f6a073a56682a89076dd5b1cafc6270d1b1bf4ae0622c37da98d3ccf7b5f5d31"
+    }
+  ],
+  "validation": {
+    "publicationTargeted": {
+      "command": "node --test test/version-publication.test.mjs",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "fakeGitAndGitHubRunnerOnly": true,
+      "covers": [
+        "Astrix human-facing release commit subject",
+        "immutable compatibility tags and source-only public Release",
+        "draft-only runtime attachments",
+        "explicit cross-application source allowlist and private-state exclusion"
+      ]
+    },
+    "applicationVersionSync": {
+      "desktop": "0.7.2",
+      "web": "0.7.2",
+      "shared": "0.7.2",
+      "sharedLockRootVersionsMatch": true,
+      "applicationDependencyLocksChanged": false
+    },
+    "historicalRecordsPreserved": {
+      "status": "passed",
+      "range": "0.1.0 through 0.7.1",
+      "byteIdenticalFiles": 21,
+      "unchangedExistingLedgerEntries": 10,
+      "existingTagsMatchedOrigin": 11,
+      "comparison": "current files against HEAD before this version; local existing tag objects against origin"
+    },
+    "desktopStartup": {
+      "version": "0.7.2",
+      "status": "passed",
+      "realClientKeptRunning": true,
+      "realProfileBackedUp": true,
+      "title": "Astrix",
+      "nativeEditor": {
+        "available": true,
+        "ready": true,
+        "visible": true,
+        "error": null,
+        "capabilities": {
+          "files": true,
+          "save": true,
+          "terminal": true,
+          "extensions": true,
+          "localVSIX": true,
+          "marketplace": true
+        },
+        "marketplace": true
+      },
+      "realPtyCreated": true,
+      "realTerminalMarkerOutput": true,
+      "extensionPanel": true,
+      "dirtyEditors": 0,
+      "modelMode": "demo",
+      "realModelInvoked": false,
+      "realFigmaDocumentChanged": false,
+      "projectFilesEdited": false
+    },
+    "webStartup": {
+      "status": "passed",
+      "version": "0.7.2",
+      "surface": "web",
+      "leftRunning": true,
+      "modelMode": "demo",
+      "liveRoutes": 10,
+      "tests": {
+        "command": "pnpm test",
+        "cwd": "网页端",
+        "status": "passed",
+        "total": 44,
+        "passed": 44,
+        "failed": 0,
+        "emptyProjectUxRegressionTests": 3,
+        "skipped": 0,
+        "homeFallbackRegressionTests": 2
+      },
+      "build": {
+        "status": "passed",
+        "typecheck": true,
+        "afterLatestHomeUxFix": true
+      },
+      "guiChecks": {
+        "workbenchHome": true,
+        "assetsNavigation": true,
+        "localModelSettingsDemo": true,
+        "multiAgentPage": true,
+        "retainedOriginalDesignPage": true,
+        "figmaProjectRequired": {
+          "title": "真实 Figma 工作区 · Astrix",
+          "selectionPrompt": true,
+          "projectEntry": true,
+          "noFalseInitializationFailure": true,
+          "noPermanentLoading": true,
+          "bridgeDisabled": true
+        },
+        "designHomeLocalProjectEntries": true,
+        "invalidCorporateManualRemoved": true
+      },
+      "isolatedChecks": {
+        "passed": 10,
+        "modelTransport": "local test service",
+        "figmaNodes": "test fixtures"
+      },
+      "realUserProjectWritten": false
+    },
+    "publicationValidation": {
+      "command": "npm run release",
+      "status": "passed",
+      "mode": "validate-only",
+      "version": "0.7.2",
+      "tag": "m0/v0.7.2",
+      "runtimeTag": "m0-runtime/v0.7.2",
+      "gitMutation": false,
+      "remoteMutation": false
+    },
+    "staticChecks": {
+      "publicationScriptSyntax": "passed",
+      "gitDiffCheck": "passed"
+    },
+    "sharedVerification": {
+      "command": "npm test",
+      "status": "passed",
+      "nodeAndCanvasTests": 153,
+      "figmaHostPolicyTests": 18,
+      "marketplacePolicyTests": 3,
+      "localNavigationTests": 3,
+      "generatorIntegration": "passed",
+      "canvasIntegration": "passed"
+    },
+    "currentUxFixes": {
+      "figmaProjectRequired": "passed",
+      "designHomeLocalProjectEntry": "passed",
+      "originalSsoPreserved": true,
+      "invalidCorporateManualRemoved": true
+    }
+  },
+  "releaseDisplay": {
+    "commitSubject": "release: Astrix v0.7.2",
+    "sourceTag": "m0/v0.7.2",
+    "runtimeTag": "m0-runtime/v0.7.2",
+    "historyRewrite": false
+  },
+  "runtimeDistribution": {
+    "release": "m0-runtime/v0.7.2",
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "generated-and-verified",
+    "attachments": [
+      {
+        "file": "M0-local-resources-v0.7.2.manifest.json",
+        "bytes": 133402,
+        "sha256": "0b971dea53da4e886840002c271ac19434a7a4f4368e769d6c5411ed8d7139ac"
+      },
+      {
+        "file": "M0-local-resources-v0.7.2.sha256",
+        "bytes": 99,
+        "sha256": "04b3b79662d4322b3177123df17acd9de9a2bbdd425bdfdcf77a63db57975a60"
+      },
+      {
+        "file": "M0-local-resources-v0.7.2.tar.gz",
+        "bytes": 49326272,
+        "sha256": "e69bf3fae17d90bfe59de0c7f96001b5d69356a671e6a0bf4000ee9d8e7edbe4"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.2.manifest.json",
+        "bytes": 3549832,
+        "sha256": "0298f40ad50d5022ae59fa7805fa9320732ed1e3f3b49ef03c400dedb32f86d4"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.2.sha256",
+        "bytes": 104,
+        "sha256": "43e5e89e49a9e84bf88416b8c99ef38a36ee81b2f69018b58a7ba2d56efc2160"
+      },
+      {
+        "file": "M0-AI-recovered-runtime-v0.7.2.tar.gz",
+        "bytes": 94866276,
+        "sha256": "0c057d637a43912a4a4d5473fe922dd85a6112e94974ce168f2361400f607063"
+      }
+    ],
+    "verifiedRecords": 6639,
+    "currentPublicFilesVerified": 323,
+    "allHashesModesAndSymlinksVerified": true,
+    "userStateAndBackupsExcluded": true
+  },
+  "limits": [
+    "Current live model settings remain demo; no real external model invocation is claimed.",
+    "Real Figma requires official login, file permission and connected Plugin Bridge; no real document write or cloud collaboration end-to-end claim is made.",
+    "Browser file editing and preview are available; native KSCode, PTY and extensions are desktop capabilities.",
+    "Historical commits and compatibility tags remain unchanged; new latest commit subjects apply to paths modified in this release."
+  ],
+  "privacy": {
+    "rawDiagnosticsIncluded": false,
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  }
+}

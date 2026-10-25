@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.1",
+  "currentVersion": "0.7.2",
   "recordedAt": "2026-10-25",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -168,6 +168,23 @@
         "Synchronizes desktop, web and shared versions while preserving historical records and tags."
       ],
       "uiFeatureChanges": false
+    },
+    {
+      "version": "0.7.2",
+      "date": "2026-10-25",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.2",
+      "record": "versions/v0.7.2.md",
+      "evidence": [
+        "versions/evidence/v0.7.2.json"
+      ],
+      "changes": [
+        "Uses release: Astrix vVERSION as the release commit subject, preserving existing history and compatibility tags.",
+        "Runs and verifies both applications at 0.7.2, including the desktop native editor, real PTY and extensions.",
+        "Adds truthful project-required Figma states and local Design-home entries; removes an unavailable corporate manual link."
+      ],
+      "uiFeatureChanges": true
     }
   ],
   "repository": "https://github.com/jinny-wj/astrix-agent",

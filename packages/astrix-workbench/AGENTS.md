@@ -7,6 +7,7 @@ The user requires every project version to be recorded on GitHub. For each futur
 - Update the desktop/web application versions and lockfiles plus this shared `package.json`, `package-lock.json`, `CHANGELOG.md`, and `versions/index.json` together.
 - Save a version note at `versions/vX.Y.Z.md`, explaining the result, verification and remaining limits.
 - Run the appropriate tests, commit the exact source, create an annotated `m0/vX.Y.Z` tag and push the commit and tag to this project's configured GitHub remote. Never force push or move an existing version tag.
+- Use the human-facing release commit subject `release: Astrix vX.Y.Z`. Keep the existing `m0/` source/history and `m0-runtime/` compatibility tag namespaces. Do not rewrite old commits or tags to change names shown on GitHub.
 - Publish a source-only GitHub Release with `--latest=false`. Generated resources and native runtime archives/checksums belong only to the restricted draft `m0-runtime/vX.Y.Z`; keep that release a draft. Use `npm run release -- --publish` after preparing the version files.
 - Keep model keys, login state, local projects, sessions, `.local-data`, `.data`, diagnostics and dependencies out of commits and release attachments.
 - Versions 0.1.0 through 0.5.0 were created before Git tracking. Their `m0/history/vX.Y.Z` tags contain historical documentation only, and are not source snapshots. Never relabel current code as one of those old versions.

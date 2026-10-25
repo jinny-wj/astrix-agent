@@ -1097,6 +1097,11 @@
       "matchCount": 4
     },
     {
+      "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/home-Dq22ywRR.js",
+      "purpose": "Replace only the unsupported corporate background-Figma warning with explicit local project/Figma links; remove its retry and the unavailable corporate asset-library manual. Keep original SSO authorization unchanged.",
+      "matchCount": 2
+    },
+    {
       "file": "/vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets/index-iLbwEgQT.js",
       "purpose": "Open the recovered workbench at localhost root without activating the unreconstructed Electron branches.",
       "matchCount": 1

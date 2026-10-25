@@ -108,6 +108,17 @@
     event.preventDefault(); event.stopImmediatePropagation();
     window.alert('此恢复版尚未接入该外部服务。请通过“本地设置”查看已支持的功能。');
   }, true);
+  document.addEventListener('click', async event => {
+    const button=event.target instanceof Element?event.target.closest('[data-m0-create-figma-project]'):null;
+    if(!button||button.disabled)return;
+    event.preventDefault();event.stopImmediatePropagation();button.disabled=true;
+    try{
+      const response=await nativeFetch('/devops-api/project/v2/create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({projectName:'Figma 项目',mode:'spark'})});
+      const project=await response.json();
+      if(!response.ok||!Number.isInteger(project.id))throw Error(project.error?.message||project.error||'本地项目创建失败');
+      location.assign('/aicode-v2?id='+encodeURIComponent(project.id)+'&mode=spark&homeEntryMode=design');
+    }catch(error){button.disabled=false;window.alert(error.message);}
+  },true);
 
   // Rebuild only the necessary public runtime shape. No original account,
   // cached session, SSO value, or injected server JSON is used.

@@ -50,5 +50,5 @@ jobs:
           import json
           release = json.load(open('release-state.json'))
           if release['isDraft'] or release['assets']:
-              raise ValueError('M0 source Release must be published and contain no runtime attachments')
+              raise ValueError('Astrix source Release must be published and contain no runtime attachments')
           PY

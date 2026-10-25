@@ -89,6 +89,7 @@ test('publishing stages only scoped source, preserves unrelated tags, and keeps 
   const f=fixture(t),result=f.publish(['--publish']);
   assert.equal(result.commit,'b'.repeat(40));
   assert.deepEqual(f.state.calls.find(call=>call.command==='git'&&call.argv[0]==='add').argv,['add','--all','--','sample-workbench']);
+  assert.deepEqual(f.state.calls.find(call=>call.command==='git'&&call.argv[0]==='commit').argv,['commit','-m','release: Astrix v0.6.1']);
   const push=f.state.calls.find(call=>call.command==='git'&&call.argv[0]==='push');
   assert.deepEqual(push.argv,['push','--atomic','-u','origin','main','refs/tags/m0/v0.6.1']);assert.ok(!push.argv.includes('--follow-tags'));
   const creates=f.state.calls.filter(call=>call.command==='gh'&&call.argv[1]==='create');

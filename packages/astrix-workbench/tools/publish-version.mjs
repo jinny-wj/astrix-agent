@@ -146,7 +146,7 @@ export function publishVersion({projectRoot=defaultRoot,args=process.argv.slice(
     run('git',['add','--all','--',...sourcePathspecs],{cwd:repositoryRoot,stdio:'inherit'});
     const staged=gitRaw('diff','--cached','--name-only','-z').split('\0').filter(Boolean);
     if(staged.some(name=>!isProjectPath(name,prefix)))throw Error('Refusing to commit staged changes outside the Astrix project');
-    if(staged.length)run('git',['commit','-m','release: '+tag],{cwd:repositoryRoot,stdio:'inherit'});
+    if(staged.length)run('git',['commit','-m','release: Astrix v'+version],{cwd:repositoryRoot,stdio:'inherit'});
     assertScopedChanges();
     run('git',['tag','-a',tag,'-F',note],{cwd:repositoryRoot,stdio:'inherit'});
   }
