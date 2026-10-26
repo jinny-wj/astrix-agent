@@ -4,13 +4,14 @@ import { lstat, mkdir, open, rename, unlink } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { ModelApiDraft, ModelApiPublicSettings, ModelApiSettings } from '../src/types/modelApi.ts'
 import type { FigmaOAuthSecureStorage } from './figmaOAuthSettings.ts'
+import { normalizeModelBaseUrl } from '../../网页端/workbench/server/model.mjs'
 
 export type ModelApiSecureStorage = FigmaOAuthSecureStorage
 
 const SETTINGS_FILENAME = 'model-api.enc.json'
 const MAX_FILE_BYTES = 128 * 1024
 const INVALID_SETTINGS = '模型 API 配置格式不正确，请检查服务地址、模型名称和 API Key。'
-const INCOMPLETE_SETTINGS = '启用模型 API 前，请填写服务地址、模型名称和 API Key。'
+const INCOMPLETE_SETTINGS = '启用模型 API 前，请填写服务地址和模型名称。'
 const READ_ERROR = '无法读取本机模型 API 配置，请解锁系统安全存储或重新保存配置。'
 const SAVE_ERROR = '无法安全保存模型 API 配置，请检查系统安全存储和本机存储权限。'
 const CLEAR_ERROR = '无法清除本机模型 API 配置，请检查本机存储权限。'
@@ -28,16 +29,12 @@ function field(value: unknown, maxLength: number): string {
   return value.trim()
 }
 
-function normalizeBaseUrl(value: unknown): string {
+function normalizeBaseUrl(value: unknown, provider: ModelApiSettings['provider']): string {
   const input = field(value, 2048)
   if (!input) return ''
   try {
-    const url = new URL(input)
-    if (/[?#]/.test(input) || /\/\/[^/]*@/.test(input) || url.username || url.password) throw new Error()
-    const localHttp = url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
-    if (url.protocol !== 'https:' && !localHttp) throw new Error()
-    const path = url.pathname.replace(/\/+$/, '').replace(/\/chat\/completions$/, '').replace(/\/+$/, '')
-    return `${url.origin}${path}`
+    if (/\/\/[^/]*@/.test(input) || input.includes('#')) throw new Error()
+    return normalizeModelBaseUrl(input, provider)
   } catch {
     throw new Error(INVALID_SETTINGS)
   }
@@ -49,8 +46,11 @@ function parseDraft(payload: unknown): ModelApiDraft {
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new Error()
     const source = payload as Record<string, unknown>
     if (typeof source.enabled !== 'boolean') throw new Error()
+    const provider = source.provider === undefined ? 'openai' : source.provider
+    if (provider !== 'openai' && provider !== 'anthropic' && provider !== 'gemini') throw new Error()
     return {
-      baseUrl: normalizeBaseUrl(source.baseUrl),
+      provider,
+      baseUrl: normalizeBaseUrl(source.baseUrl, provider),
       model: field(source.model, 512),
       apiKey: source.apiKey === undefined ? undefined : field(source.apiKey, 8192),
       enabled: source.enabled,
@@ -61,13 +61,18 @@ function parseDraft(payload: unknown): ModelApiDraft {
 }
 
 function complete(settings: ModelApiSettings): boolean {
-  return Boolean(settings.baseUrl && settings.model && settings.apiKey)
+  return Boolean(settings.baseUrl && settings.model)
+}
+
+function sameConnection(draft: ModelApiDraft, previous: ModelApiSettings | null): boolean {
+  if (!previous || (draft.provider ?? 'openai') !== (previous.provider ?? 'openai')) return false
+  try { return new URL(draft.baseUrl).origin === new URL(previous.baseUrl).origin } catch { return false }
 }
 
 /** Validate a draft for either persistence or an explicit connection test. */
 export function normalizeModelApiDraft(payload: unknown, previous: ModelApiSettings | null): ModelApiSettings {
   const draft = parseDraft(payload)
-  const settings: ModelApiSettings = { ...draft, apiKey: draft.apiKey || previous?.apiKey || '' }
+  const settings: ModelApiSettings = { ...draft, apiKey: draft.apiKey || (sameConnection(draft, previous) ? previous?.apiKey : '') || '' }
   if (settings.enabled && !complete(settings)) throw new Error(INCOMPLETE_SETTINGS)
   return settings
 }
@@ -174,6 +179,7 @@ export async function clearModelApiSettings(dataDir: string): Promise<void> {
 
 export function publicModelApiSettings(settings: ModelApiSettings | null): ModelApiPublicSettings {
   return {
+    provider: settings?.provider ?? 'openai',
     baseUrl: settings?.baseUrl ?? '',
     model: settings?.model ?? '',
     enabled: settings?.enabled ?? false,

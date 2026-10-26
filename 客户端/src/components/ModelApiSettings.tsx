@@ -7,10 +7,20 @@ import {
   saveModelApiSettings,
   testModelApiSettings,
 } from '../services/modelApi'
-import type { ModelApiDraft, ModelApiPublicSettings } from '../types/modelApi'
+import type { ModelApiDraft, ModelApiProvider, ModelApiPublicSettings } from '../types/modelApi'
 
 const EMPTY_SETTINGS: ModelApiPublicSettings = {
-  baseUrl: '', model: '', enabled: false, hasApiKey: false, configured: false,
+  provider: 'openai', baseUrl: '', model: '', enabled: false, hasApiKey: false, configured: false,
+}
+
+const providerRoots: Record<ModelApiProvider, string> = {
+  openai: 'https://api.openai.com/v1',
+  anthropic: 'https://api.anthropic.com/v1',
+  gemini: 'https://generativelanguage.googleapis.com/v1beta',
+}
+
+function origin(value: string): string | null {
+  try { return new URL(value.trim()).origin } catch { return null }
 }
 
 const inputClass = 'mt-1.5 w-full rounded-[10px] border border-[#e2e6ed] bg-white px-3 py-2 text-[13px] text-[#2a2f38] outline-none focus:border-[#2164ed] disabled:bg-[#f6f7f9] disabled:text-[#8a93a2]'
@@ -20,9 +30,8 @@ function validBaseUrl(value: string): boolean {
   try {
     const input = value.trim()
     const url = new URL(input)
-    const localHttp = url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
-    return (url.protocol === 'https:' || localHttp)
-      && !url.username && !url.password && !/[?#]/.test(input) && !/\/\/[^/]*@/.test(input)
+    return ['https:', 'http:'].includes(url.protocol)
+      && Boolean(url.hostname) && !url.username && !url.password && !url.hash && !/\p{Cc}/u.test(input)
   } catch {
     return false
   }
@@ -31,6 +40,7 @@ function validBaseUrl(value: string): boolean {
 export function ModelApiSettings() {
   const desktopAvailable = hasDesktopModelApiSettings()
   const [settings, setSettings] = useState(EMPTY_SETTINGS)
+  const [provider, setProvider] = useState<ModelApiProvider>('openai')
   const [baseUrl, setBaseUrl] = useState('')
   const [model, setModel] = useState('')
   const [apiKey, setApiKey] = useState('')
@@ -44,6 +54,7 @@ export function ModelApiSettings() {
 
   const applySettings = (next: ModelApiPublicSettings) => {
     setSettings(next)
+    setProvider(next.provider ?? 'openai')
     setBaseUrl(next.baseUrl)
     setModel(next.model)
     setEnabled(next.enabled)
@@ -73,7 +84,8 @@ export function ModelApiSettings() {
     }
   }, [desktopAvailable])
 
-  const complete = validBaseUrl(baseUrl) && Boolean(model.trim()) && Boolean(apiKey.trim() || settings.hasApiKey)
+  const complete = validBaseUrl(baseUrl) && Boolean(model.trim())
+  const retainSavedKey = settings.hasApiKey && provider === (settings.provider ?? 'openai') && origin(baseUrl) === origin(settings.baseUrl)
   const disabled = !desktopAvailable || !loaded || pending !== null
   const clearDisabled = !desktopAvailable || pending !== null
 
@@ -83,6 +95,7 @@ export function ModelApiSettings() {
   }
 
   const draft = (): ModelApiDraft => ({
+    provider,
     baseUrl: baseUrl.trim(),
     model,
     enabled,
@@ -92,7 +105,7 @@ export function ModelApiSettings() {
   const run = async (action: 'save' | 'test' | 'clear') => {
     if ((action === 'clear' ? clearDisabled : disabled) || busyRef.current) return
     if (action === 'save' && baseUrl.trim() && !validBaseUrl(baseUrl)) {
-      setFeedback({ text: '服务地址格式无效。请使用 HTTPS，或本机 localhost、127.0.0.1、[::1] 的 HTTP 地址；地址中不能包含账号、查询参数或片段。', error: true })
+      setFeedback({ text: '服务地址格式无效。请使用完整 HTTP/HTTPS 地址，不附带网址账号或片段；支持合法查询参数。', error: true })
       return
     }
     if ((action === 'test' || (action === 'save' && enabled)) && !complete) return
@@ -154,7 +167,7 @@ export function ModelApiSettings() {
         ) : null}
       </div>
       <p className="mt-1.5 text-[12px] leading-5 text-[#6b7382]">
-        支持 OpenAI 兼容服务，可先保存配置，稍后填写 API Key。
+        支持 OpenAI 兼容接口、Claude 原生 Messages 与 Gemini 原生 GenerateContent，可连接官方、第三方或本机服务。
         启用后，Auto 使用此 API 和模型；手动选定的 Agent 优先。未启用时，Auto 沿用本机 Agent。
         此入口用于文字对话；图像生成等功能仍使用对应工作流。
       </p>
@@ -163,6 +176,20 @@ export function ModelApiSettings() {
       ) : (
         <form onSubmit={submit} className="mt-3">
           <fieldset disabled={disabled} className="min-w-0 space-y-3">
+            <div>
+              <label className="block text-[12.5px] font-medium text-[#3e4653]" htmlFor="model-api-provider">API 协议</label>
+              <select id="model-api-provider" value={provider} className={inputClass} onChange={(event) => {
+                const next = event.target.value as ModelApiProvider
+                if (!baseUrl.trim() || Object.values(providerRoots).includes(baseUrl.trim().replace(/\/+$/, ''))) setBaseUrl(providerRoots[next])
+                setProvider(next)
+                setApiKey('')
+                changed()
+              }}>
+                <option value="openai">OpenAI 兼容</option>
+                <option value="anthropic">Claude 原生 Messages</option>
+                <option value="gemini">Gemini 原生 GenerateContent</option>
+              </select>
+            </div>
             <div>
               <label className="block text-[12.5px] font-medium text-[#3e4653]" htmlFor="model-api-base-url">服务地址 Base URL</label>
               <input
@@ -174,11 +201,11 @@ export function ModelApiSettings() {
                 maxLength={2048}
                 value={baseUrl}
                 onChange={(event) => { setBaseUrl(event.target.value); changed() }}
-                placeholder="https://api.openai.com/v1"
+                placeholder={providerRoots[provider]}
                 aria-describedby="model-api-base-url-help"
                 className={inputClass}
               />
-              <p id="model-api-base-url-help" className="mt-1 text-[11.5px] leading-5 text-[#7d8695]">填写服务商提供的 OpenAI 兼容 API 根地址。</p>
+              <p id="model-api-base-url-help" className="mt-1 text-[11.5px] leading-5 text-[#7d8695]">填写对应协议的根地址或完整接口地址，第三方代理请使用其提供的地址；模型 ID 单独填写。</p>
             </div>
             <div>
               <label className="block text-[12.5px] font-medium text-[#3e4653]" htmlFor="model-api-key">API Key</label>
@@ -190,12 +217,12 @@ export function ModelApiSettings() {
                 maxLength={8192}
                 value={apiKey}
                 onChange={(event) => { setApiKey(event.target.value); changed() }}
-                placeholder={settings.hasApiKey ? '已保存，留空保留现有 API Key' : '可稍后填写'}
+                placeholder={retainSavedKey ? '已保存，留空保留' : '免密服务可留空'}
                 aria-describedby="model-api-key-help"
                 className={inputClass}
               />
               <p id="model-api-key-help" className="mt-1 text-[11.5px] leading-5 text-[#7d8695]">
-                {settings.hasApiKey ? '已有 API Key 不会显示。留空会保留；如需移除，请清除配置。' : 'API Key 由客户端保存，不会显示原值。'}
+                {retainSavedKey ? '已有 API Key 不会显示；同一协议和来源留空保留。如需移除，请清除配置。' : settings.hasApiKey ? '协议或来源已改变，原 API Key 不会沿用。请填写对应服务的 Key；免密服务可留空。' : 'API Key 由客户端保存，不会显示原值；免密服务可留空。'}
               </p>
             </div>
             <div>
@@ -224,7 +251,7 @@ export function ModelApiSettings() {
                 onChange={(event) => {
                   changed()
                   if (event.target.checked && !complete) {
-                    setFeedback({ text: '启用前请补全有效的服务地址、API Key 和模型 ID。可以先保存草稿。', error: true })
+                    setFeedback({ text: '启用前请补全有效的服务地址和模型 ID。可以先保存草稿。', error: true })
                     return
                   }
                   setEnabled(event.target.checked)

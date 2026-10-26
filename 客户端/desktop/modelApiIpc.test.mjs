@@ -78,16 +78,16 @@ test('草稿保存及启用不请求模型，读取永不回传已保存的 Key�
   assert.equal((await h.call('get')).hasApiKey, false)
 })
 
-test('显式测试使用当前草稿与已存 Key，不保存、不启用，失败不会泄露响应', async t => {
+test('显式测试同来源草稿可使用已存 Key，不保存、不启用，失败不会泄露响应', async t => {
   const h = await harness(t)
   await h.call('save', draft)
   const fetchMock = t.mock.method(globalThis, 'fetch', async (url, init) => {
-    assert.equal(url, 'https://other.example.test/v1/chat/completions')
-    assert.equal(init.headers.Authorization, 'Bearer ' + draft.apiKey)
+    assert.equal(url, 'https://model-api.example.test/v1/chat/completions')
+    assert.equal(new Headers(init.headers).get('authorization'), 'Bearer ' + draft.apiKey)
     assert.equal(JSON.parse(init.body).model, 'other/model.3')
     return new Response(JSON.stringify({ choices: [{ message: { content: 'OK' } }] }))
   })
-  assert.equal((await h.call('test', { ...draft, apiKey: '', model: 'other/model.3', baseUrl: 'https://other.example.test/v1' })).ok, true)
+  assert.equal((await h.call('test', { ...draft, apiKey: '', model: 'other/model.3' })).ok, true)
   assert.equal(h.configured.length, 1)
   assert.equal((await h.call('get')).model, draft.model)
   assert.equal((await h.call('get')).enabled, false)
@@ -95,6 +95,26 @@ test('显式测试使用当前草稿与已存 Key，不保存、不启用，失�
   const failure = await h.call('test', { ...draft, apiKey: '' })
   assert.equal(failure.ok, false)
   assert.doesNotMatch(JSON.stringify(failure), /fixture-private-value/)
+})
+
+test('跨来源或协议的测试不转发已存 Key，且不改已存配置', async t => {
+  const h = await harness(t)
+  await h.call('save', draft)
+  const fetchMock = t.mock.method(globalThis, 'fetch', async (_url, init) => {
+    const headers = new Headers(init.headers)
+    assert.equal(headers.get('authorization'), null)
+    assert.equal(headers.get('x-api-key'), null)
+    return String(_url).includes('/messages')
+      ? new Response(JSON.stringify({ content: [{ type: 'text', text: 'OK' }] }))
+      : new Response(JSON.stringify({ choices: [{ message: { content: 'OK' } }] }))
+  })
+  assert.equal((await h.call('test', { ...draft, apiKey: '', baseUrl: 'https://other.example.test/v1' })).ok, true)
+  assert.equal((await h.call('test', { ...draft, provider: 'anthropic', apiKey: '' })).ok, true)
+  assert.equal(fetchMock.mock.callCount(), 2)
+  assert.equal((await h.call('get')).provider, 'openai')
+  assert.equal((await h.call('get')).baseUrl, draft.baseUrl)
+  assert.equal((await h.call('get')).hasApiKey, true)
+  assert.equal(h.configured.length, 1)
 })
 
 test('未拥有本机服务时阻止保存、清除和测试', async t => {

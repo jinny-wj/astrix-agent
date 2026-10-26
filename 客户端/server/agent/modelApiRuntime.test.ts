@@ -58,9 +58,8 @@ test('模型 API 发送精确模型、授权和仅文字请求，不跟随重定
   assert.equal(requestInit?.redirect, 'error')
   assert.equal(requestInit?.credentials, 'omit')
   assert.equal(requestInit?.cache, 'no-store')
-  assert.deepEqual(requestInit?.headers, {
-    'Content-Type': 'application/json', Authorization: `Bearer ${settings.apiKey}`,
-  })
+  assert.equal(new Headers(requestInit?.headers).get('content-type'), 'application/json')
+  assert.equal(new Headers(requestInit?.headers).get('authorization'), `Bearer ${settings.apiKey}`)
   const body = JSON.parse(String(requestInit?.body))
   assert.equal(body.model, settings.model)
   assert.equal(body.stream, false)
@@ -74,11 +73,11 @@ test('模型 API 发送精确模型、授权和仅文字请求，不跟随重定
   assert.equal(last?.kind === 'text' ? last.text : '', '已连接')
 })
 
-test('连接测试发送固定小提示和单个输出 token，不回显服务文本', async (context) => {
+test('连接测试发送固定小提示，不回显服务文本', async (context) => {
   context.mock.method(globalThis, 'fetch', async (_url: string, init: RequestInit) => {
     const body = JSON.parse(String(init.body))
     assert.equal(body.model, settings.model)
-    assert.equal(body.max_tokens, 1)
+    assert.equal(body.max_tokens, undefined)
     assert.deepEqual(body.messages, [{ role: 'user', content: 'Reply OK.' }])
     return completion('mock-provider-private-output')
   })
@@ -148,8 +147,48 @@ test('未启用或配置非法时不会发出请求', async (context) => {
   const result = await testModelApiConnection({ ...settings, baseUrl: 'https://private-user:private-value@models.example.test/v1' })
   assert.equal(result.ok, false)
   assert.doesNotMatch(result.message, /private-user|private-value/)
-  assert.equal((await testModelApiConnection({ ...settings, baseUrl: 'http://remote.example.test/v1' })).ok, false)
   assert.equal(fetchMock.mock.callCount(), 0)
+})
+
+test('Claude 与 Gemini 原生请求复用共享适配器，同时保留原入口的纯文字限制', async (context) => {
+  let currentProvider: 'anthropic' | 'gemini' = 'anthropic'
+  let request: { url: string; init: RequestInit } | undefined
+  const fetchMock = context.mock.method(globalThis, 'fetch', async (url: string, init: RequestInit) => {
+    request = { url, init }
+    if (currentProvider === 'anthropic') {
+      return new Response(JSON.stringify({ role: 'assistant', content: [{ type: 'text', text: 'Claude 原生文本' }], stop_reason: 'end_turn' }))
+    }
+    return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts: [{ text: 'Gemini 原生文本' }] }, finishReason: 'STOP' }] }))
+  })
+  for (const provider of ['anthropic', 'gemini'] as const) {
+    currentProvider = provider
+    const runtime = createModelApiRuntime({ ...settings, provider, model: 'custom-model', baseUrl: 'http://native-proxy.example.test/' + (provider === 'anthropic' ? 'v1/messages' : 'v1beta/models/custom-model:generateContent') + '?api-version=custom' })
+    const messages = await collect(runtime)
+    assert.ok(request)
+    const { url, init } = request
+    const headers = new Headers(init.headers)
+    const body = JSON.parse(String(init.body))
+    assert.equal(init.redirect, 'error')
+    assert.equal(init.credentials, 'omit')
+    assert.equal(init.cache, 'no-store')
+    assert.equal(body.tools, undefined)
+    assert.equal(headers.get('authorization'), null)
+    if (provider === 'anthropic') {
+      assert.equal(url, 'http://native-proxy.example.test/v1/messages?api-version=custom')
+      assert.equal(headers.get('x-api-key'), settings.apiKey)
+      assert.equal(headers.get('anthropic-version'), '2023-06-01')
+      assert.match(JSON.stringify(body.system), /不能直接读取本机文件/)
+      assert.match(JSON.stringify(body.messages), /用户请求：只回复连接正常/)
+    } else {
+      assert.equal(url, 'http://native-proxy.example.test/v1beta/models/custom-model:generateContent?api-version=custom')
+      assert.equal(headers.get('x-goog-api-key'), settings.apiKey)
+      assert.match(JSON.stringify(body.systemInstruction), /不能直接读取本机文件/)
+      assert.match(JSON.stringify(body.contents), /用户请求：只回复连接正常/)
+    }
+    assert.equal(messages.at(-1)?.kind, 'text')
+    assert.match(JSON.stringify(messages.at(-1)), provider === 'anthropic' ? /Claude 原生文本/ : /Gemini 原生文本/)
+  }
+  assert.equal(fetchMock.mock.callCount(), 2)
 })
 
 test('调用方取消时中止 fetch 并返回固定信息，预取消不发送请求', async (context) => {

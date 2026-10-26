@@ -4,6 +4,7 @@ import { yieldSelectionContext } from './figmaSkills.ts'
 import { skillBody } from './skills.ts'
 import { buildStudioUserPrompt } from './studioPrompt.ts'
 import type { AgentRuntime, AgentUiMessage } from './types.ts'
+import { modelCompletion, normalizeModelBaseUrl } from '../../../网页端/workbench/server/model.mjs'
 
 const CHAT_TIMEOUT_MS = 60_000
 const TEST_TIMEOUT_MS = 15_000
@@ -17,27 +18,19 @@ function requestError(message: string) {
   return new ModelApiRequestError(message)
 }
 
-function completionUrl(settings: ModelApiSettings) {
+function connection(settings: ModelApiSettings) {
   try {
-    const url = new URL(settings.baseUrl)
-    const localHttp = url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
-    if ((url.protocol !== 'https:' && !localHttp) || url.username || url.password || /[?#]/.test(settings.baseUrl)
-      || !settings.model.trim() || !settings.apiKey.trim()) {
+    const provider = settings.provider ?? 'openai'
+    if (!['openai', 'anthropic', 'gemini'].includes(provider) || !settings.model.trim()) {
       throw new Error('Invalid configuration')
     }
-    url.pathname = `${url.pathname.replace(/\/+$/, '')}/chat/completions`
-    return url.toString()
+    return { provider, baseUrl: normalizeModelBaseUrl(settings.baseUrl, provider), model: settings.model, apiKey: settings.apiKey }
   } catch {
     throw requestError('AI 模型 API 配置不完整，请检查服务地址、模型 ID 和 API Key。')
   }
 }
 
-function responseText(payload: unknown) {
-  if (!payload || typeof payload !== 'object') return ''
-  const choices = (payload as { choices?: unknown }).choices
-  if (!Array.isArray(choices)) return ''
-  const first = choices[0] as { message?: { content?: unknown } } | undefined
-  const content = first?.message?.content
+function responseText(content: unknown) {
   if (typeof content === 'string') return content.trim()
   if (!Array.isArray(content)) return ''
   return content.flatMap((part: unknown) => {
@@ -52,9 +45,8 @@ async function requestCompletion(
   messages: Array<{ role: 'system' | 'user'; content: string }>,
   timeoutMs: number,
   signal?: AbortSignal,
-  maxTokens?: number,
 ) {
-  const url = completionUrl(settings)
+  const config = connection(settings)
   const controller = new AbortController()
   let timedOut = false
   const onAbort = () => controller.abort()
@@ -66,27 +58,8 @@ async function requestCompletion(
   }, timeoutMs)
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${settings.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: settings.model,
-        messages,
-        stream: false,
-        ...(maxTokens === undefined ? {} : { max_tokens: maxTokens }),
-      }),
-      redirect: 'error',
-      credentials: 'omit',
-      cache: 'no-store',
-      signal: controller.signal,
-    })
-    if (!response.ok) {
-      throw requestError('AI 模型服务未接受请求，请检查服务地址、模型 ID、API Key 和可用额度。')
-    }
-    const text = responseText(await response.json())
+    const result = await modelCompletion(config, messages, undefined, controller.signal)
+    const text = responseText(result.content)
     if (!text) throw requestError('AI 模型服务未返回可用文本，请检查模型配置。')
     return text
   } catch (error) {
@@ -142,7 +115,7 @@ export async function testModelApiConnection(
   try {
     await requestCompletion(settings, [
       { role: 'user', content: 'Reply OK.' },
-    ], TEST_TIMEOUT_MS, signal, 1)
+    ], TEST_TIMEOUT_MS, signal)
     return { ok: true, message: '连接测试成功，模型已返回文本。' }
   } catch (error) {
     return {

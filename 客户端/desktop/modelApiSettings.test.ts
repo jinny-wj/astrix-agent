@@ -13,7 +13,7 @@ import {
   type ModelApiSecureStorage,
 } from './modelApiSettings.ts'
 
-const settings = { baseUrl: 'https://model.example/v1', model: 'team/model.v1', apiKey: 'fixture-private-value', enabled: true }
+const settings = { provider: 'openai' as const, baseUrl: 'https://model.example/v1', model: 'team/model.v1', apiKey: 'fixture-private-value', enabled: true }
 const filename = 'model-api.enc.json'
 
 function testStorage(key = randomBytes(32)): ModelApiSecureStorage {
@@ -49,9 +49,9 @@ test('model API settings persist encrypted, survive restart, and expose only pub
   const serialized = await readFile(join(dataDir, filename), 'utf8')
   for (const value of [settings.apiKey, settings.baseUrl, settings.model]) assert.equal(serialized.includes(value), false)
   assert.equal((await stat(join(dataDir, filename))).mode & 0o777, 0o600)
-  assert.deepEqual(publicModelApiSettings(settings), { baseUrl: settings.baseUrl, model: settings.model, enabled: true, configured: true, hasApiKey: true })
+  assert.deepEqual(publicModelApiSettings(settings), { provider: 'openai', baseUrl: settings.baseUrl, model: settings.model, enabled: true, configured: true, hasApiKey: true })
   assert.equal('apiKey' in publicModelApiSettings(settings), false)
-  assert.deepEqual(publicModelApiSettings(null), { baseUrl: '', model: '', enabled: false, configured: false, hasApiKey: false })
+  assert.deepEqual(publicModelApiSettings(null), { provider: 'openai', baseUrl: '', model: '', enabled: false, configured: false, hasApiKey: false })
 })
 
 test('editing other fields retains the saved API key and failed replacement preserves the original file', async (t) => {
@@ -73,19 +73,19 @@ test('editing other fields retains the saved API key and failed replacement pres
   assert.equal((await readModelApiSettings(dataDir, storage))?.apiKey, settings.apiKey)
 })
 
-test('disabled incomplete drafts can be saved, but enabling requires all three fields', async (t) => {
+test('disabled incomplete drafts can be saved, enabling requires address and model, and anonymous endpoints are allowed', async (t) => {
   const dataDir = await temporaryDirectory(t)
   const storage = testStorage()
-  const draft = { baseUrl: '', model: '', apiKey: '', enabled: false }
+  const draft = { provider: 'openai', baseUrl: '', model: '', apiKey: '', enabled: false } as const
   assert.deepEqual(await saveModelApiSettings(dataDir, { baseUrl: '', model: '', enabled: false }, storage), draft)
   assert.deepEqual(await readModelApiSettings(dataDir, storage), draft)
   assert.equal(publicModelApiSettings(draft).configured, false)
   for (const incomplete of [
     { ...settings, baseUrl: '' },
     { ...settings, model: '' },
-    { ...settings, apiKey: '' },
   ]) await assert.rejects(saveModelApiSettings(dataDir, incomplete, storage), /启用模型 API 前/)
   assert.deepEqual(await readModelApiSettings(dataDir, storage), draft)
+  assert.equal((await saveModelApiSettings(dataDir, { ...settings, apiKey: '' }, storage)).apiKey, '')
 })
 
 test('connection-test normalization reuses validation and saved key without persisting or changing state', () => {
@@ -107,19 +107,17 @@ test('clearing is idempotent and removes the saved configuration without needing
   assert.deepEqual(await readdir(dataDir), [])
 })
 
-test('service addresses allow HTTPS and local HTTP, normalize endpoints, and reject unsafe URLs', async (t) => {
+test('service addresses allow arbitrary HTTP(S) origins and query parameters while rejecting malformed URLs', async (t) => {
   const dataDir = await temporaryDirectory(t)
   const storage = testStorage()
-  for (const baseUrl of ['https://model.example/v1/', 'http://127.0.0.1:1234/v1', 'http://localhost:1234/v1', 'http://[::1]:1234/v1']) {
+  for (const baseUrl of ['https://model.example/v1/', 'http://127.0.0.1:1234/v1', 'http://localhost:1234/v1', 'http://[::1]:1234/v1', 'http://model.example/v1', 'http://192.168.1.2:1234/v1', 'http://localhost.example/v1', 'https://model.example/v1?api-version=custom']) {
     const result = await saveModelApiSettings(dataDir, { ...settings, baseUrl }, storage)
     assert.equal(result.baseUrl, baseUrl.replace(/\/+$/, ''))
   }
   const before = await readFile(join(dataDir, filename))
   for (const baseUrl of [
-    'http://model.example/v1', 'http://192.168.1.2:1234/v1', 'http://localhost.example/v1',
     'https://name:private-diagnostic@model.example/v1', 'https://@model.example/v1',
-    'https://model.example/v1?key=private-diagnostic', 'https://model.example/v1#private-diagnostic',
-    'https://model.example/v1?', 'file:///private-diagnostic', 'private-diagnostic',
+    'https://model.example/v1#private-diagnostic', 'file:///private-diagnostic', 'private-diagnostic',
     'https://model.example/\nprivate-diagnostic',
   ]) {
     await assert.rejects(saveModelApiSettings(dataDir, { ...settings, baseUrl }, storage), (error: Error) => error.message.includes('格式不正确') && !error.message.includes('private-diagnostic'))
@@ -132,7 +130,7 @@ test('invalid input and secure storage failures return fixed errors without expo
   const storage = testStorage()
   const diagnostic = 'private-input-diagnostic'
   for (const payload of [
-    null, [], {}, { ...settings, enabled: 'true' }, { ...settings, baseUrl: 42 },
+    null, [], {}, { ...settings, provider: 'unrecognized' }, { ...settings, enabled: 'true' }, { ...settings, baseUrl: 42 },
     { ...settings, model: `model\u0085${diagnostic}` }, { ...settings, model: 'x'.repeat(513) },
     { ...settings, apiKey: `key\u0000${diagnostic}` }, { ...settings, apiKey: 'x'.repeat(8193) },
     { get baseUrl() { throw new Error(diagnostic) }, model: '', enabled: false },
@@ -144,6 +142,34 @@ test('invalid input and secure storage failures return fixed errors without expo
     { ...storage, encryptStringAsync: async () => { throw new Error(diagnostic) } },
   ]) await assert.rejects(saveModelApiSettings(dataDir, settings, unavailable), (error: Error) => error.message.includes('无法安全保存') && !error.message.includes(diagnostic))
   assert.deepEqual(await readdir(dataDir), [])
+})
+
+test('native protocols normalize their own endpoints and never inherit another source or protocol key', async (t) => {
+  const dataDir = await temporaryDirectory(t)
+  const storage = testStorage()
+  await saveModelApiSettings(dataDir, settings, storage)
+  const otherOrigin = await saveModelApiSettings(dataDir, { ...settings, baseUrl: 'https://other.example/v1', apiKey: '' }, storage)
+  assert.equal(otherOrigin.apiKey, '')
+  await saveModelApiSettings(dataDir, settings, storage)
+  const claude = await saveModelApiSettings(dataDir, { ...settings, provider: 'anthropic', baseUrl: settings.baseUrl + '/messages', apiKey: '' }, storage)
+  assert.equal(claude.provider, 'anthropic')
+  assert.equal(claude.baseUrl, settings.baseUrl)
+  assert.equal(claude.apiKey, '')
+  const gemini = normalizeModelApiDraft({ ...settings, provider: 'gemini', baseUrl: 'https://proxy.example/v1beta/models/custom-model:generateContent?api-version=1', apiKey: '' }, settings)
+  assert.equal(gemini.provider, 'gemini')
+  assert.equal(gemini.baseUrl, 'https://proxy.example/v1beta?api-version=1')
+  assert.equal(gemini.apiKey, '')
+})
+
+test('encrypted legacy settings default to OpenAI without rewriting the saved envelope', async (t) => {
+  const dataDir = await temporaryDirectory(t)
+  const storage = testStorage()
+  const { provider: _provider, ...legacy } = settings
+  const encrypted = await storage.encryptStringAsync(JSON.stringify(legacy))
+  await writeFile(join(dataDir, filename), JSON.stringify({ version: 1, encrypted: encrypted.toString('base64') }))
+  const before = await readFile(join(dataDir, filename))
+  assert.deepEqual(await readModelApiSettings(dataDir, storage), settings)
+  assert.deepEqual(await readFile(join(dataDir, filename)), before)
 })
 
 test('corrupt, oversized, and undecryptable files never expose raw data or storage diagnostics', async (t) => {

@@ -1,12 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
+import {nativeModelCompletion} from './model-providers.mjs';
 
-export function normalizeModelBaseUrl(value) {
+export function normalizeModelBaseUrl(value,provider='openai') {
+  if(!['openai','anthropic','gemini'].includes(provider))throw new Error('未知 API 协议');
   if(typeof value!=='string'||!value.trim())throw new Error('模型地址应为普通 HTTP/HTTPS URL');
   let url;try{url=new URL(value.trim());}catch{throw new Error('模型地址应为普通 HTTP/HTTPS URL');}
   if(!['http:','https:'].includes(url.protocol)||!url.hostname||url.username||url.password||url.hash)throw new Error('模型地址应为不含用户名、密码或片段的 HTTP/HTTPS URL');
-  url.pathname=url.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'');
+  url.pathname=url.pathname.replace(/\/+$/,'');
+  if(provider==='openai')url.pathname=url.pathname.replace(/\/chat\/completions$/,'');
+  if(provider==='anthropic')url.pathname=url.pathname.replace(/\/messages$/,'');
+  if(provider==='gemini')url.pathname=url.pathname.replace(/\/models\/[^/]+:(?:streamGenerateContent|generateContent)$/,'');
   return url.pathname==='/'&&!url.search?url.href.replace(/\/$/,''):url.href;
 }
 
@@ -18,7 +23,7 @@ export function modelCompletionUrl(baseUrl) {
 
 export function createModelConfig(dataDir) {
   const file = path.join(dataDir, 'model.json');
-  const defaults = { mode: 'demo', engine: 'local', workflow: 'single', baseUrl: 'http://127.0.0.1:11434/v1', model: '', apiKey: '', allowWriteTools: false, allowFigmaWriteTools: false };
+  const defaults = { mode: 'demo', provider: 'openai', engine: 'local', workflow: 'single', baseUrl: 'http://127.0.0.1:11434/v1', model: '', apiKey: '', allowWriteTools: false, allowFigmaWriteTools: false };
   let config = {...defaults};
   try { config = {...config, ...JSON.parse(fs.readFileSync(file, 'utf8'))}; } catch {}
   const visible=value=>({...Object.fromEntries(Object.keys(defaults).filter(key=>key!=='apiKey').map(key=>[key,value[key]])),hasKey:Boolean(value.apiKey)});
@@ -32,10 +37,10 @@ export function createModelConfig(dataDir) {
     if(typeof merged.model!=='string'||next.apiKey!==undefined&&typeof next.apiKey!=='string')throw new Error('模型名和密钥应为文本');
     if(next.clearKey!==undefined&&typeof next.clearKey!=='boolean')throw new Error('clearKey 应为布尔值');
     for(const key of ['allowWriteTools','allowFigmaWriteTools'])if(next[key]!==undefined&&typeof next[key]!=='boolean')throw new Error('工具写权限应为布尔值');
-    merged.baseUrl=normalizeModelBaseUrl(merged.baseUrl);
-    let previousOrigin;try{previousOrigin=new URL(normalizeModelBaseUrl(config.baseUrl)).origin;}catch{}
+    merged.baseUrl=normalizeModelBaseUrl(merged.baseUrl,merged.provider);
+    let previousOrigin;try{previousOrigin=new URL(normalizeModelBaseUrl(config.baseUrl,config.provider)).origin;}catch{}
     const replacement=next.apiKey?.trim();
-    merged.apiKey=next.clearKey?'':replacement||(new URL(merged.baseUrl).origin===previousOrigin?config.apiKey:'');
+    merged.apiKey=next.clearKey?'':replacement||(merged.provider===config.provider&&new URL(merged.baseUrl).origin===previousOrigin?config.apiKey:'');
     if(typeof merged.apiKey!=='string'||/[\u0000-\u001f\u007f]/.test(merged.apiKey))throw new Error('密钥格式无效');
     merged.allowWriteTools=Boolean(merged.allowWriteTools);merged.allowFigmaWriteTools=Boolean(merged.allowFigmaWriteTools);
     return merged;
@@ -58,10 +63,14 @@ export function createModelConfig(dataDir) {
 
 export async function modelCompletion(config, messages, tools, signal, onDelta) {
   if (!config.model) throw new Error('请先在本地设置页填写模型名称');
+  const provider=config.provider||'openai';
+  if(provider==='anthropic'||provider==='gemini')return nativeModelCompletion(config,messages,tools,signal,onDelta);
+  if(provider!=='openai')throw new Error('未知 API 协议');
   const headers = {'content-type':'application/json'};
   if (config.apiKey) headers.authorization = `Bearer ${config.apiKey}`;
   const response = await fetch(modelCompletionUrl(config.baseUrl), {
     method:'POST', headers,
+    redirect:'error',credentials:'omit',cache:'no-store',
     body: JSON.stringify({model:config.model,messages,stream:Boolean(onDelta),...(tools?.length?{tools,tool_choice:'auto'}:{})}),
     signal:signal ? AbortSignal.any([signal,AbortSignal.timeout(120000)]) : AbortSignal.timeout(120000)
   });

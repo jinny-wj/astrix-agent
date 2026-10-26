@@ -61,11 +61,14 @@ export function createOriginalOpenCode({dataDir,getWorkspace,binary=originalBina
       OPENCODE_DISABLE_FFF:'1',OPENCODE_PURE:'1'
     };
     const promptDigest=createHash('sha256').update(agentPrompt||'').digest('hex');
-    const identity=createHash('sha256').update(JSON.stringify([cwd,config.baseUrl,config.model,config.allowWriteTools,agentName,promptDigest,maxSteps,Boolean(mcpConfig)])).digest('hex');
+    const identity=createHash('sha256').update(JSON.stringify([cwd,config.provider||'openai',config.baseUrl,config.model,config.allowWriteTools,agentName,promptDigest,maxSteps,Boolean(mcpConfig)])).digest('hex');
     const transcript=history||[];
     const historyHash=value=>createHash('sha256').update(JSON.stringify(value.map(({role,content})=>({role,content})))).digest('hex');
     const session=sessions[sessionId];
-    const resume=sessionId&&session?.identity===identity&&(!Array.isArray(history)||session.historyHash===historyHash(transcript))&&session.engineSessionId;
+    // Native protocol signatures are kept by the per-run gateway. A fresh run
+    // receives completed text history rather than replaying unsigned tool turns
+    // from an older engine session after that gateway has closed.
+    const resume=(!config.provider||config.provider==='openai')&&sessionId&&session?.identity===identity&&(!Array.isArray(history)||session.historyHash===historyHash(transcript))&&session.engineSessionId;
     const args=['run','--format','json','--model','m0-local/'+config.model,'--agent',agentName,'--title','Astrix'];
     if(resume)args.push('--session',resume);
     // stdin keeps user content out of the process argument list. Existing

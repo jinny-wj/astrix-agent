@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.6",
+  "currentVersion": "0.7.7",
   "recordedAt": "2026-10-26",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -240,6 +240,17 @@
       "record": "versions/v0.7.6.md",
       "evidence": [
         "versions/evidence/v0.7.6.json"
+      ]
+    },
+    {
+      "version": "0.7.7",
+      "date": "2026-10-26",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.7",
+      "record": "versions/v0.7.7.md",
+      "evidence": [
+        "versions/evidence/v0.7.7.json"
       ]
     }
   ],

@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.6](https://img.shields.io/badge/Workbench-v0.7.6-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.6.md)
+[![Workbench v0.7.7](https://img.shields.io/badge/Workbench-v0.7.7-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.7.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -105,7 +105,7 @@ cd astrix-agent
 
 ### 3. 准备工作台运行资源
 
-公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.6 资源并在仓库根目录还原。资源采用两端目录布局，下载与当前版本匹配的资源后再启动。
+公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.7 资源并在仓库根目录还原。资源采用两端目录布局，下载与当前版本匹配的资源后再启动。
 
 ### 4. 启动 macOS 客户端
 
@@ -149,7 +149,7 @@ pnpm dev
 
 ## 配置模型 API
 
-首页右上角的 **API 设置** 可配置 OpenAI 兼容模型服务：地址与模型名自由填写，支持官方、第三方和本机服务。可先测试当前填写的配置，再决定是否保存并用于对话；两端分别保存各自配置。详见 [API 配置说明](packages/astrix-workbench/docs/API配置.md)。
+首页右上角的 **API 设置** 可选择 OpenAI 兼容、Claude 原生 Messages 或 Gemini 原生 GenerateContent：地址与模型名自由填写，支持官方、第三方和本机服务。可先测试当前填写的配置，再决定是否保存并用于对话；两端分别保存各自配置，切换协议或来源不沿用旧 Key。详见 [API 配置说明](packages/astrix-workbench/docs/API配置.md)。
 
 ## 连接 Figma
 

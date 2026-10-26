@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.7",
+  "recordedAt": "2026-10-26",
+  "recordType": "source-release",
+  "status": "native-protocols-isolated-agent-workflows-builds-and-live-home-panels-verified",
+  "sources": [
+    {
+      "path": ".release-assets/shared-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 26344,
+      "sha256": "fa5ef12b9dae5ab7456ef135d8bfc9fdb651d53631a452e3c4ddbe7c28d1044a"
+    },
+    {
+      "path": ".release-assets/web-tests-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 3791,
+      "sha256": "82f038eabbece209b1f3af12b33768d58bae553d9e2f1e0c7d571bac229fbe1a"
+    },
+    {
+      "path": ".release-assets/client-tests-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 9707,
+      "sha256": "8866eeecda5bfb2ee8147904f1b0cb130d69e907698216fec0c4500016b044d4"
+    },
+    {
+      "path": ".release-assets/web-build-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 53222,
+      "sha256": "68acf66053751025ad033dd002a39370ebed55860c8ddf276162bd4991aba2fa"
+    },
+    {
+      "path": ".release-assets/client-build-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 450,
+      "sha256": "a56ec073e488027c9ab5541ba6ecb72eb62d1b593c3b8a5ca8437851c0853a6a"
+    },
+    {
+      "path": ".release-assets/client-typecheck-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 136,
+      "sha256": "ff302865b02817dd805303c75a7c707571c9be4920037b82507544247157dcc0"
+    },
+    {
+      "path": ".release-assets/client-bundle-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 766,
+      "sha256": "9f99cf3ce6fa607bd185557ddb596f3b3c94e1eed0fd357851bef0b633b5ddbe"
+    },
+    {
+      "path": ".release-assets/retained-native-tests-v0.7.7.log",
+      "distribution": "local-only",
+      "bytes": 3274,
+      "sha256": "8ca6163ea1dcd6024c36ea8f51b94917531a821922786d905b85c9b673115438"
+    },
+    {
+      "path": ".release-assets/native-gui-v0.7.7.json",
+      "distribution": "local-only",
+      "bytes": 1078,
+      "sha256": "0ab862ef5d94426fdf75b5f5c15599cee15022c01bf9462d04ce76b4857619ee"
+    },
+    {
+      "path": ".release-assets/native-live-ui-v0.7.7.json",
+      "distribution": "local-only",
+      "bytes": 401,
+      "sha256": "7e95ca1d629b081cdb6b97548effe97822c872daf7f98ff298f13b927e2a07a5"
+    },
+    {
+      "path": ".release-assets/native-after-v0.7.7.json",
+      "distribution": "local-only",
+      "bytes": 509,
+      "sha256": "bdab820924764932be4cef4399e36c16368d3a4d229f4997fa130a5d74d319f2"
+    },
+    {
+      "path": "diagnostics/native-staged-v0.7.7.json",
+      "distribution": "local-only",
+      "bytes": 4255,
+      "sha256": "643db2efd2e503316a08a33b224ab6f90fc442273d827e701e4cbf5d84a73fa5"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.7.json",
+      "distribution": "local-only",
+      "bytes": 11221,
+      "sha256": "9855fc72531312bc3d2283e9c1a992d2a5ed43a43428883d3bdb493130624ad9"
+    }
+  ],
+  "validation": {
+    "shared": {
+      "nodeAndCanvas": 209,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "web": {
+      "tests": 44,
+      "build": "passed"
+    },
+    "desktop": {
+      "tests": 106,
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed"
+    },
+    "nativeProtocols": {
+      "adapterTests": 13,
+      "integrationTests": 7,
+      "frontendFormTestsIncludedInShared": 9,
+      "providers": [
+        "openai",
+        "anthropic",
+        "gemini"
+      ],
+      "jsonAndSse": "passed",
+      "toolRoundTrips": "passed",
+      "geminiSignaturesAndNativeFunctionIdsPreserved": true,
+      "truncatedToolResponsesRejected": true,
+      "cancellationAndResponseLimitVerified": true,
+      "redirectsRejected": true,
+      "realLocalAgentToolExecution": true,
+      "realRecoveredEngineToolExecution": true,
+      "recoveredEngineNativeRunsUseCompletedTextHistory": true,
+      "gatewayRequestBudgetEnforced": true,
+      "turnSignatureCollisionRegression": "passed",
+      "realProviderUsed": false
+    },
+    "retainedDesignClient": {
+      "targetedTests": 33,
+      "sharedProtocolAdapter": true,
+      "legacyEncryptedConfigDefaultsToOpenAiWithoutRewrite": true,
+      "textOnlyBoundaryPreserved": true
+    },
+    "isolatedGui": {
+      "surfaces": [
+        "web",
+        "desktop-profile"
+      ],
+      "nativeDrafts": "passed",
+      "saveAndRestore": "passed",
+      "crossProtocolCredentialIsolation": "passed",
+      "advancedSettingsPreserved": true,
+      "narrowViewportWidth": 390,
+      "escapeFocusRestoration": true,
+      "actualUserStateUsed": false
+    },
+    "liveApplications": [
+      {
+        "surface": "desktop",
+        "version": "0.7.7",
+        "nativeHomeEntryAndThreeOptionsVerified": true
+      },
+      {
+        "surface": "web",
+        "version": "0.7.7",
+        "homeEntryAndThreeOptionsVerified": true
+      }
+    ],
+    "modelConfiguration": {
+      "filesUnchanged": true,
+      "modeUnchanged": true,
+      "realModelConfiguredByThisWork": false,
+      "realModelInvokedByThisWork": false
+    },
+    "stagedRuntime": {
+      "status": "passed",
+      "stagedFileCount": 6696,
+      "keyFilesVerified": 12,
+      "isolatedNativeDrafts": 2,
+      "privateStateExcluded": true,
+      "modelStateFileCreated": false
+    },
+    "historicalRecordsPreserved": {
+      "versionFiles": 31,
+      "existingLedgerEntries": 15,
+      "existingTags": 16,
+      "status": "passed"
+    },
+    "figma": {
+      "oauthOrPairingChanged": false,
+      "designWriteCommandsSent": 0,
+      "newRealFileReadOrOnlineBridgeClaim": false
+    }
+  },
+  "runtimeDistribution": {
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "generated-and-independently-verified",
+    "platform": "macOS arm64",
+    "attachments": [
+      {
+        "name": "M0-local-resources-v0.7.7.tar.gz",
+        "bytes": 49331030,
+        "sha256": "b6cfb3b3f863309e2d725b58f9cdf045148f75f39face8c360697f4a30556b02"
+      },
+      {
+        "name": "M0-local-resources-v0.7.7.manifest.json",
+        "bytes": 134967,
+        "sha256": "b377a3229523493cdf424f8dc007b60b7829c253c555d41817c099e022c009c6"
+      },
+      {
+        "name": "M0-local-resources-v0.7.7.sha256",
+        "bytes": 99,
+        "sha256": "00bffa52433a406f83585cf14e4f5300eb28828435fc0eb6b6bce41240480a84"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.7.tar.gz",
+        "bytes": 94862782,
+        "sha256": "6f5b44827508a71c1f9fb7f4b84ed48d9e7c968bebc4a817400b950c3e583f99"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.7.manifest.json",
+        "bytes": 3549832,
+        "sha256": "5b9331bcd0adb551198d04449555368100006912b1d5d940c7f83eb2277c2040"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.7.sha256",
+        "bytes": 104,
+        "sha256": "4b37ba7a33a627254e80da39902f5628516a9e56e2a7f5a17d136e314314e9b5"
+      }
+    ],
+    "independentChecks": 67,
+    "verifiedRecords": 6644,
+    "currentPublicFilesVerified": 328
+  },
+  "releaseDisplay": {
+    "commitSubject": "release: Astrix v0.7.7",
+    "sourceTag": "m0/v0.7.7",
+    "runtimeTag": "m0-runtime/v0.7.7",
+    "historyRewrite": false
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "accountIdentifiersIncluded": false,
+    "personalPluginIdIncluded": false,
+    "documentLinksIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "limits": [
+    "Native adapters cover text and existing client-side Agent functions; image/audio/video generation, Vertex AI and hosted provider tools are not implemented by this feature.",
+    "All provider calls in verification used isolated loopback mocks. Real model credentials, upstream compatibility and quota were not tested.",
+    "Recovered OpenCode native runs use fresh per-turn native tool context plus completed text history rather than replaying an older unsigned tool session.",
+    "Prior Figma file API restrictions and current Bridge availability are not changed or re-verified by this API feature."
+  ]
+}

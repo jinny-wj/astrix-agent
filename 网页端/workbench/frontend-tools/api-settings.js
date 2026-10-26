@@ -1,4 +1,4 @@
-import {publicApiConfig,credentialState,apiSubmission} from './api-settings-model.mjs';
+import {apiProviders,publicApiConfig,credentialState,apiSubmission,switchApiProvider} from './api-settings-model.mjs';
 
 export function installApiSettings({request=window.fetch.bind(window)}={}) {
   if(document.getElementById('astrix-api-entry'))return window.__ASTRIX_API_SETTINGS__;
@@ -8,9 +8,10 @@ export function installApiSettings({request=window.fetch.bind(window)}={}) {
   dialog.innerHTML=`<div class="api-header"><span class="api-emblem" aria-hidden="true">✦</span><div><h2 id="astrix-api-title">API 设置</h2><p class="api-subtitle">连接你的模型服务</p></div><button type="button" class="api-close" id="astrix-api-close" aria-label="关闭 API 设置">×</button></div>
   <p class="api-loading" id="astrix-api-loading" role="status">正在读取配置…</p>
   <form id="astrix-api-form" novalidate autocomplete="off" hidden>
-    <p class="api-intro" id="astrix-api-description">OpenAI 兼容接口，支持官方、第三方与本机服务。<br>可自由填写地址和模型名，具体能力由服务提供。</p>
+    <p class="api-intro" id="astrix-api-description">支持 OpenAI 兼容、Claude 与 Gemini 原生接口。<br>官方、第三方或本机服务均可，自由填写地址和模型名。</p>
     <label class="api-switch-row"><span class="api-switch-copy">用于后续对话<small>保存后生效；关闭时使用界面演示</small></span><input id="astrix-api-enabled" type="checkbox" role="switch" aria-label="保存后使用 API 对话"></label>
-    <label class="api-field" for="astrix-api-base-url">API 地址<input id="astrix-api-base-url" type="url" inputmode="url" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="填写服务的兼容接口地址" aria-describedby="astrix-api-url-help"><span class="api-help" id="astrix-api-url-help">可填接口根路径或完整 chat/completions 地址。API Key 请填写下方独立字段。</span></label>
+    <label class="api-field" for="astrix-api-provider">API 协议<select id="astrix-api-provider">${Object.entries(apiProviders).map(([value,detail])=>`<option value="${value}">${detail.label}</option>`).join('')}</select></label>
+    <label class="api-field" for="astrix-api-base-url">API 地址<input id="astrix-api-base-url" type="url" inputmode="url" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="填写服务的 API 地址" aria-describedby="astrix-api-url-help"><span class="api-help" id="astrix-api-url-help"></span></label>
     <label class="api-field" for="astrix-api-model">模型名称<input id="astrix-api-model" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="填写该服务中的模型名称"></label>
     <label class="api-field" for="astrix-api-key">API Key<input id="astrix-api-key" type="password" spellcheck="false" autocapitalize="off" autocomplete="new-password" placeholder="无需密钥的服务可留空" aria-describedby="astrix-api-key-note"></label>
     <p id="astrix-api-key-note" role="status"></p>
@@ -22,13 +23,14 @@ export function installApiSettings({request=window.fetch.bind(window)}={}) {
   document.body.append(entry,dialog);
   const $=id=>dialog.querySelector('#astrix-api-'+id),form=$('form');
   let saved=null,busy=false,opener=null,controller=null,version=0,lastPath='';
-  const fields=['enabled','base-url','model','key','clear-key'];
-  const draft=()=>({enabled:$('enabled').checked,baseUrl:$('base-url').value,model:$('model').value,apiKey:$('key').value,clearKey:$('clear-key').checked});
+  const fields=['enabled','provider','base-url','model','key','clear-key'];
+  const draft=()=>({enabled:$('enabled').checked,provider:$('provider').value,baseUrl:$('base-url').value,model:$('model').value,apiKey:$('key').value,clearKey:$('clear-key').checked});
+  function renderProtocol(){const details=apiProviders[$('provider').value]||apiProviders.openai;$('url-help').textContent=details.urlHelp+' API Key 请填写下方独立字段。';$('base-url').placeholder=details.baseUrl;$('model').placeholder=details.modelExample;}
   function feedback(message,kind='info'){const target=$('feedback');target.textContent=message;target.dataset.kind=kind;target.hidden=!message;}
   function setBusy(value,operation=''){busy=value;form.setAttribute('aria-busy',String(value));for(const id of [...fields,'test','save'])$(id).disabled=value||!saved;$('test').textContent=value&&operation==='test'?'正在测试…':'测试连接';$('save').textContent=value&&operation==='save'?'正在保存…':'保存配置';}
   function renderCredential(){
     if(!saved)return;const value=credentialState(saved,draft()),note=$('key-note');note.dataset.state=value;
-    const messages={keep:'已保存密钥；留空会保留同一来源的密钥。',replace:'保存后使用新填写的密钥。',clear:'保存后清除已保存的密钥；当前填写内容仍可先测试。','new-origin':'地址来源已改变，原密钥不会沿用。请填写新来源的密钥；无需密钥的服务可留空。',empty:'未保存密钥。无需密钥的本机服务可留空。'};
+    const messages={keep:'已保存密钥；留空会保留同一协议、同一来源的密钥。',replace:'保存后使用新填写的密钥。',clear:'保存后清除已保存的密钥；当前填写内容仍可先测试。','new-provider':'API 协议已改变，原密钥不会沿用。请填写此协议服务的密钥；无需密钥的服务可留空。','new-origin':'地址来源已改变，原密钥不会沿用。请填写新来源的密钥；无需密钥的服务可留空。',empty:'未保存密钥。无需密钥的本机服务可留空。'};
     note.textContent=messages[value];$('key').placeholder=saved.hasKey&&value==='keep'?'已保存，留空保留':'无需密钥的服务可留空';$('clear-row').hidden=!saved.hasKey;
   }
   async function jsonRequest(url,options={}){
@@ -37,7 +39,7 @@ export function installApiSettings({request=window.fetch.bind(window)}={}) {
     if(!response.ok)throw Error(body?.error?.message||body?.error||`请求失败（HTTP ${response.status}）`);
     return body;
   }
-  function applyPublic(value){saved=publicApiConfig(value);$('enabled').checked=saved.mode==='compatible';$('base-url').value=saved.baseUrl;$('model').value=saved.model;$('key').value='';$('clear-key').checked=false;renderCredential();}
+  function applyPublic(value){saved=publicApiConfig(value);$('enabled').checked=saved.mode==='compatible';$('provider').value=saved.provider;$('base-url').value=saved.baseUrl;$('model').value=saved.model;$('key').value='';$('clear-key').checked=false;renderProtocol();renderCredential();}
   async function load(){
     const token=++version;controller?.abort();controller=new AbortController();saved=null;feedback('');$('loading').hidden=false;form.hidden=true;$('reload').hidden=true;setBusy(true,'load');
     try{const config=await jsonRequest('/__local/model');if(!dialog.open||token!==version)return;applyPublic(config);form.hidden=false;setBusy(false);requestAnimationFrame(()=>{if(dialog.open&&token===version)$('base-url').focus();});}
@@ -62,7 +64,8 @@ export function installApiSettings({request=window.fetch.bind(window)}={}) {
   entry.onclick=()=>void open();$('close').onclick=close;$('cancel').onclick=close;$('reload').onclick=()=>void load();$('test').onclick=()=>void submit(true);form.onsubmit=event=>{event.preventDefault();void submit(false);};
   dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
   dialog.addEventListener('close',()=>{$('key').value='';});
-  for(const id of fields)$(id).addEventListener('input',()=>{if(id==='key'&&$('key').value)$('clear-key').checked=false;if(id==='clear-key'&&$('clear-key').checked)$('key').value='';feedback('');renderCredential();});
+  $('provider').addEventListener('change',()=>{const hadDraftKey=Boolean($('key').value);const next=switchApiProvider(draft(),$('provider').value);$('base-url').value=next.baseUrl;$('key').value='';$('clear-key').checked=false;renderProtocol();renderCredential();feedback(hadDraftKey?'已切换协议，并清空尚未保存的 API Key。请填写新服务的密钥。':'');});
+  for(const id of fields.filter(id=>id!=='provider'))$(id).addEventListener('input',()=>{if(id==='key'&&$('key').value)$('clear-key').checked=false;if(id==='clear-key'&&$('clear-key').checked)$('key').value='';feedback('');renderCredential();});
   refreshVisibility();new MutationObserver(refreshVisibility).observe(document.body,{childList:true,subtree:true});addEventListener('popstate',refreshVisibility);
   const api=Object.freeze({open,close,refreshVisibility});window.__ASTRIX_API_SETTINGS__=api;return api;
 }
