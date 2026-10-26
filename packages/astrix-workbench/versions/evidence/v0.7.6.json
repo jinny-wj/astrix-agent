@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.6",
+  "recordedAt": "2026-10-26",
+  "recordType": "source-release",
+  "status": "source-build-isolated-api-workflows-and-live-home-panels-verified",
+  "sources": [
+    {
+      "path": ".release-assets/shared-v0.7.6.log",
+      "distribution": "local-only",
+      "bytes": 23795,
+      "sha256": "7e795eeb36789f4a6f5e98f45cbd923fd876e957523df368ba178b4907e2d737"
+    },
+    {
+      "path": ".release-assets/web-tests-v0.7.6.log",
+      "distribution": "local-only",
+      "bytes": 3784,
+      "sha256": "5ab28cbe5009067d0af0192616c071cb43d51242b3de59b95e3b5fb52f9d0028"
+    },
+    {
+      "path": ".release-assets/web-build-v0.7.6.log",
+      "distribution": "local-only",
+      "bytes": 53222,
+      "sha256": "0d680a12a48000901d0a27b5473978ac6c5d8780c920ad298b0b97fbb4f422a6"
+    },
+    {
+      "path": ".release-assets/client-build-v0.7.6.log",
+      "distribution": "local-only",
+      "bytes": 450,
+      "sha256": "d274cc82f86ee67ca481be8a4c40ae375725b1e4f5094b0e260b38d04a71ba93"
+    },
+    {
+      "path": ".release-assets/client-typecheck-v0.7.6.log",
+      "distribution": "local-only",
+      "bytes": 136,
+      "sha256": "2921e4dbfb8d314dd98e2653eadbfcd9482445421e545c5c8cf9dd32851e4fbd"
+    },
+    {
+      "path": ".release-assets/client-bundle-v0.7.6.log",
+      "distribution": "local-only",
+      "bytes": 762,
+      "sha256": "c218758e7a9223934216953be542ba436c3b5239b5971d7abf2aa404d2308f3c"
+    },
+    {
+      "path": ".release-assets/api-gui-web-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 475,
+      "sha256": "41e47b81dc2b555ca9b70eef8073b65a3c889debb80a8c5c397b4b818cb4895f"
+    },
+    {
+      "path": ".release-assets/api-gui-desktop-profile-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 337,
+      "sha256": "869fc47af36d9851588b3785111b17dceada1d7ae2a192341c2b465e01b4a828"
+    },
+    {
+      "path": ".release-assets/api-responsive-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 379,
+      "sha256": "a8afbad3699c54b8567f70d7a9370f2017c5f65627004dbc7ce8c89662eab6e6"
+    },
+    {
+      "path": ".release-assets/api-live-ui-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 371,
+      "sha256": "f7345337a7fd0e5384161f5931dd96530a050571b9323b2993033436098502f4"
+    },
+    {
+      "path": ".release-assets/api-settings-after-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 692,
+      "sha256": "8f863ab3a7dc4f4f0f32bcee9516def895cccdb0a740571a2140d383c918e61a"
+    },
+    {
+      "path": "diagnostics/api-staged-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 4111,
+      "sha256": "53f2adfb5415cd566f00fdea7ff1bc8aca8054ad030fa8ad7b0b46763b98559d"
+    },
+    {
+      "path": ".release-assets/archive-verification-v0.7.6.json",
+      "distribution": "local-only",
+      "bytes": 11135,
+      "sha256": "782059e9943d3d8e51ad144e18a0440db59b9a7f52d0b18f75f23b2738c19e1f"
+    }
+  ],
+  "validation": {
+    "shared": {
+      "nodeAndCanvas": 186,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "web": {
+      "tests": 44,
+      "build": "passed"
+    },
+    "desktop": {
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed"
+    },
+    "apiConfiguration": {
+      "newBackendTests": 9,
+      "newFrontendTests": 6,
+      "status": "passed",
+      "sourceDomainWhitelist": false,
+      "protocol": "OpenAI-compatible Chat Completions",
+      "draftTestsDoNotPersistOrEnable": true,
+      "queryAndFullPathCanonicalization": true,
+      "sameOriginBlankKeyPreserved": true,
+      "crossOriginOldKeyNotForwarded": true,
+      "explicitClearVerified": true,
+      "privateAtomicSave": true,
+      "keyNeverEchoedOrInBrowserStorage": true,
+      "existingEngineWorkflowAndWritePermissionsPreserved": true,
+      "realUpstreamProviderUsed": false
+    },
+    "isolatedGui": {
+      "web": "passed",
+      "desktopProfile": "passed",
+      "temporaryStateOnly": true,
+      "escapeFocusRestoration": true,
+      "responsiveWidths": [
+        390,
+        720,
+        900,
+        1280
+      ],
+      "modeControlOverlap": false
+    },
+    "liveApplications": [
+      {
+        "surface": "desktop",
+        "version": "0.7.6",
+        "nativeHomeEntryVerified": true,
+        "nativeDialogVerified": true,
+        "mode": "demo",
+        "hasKey": false
+      },
+      {
+        "surface": "web",
+        "version": "0.7.6",
+        "homeEntryVerified": true,
+        "dialogVerified": true,
+        "mode": "demo",
+        "hasKey": false
+      }
+    ],
+    "modelConfiguration": {
+      "changedByThisWork": false,
+      "realModelConfiguredByThisWork": false,
+      "realModelInvokedByThisWork": false,
+      "bothModelFilesAbsentBeforeAndAfter": true
+    },
+    "stagedRuntime": {
+      "status": "passed",
+      "stagedFileCount": 6694,
+      "keyFilesVerified": 9,
+      "temporaryIsolatedService": "passed",
+      "modelStateFileCreated": false,
+      "privateStateExcluded": true
+    },
+    "historicalRecordsPreserved": {
+      "versionFiles": 29,
+      "existingLedgerEntries": 14,
+      "existingTags": 15,
+      "status": "passed"
+    },
+    "figma": {
+      "oauthOrPairingConfigurationChanged": false,
+      "designWriteCommandsSent": 0,
+      "newRealFileReadOrOnlineBridgeClaim": false
+    }
+  },
+  "runtimeDistribution": {
+    "policy": "restricted unpublished draft only",
+    "layoutVersion": 2,
+    "status": "generated-and-independently-verified",
+    "platform": "macOS arm64",
+    "attachments": [
+      {
+        "name": "M0-local-resources-v0.7.6.tar.gz",
+        "bytes": 49330205,
+        "sha256": "801f8b3b91b4b808fae7ba4317a1dee055153f3726be1b1ceebdf4b828ef3a57"
+      },
+      {
+        "name": "M0-local-resources-v0.7.6.manifest.json",
+        "bytes": 134966,
+        "sha256": "ed8d86743f760eaa62ada7333cfea4c422d3d2bce6a67b4337e5f863fb9fb91f"
+      },
+      {
+        "name": "M0-local-resources-v0.7.6.sha256",
+        "bytes": 99,
+        "sha256": "d7c5c52fc4605b3b53c99d2e721afc25830d3db6ca4f489ae41798df5c755fb8"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.6.tar.gz",
+        "bytes": 94866744,
+        "sha256": "2cf9cba7312e56a4816dfbfe1f19d5bbe4acb19b105756f9eb2c29964fa96c31"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.6.manifest.json",
+        "bytes": 3549832,
+        "sha256": "2c982fc53a0c2ee7a8fd0a6b7247911b0662cf3d8b2b463ea17b93a09414aac4"
+      },
+      {
+        "name": "M0-AI-recovered-runtime-v0.7.6.sha256",
+        "bytes": 104,
+        "sha256": "d6775a79fc4d1c03e5796fc6e2149de437bae6782d11a026887813298f187757"
+      }
+    ],
+    "independentChecks": 63,
+    "verifiedRecords": 6644,
+    "currentPublicFilesVerified": 328
+  },
+  "releaseDisplay": {
+    "commitSubject": "release: Astrix v0.7.6",
+    "sourceTag": "m0/v0.7.6",
+    "runtimeTag": "m0-runtime/v0.7.6",
+    "historyRewrite": false
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "accountIdentifiersIncluded": false,
+    "personalPluginIdIncluded": false,
+    "documentLinksIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "limits": [
+    "Endpoint and model names are unrestricted; the implemented protocol is OpenAI-compatible Chat Completions. Native vendor API dialects are not automatically translated.",
+    "API workflow verification used isolated local mock services. No real provider credential or real model was configured or invoked.",
+    "Both live applications show the new home settings panel while their original model settings remain unchanged.",
+    "This API feature does not resolve the prior Figma file API denial or establish a currently online Plugin Bridge."
+  ]
+}

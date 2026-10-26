@@ -150,7 +150,7 @@ for (const item of extraAssets.assets) {
 let html = rewrite(await readFile(path.join(sourceRoot, 'html-shell/home.static-shell.html'), 'utf8'), 'index.html');
 html = html.replace(/<!-- RECOVERED STATIC SHELL:[\s\S]*?-->/, '<!-- Recovered M0 UI, with an independently implemented localhost runtime. -->');
 html = html.replace(/<script[^>]*src=["']\/accessproxy_statics\/[^"']+["'][^>]*><\/script>/g, '');
-html = html.replace('<head>', '<head>\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>');
+html = html.replace('<head>', '<head>\n  <link rel="stylesheet" href="/api-settings.css">\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>');
 html = html.replace(/<script type="module" crossorigin src="([^"]+)"><\/script>/,
   (_match, entry) => `<script type="module">await window.__m0LocalReady; await import(${JSON.stringify(entry)});</script>`);
 html = html.replace(/<title>[^<]*<\/title>/, '<title>Astrix</title>');
@@ -161,6 +161,7 @@ await mkdir(path.join(publicRoot,'branding'),{recursive:true});
 await copyFile(path.join(here,'branding/astrix-logo-v1.png'),path.join(publicRoot,'branding/astrix-logo-v1.png'));
 await copyFile(path.join(here,'branding/astrix-dock.png'),path.join(publicRoot,'branding/astrix-dock.png'));
 await copyFile(path.join(here, 'local-runtime.js'), path.join(publicRoot, 'local-runtime.js'));
+for (const file of ['api-settings.js','api-settings-model.mjs','api-settings.css']) await copyFile(path.join(here,file),path.join(publicRoot,file));
 await copyFile(path.join(here, 'workflow-monitor.js'), path.join(publicRoot, 'workflow-monitor.js'));
 await copyFile(path.join(here, 'local-codegen.html'), path.join(publicRoot, 'codegen.html'));
 await copyFile(path.join(here, 'local-codegen.js'), path.join(publicRoot, 'codegen.js'));

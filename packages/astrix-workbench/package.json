@@ -1,11 +1,11 @@
 {
   "name": "@astrix/workbench-common",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "private": true,
   "type": "module",
   "description": "Shared paths, version records, packaging and cross-platform verification for Astrix desktop and web",
   "scripts": {
-    "test": "node --test test/*.test.mjs ../../网页端/workbench/canvas/vector.test.mjs ../../网页端/workbench/canvas/collaboration-state.test.mjs && node ../../客户端/workbench/tools/test-figma-host-policy.cjs && node ../../客户端/workbench/tools/test-marketplace-policy.cjs && node ../../客户端/workbench/tools/test-local-navigation.cjs && node ../../网页端/workbench/plugins/test-generators.mjs && node ../../网页端/workbench/canvas/test-canvas.mjs",
+    "test": "node --test test/*.test.mjs ../../网页端/workbench/frontend-tools/api-settings.test.mjs ../../网页端/workbench/canvas/vector.test.mjs ../../网页端/workbench/canvas/collaboration-state.test.mjs && node ../../客户端/workbench/tools/test-figma-host-policy.cjs && node ../../客户端/workbench/tools/test-marketplace-policy.cjs && node ../../客户端/workbench/tools/test-local-navigation.cjs && node ../../网页端/workbench/plugins/test-generators.mjs && node ../../网页端/workbench/canvas/test-canvas.mjs",
     "release": "node tools/publish-version.mjs",
     "release:runtime": "node tools/package-runtime.mjs",
     "release:resources": "node tools/package-resources.mjs"

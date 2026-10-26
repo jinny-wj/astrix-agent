@@ -1,32 +1,57 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {randomUUID} from 'node:crypto';
+
+export function normalizeModelBaseUrl(value) {
+  if(typeof value!=='string'||!value.trim())throw new Error('模型地址应为普通 HTTP/HTTPS URL');
+  let url;try{url=new URL(value.trim());}catch{throw new Error('模型地址应为普通 HTTP/HTTPS URL');}
+  if(!['http:','https:'].includes(url.protocol)||!url.hostname||url.username||url.password||url.hash)throw new Error('模型地址应为不含用户名、密码或片段的 HTTP/HTTPS URL');
+  url.pathname=url.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'');
+  return url.pathname==='/'&&!url.search?url.href.replace(/\/$/,''):url.href;
+}
+
+export function modelCompletionUrl(baseUrl) {
+  const url=new URL(normalizeModelBaseUrl(baseUrl));
+  url.pathname=url.pathname.replace(/\/+$/,'')+'/chat/completions';
+  return url.href;
+}
 
 export function createModelConfig(dataDir) {
   const file = path.join(dataDir, 'model.json');
   const defaults = { mode: 'demo', engine: 'local', workflow: 'single', baseUrl: 'http://127.0.0.1:11434/v1', model: '', apiKey: '', allowWriteTools: false, allowFigmaWriteTools: false };
   let config = {...defaults};
   try { config = {...config, ...JSON.parse(fs.readFileSync(file, 'utf8'))}; } catch {}
+  const visible=value=>({...Object.fromEntries(Object.keys(defaults).filter(key=>key!=='apiKey').map(key=>[key,value[key]])),hasKey:Boolean(value.apiKey)});
+  function preview(next) {
+    if(!next||typeof next!=='object'||Array.isArray(next))throw new Error('模型配置应为 JSON 对象');
+    const merged={...config};
+    for(const key of Object.keys(defaults))if(key!=='apiKey'&&next[key]!==undefined)merged[key]=next[key];
+    if(!['demo','compatible'].includes(merged.mode))throw new Error('未知模型模式');
+    if(!['local','original-opencode'].includes(merged.engine))throw new Error('未知执行引擎');
+    if(!['single','multi'].includes(merged.workflow))throw new Error('未知工作流模式');
+    if(typeof merged.model!=='string'||next.apiKey!==undefined&&typeof next.apiKey!=='string')throw new Error('模型名和密钥应为文本');
+    if(next.clearKey!==undefined&&typeof next.clearKey!=='boolean')throw new Error('clearKey 应为布尔值');
+    for(const key of ['allowWriteTools','allowFigmaWriteTools'])if(next[key]!==undefined&&typeof next[key]!=='boolean')throw new Error('工具写权限应为布尔值');
+    merged.baseUrl=normalizeModelBaseUrl(merged.baseUrl);
+    let previousOrigin;try{previousOrigin=new URL(normalizeModelBaseUrl(config.baseUrl)).origin;}catch{}
+    const replacement=next.apiKey?.trim();
+    merged.apiKey=next.clearKey?'':replacement||(new URL(merged.baseUrl).origin===previousOrigin?config.apiKey:'');
+    if(typeof merged.apiKey!=='string'||/[\u0000-\u001f\u007f]/.test(merged.apiKey))throw new Error('密钥格式无效');
+    merged.allowWriteTools=Boolean(merged.allowWriteTools);merged.allowFigmaWriteTools=Boolean(merged.allowFigmaWriteTools);
+    return merged;
+  }
   return {
     get: () => ({...config}),
-    public: () => ({...config, apiKey: undefined, hasKey: Boolean(config.apiKey)}),
+    public: () => visible(config),
+    preview,
     set: next => {
-      const merged = {...config};
-      for (const key of Object.keys(defaults)) if (next[key] !== undefined) merged[key] = next[key];
-      if (!['demo','compatible'].includes(merged.mode)) throw new Error('未知模型模式');
-      if (!['local','original-opencode'].includes(merged.engine)) throw new Error('未知执行引擎');
-      if (!['single','multi'].includes(merged.workflow)) throw new Error('未知工作流模式');
-      const url = new URL(merged.baseUrl);
-      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error('模型地址应为普通 HTTP/HTTPS URL');
-      if (/\.(?:corp\.kuaishou\.com|staging\.kuaishou\.com)$/.test(url.hostname)) throw new Error('本地工程不复用原客户端公司服务，请填写独立模型服务地址');
-      if (typeof merged.model !== 'string' || typeof merged.apiKey !== 'string') throw new Error('模型名和密钥应为文本');
-      merged.baseUrl = url.href.replace(/\/$/, '');
-      merged.allowWriteTools = Boolean(merged.allowWriteTools);
-      merged.allowFigmaWriteTools = Boolean(merged.allowFigmaWriteTools);
+      const merged=preview(next);
       fs.mkdirSync(dataDir, {recursive:true});
-      fs.writeFileSync(file, JSON.stringify(merged,null,2), {mode:0o600});
-      fs.chmodSync(file,0o600);
+      const temporary=file+'.'+randomUUID()+'.tmp';
+      try{fs.writeFileSync(temporary,JSON.stringify(merged,null,2),{mode:0o600,flag:'wx'});fs.renameSync(temporary,file);}
+      finally{try{fs.unlinkSync(temporary);}catch(error){if(error.code!=='ENOENT')throw error;}}
       config = merged;
-      return {...config, apiKey:undefined, hasKey:Boolean(config.apiKey)};
+      return visible(config);
     }
   };
 }
@@ -35,7 +60,7 @@ export async function modelCompletion(config, messages, tools, signal, onDelta) 
   if (!config.model) throw new Error('请先在本地设置页填写模型名称');
   const headers = {'content-type':'application/json'};
   if (config.apiKey) headers.authorization = `Bearer ${config.apiKey}`;
-  const response = await fetch(`${config.baseUrl.replace(/\/$/,'')}/chat/completions`, {
+  const response = await fetch(modelCompletionUrl(config.baseUrl), {
     method:'POST', headers,
     body: JSON.stringify({model:config.model,messages,stream:Boolean(onDelta),...(tools?.length?{tools,tool_choice:'auto'}:{})}),
     signal:signal ? AbortSignal.any([signal,AbortSignal.timeout(120000)]) : AbortSignal.timeout(120000)

@@ -134,11 +134,15 @@
   const designModelKey = 'kConf_openApiBaas.data__airstar-689efd34e57bde596a38c5b0.dataDetail_1784717314617';
   window[codeModelKey] = structuredClone(modelConfig);
   window[designModelKey] = structuredClone(modelConfig);
-  const modelReady = nativeFetch('/__local/models').then(response => response.ok ? response.json() : null).then(config => {
+  function updatePublicModels(config) {
     if (!Array.isArray(config?.models) || !config.models.length) return;
     const normalized = { ...config, models: config.models.map(model => ({ ...model, display_name: model.display_name || model.name || model.model_id, autoCandidate: true })) };
     window[codeModelKey] = structuredClone(normalized); window[designModelKey] = structuredClone(normalized);
-  }).catch(() => {});
+  }
+  const modelReady = nativeFetch('/__local/models').then(response => response.ok ? response.json() : null).then(updatePublicModels).catch(() => {});
+  addEventListener('astrix-api-config-saved',()=>{
+    void nativeFetch('/__local/models').then(response=>response.ok?response.json():null).then(updatePublicModels).catch(()=>{});
+  });
   window.__M0_NATIVE_EDITOR_AVAILABLE__ = false;
   const nativeEditorReady = window.m0LocalDesktop?.nativeEditor?.available
     ? window.m0LocalDesktop.nativeEditor.available().then(available => { window.__M0_NATIVE_EDITOR_AVAILABLE__ = available === true; }).catch(() => {})
@@ -189,6 +193,7 @@
   };
 
   addEventListener('DOMContentLoaded', () => {
+    void import('/api-settings.js').then(({installApiSettings})=>installApiSettings({request:nativeFetch})).catch(()=>report('API 设置面板未能加载','','/api-settings.js'));
     const links = document.createElement('nav');
     links.setAttribute('aria-label', '本地恢复功能');
     links.style.cssText = 'position:fixed;right:18px;bottom:12px;z-index:2147483640;display:flex;gap:12px;font:12px -apple-system,sans-serif;background:rgba(255,255,255,.94);border:1px solid #e3e6ed;border-radius:7px;padding:7px 11px;box-shadow:0 2px 8px #1520480a';

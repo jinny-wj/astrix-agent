@@ -1,6 +1,7 @@
 import http from 'node:http';
 import {Readable} from 'node:stream';
 import {randomBytes} from 'node:crypto';
+import {modelCompletionUrl} from './model.mjs';
 
 /** Per-run gateway: the recovered engine cannot exceed its forwarded model
  * request budget even if that version ignores its agent.steps configuration. */
@@ -25,7 +26,7 @@ export async function createModelGateway({config,maxRequests=12,signal}){
       stats.forwardedRequests++;
       const headers={'content-type':'application/json'};
       if(config.apiKey)headers.authorization='Bearer '+config.apiKey;
-      const response=await fetch(config.baseUrl.replace(/\/$/,'')+'/chat/completions',{
+      const response=await fetch(modelCompletionUrl(config.baseUrl),{
         method:'POST',headers,body,
         signal:AbortSignal.any([abort.signal,AbortSignal.timeout(120000),...(signal?[signal]:[])])
       });

@@ -50,7 +50,7 @@ const cliSockets=new Set();
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.woff':'font/woff','.woff2':'font/woff2','.ttf':'font/ttf','.wasm':'application/wasm','.ico':'image/x-icon'};
 function json(res,data,status=200){res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'});res.end(JSON.stringify(data));}
 function html(res,text){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});res.end(text);}
-async function bodyOf(req){const chunks=[];let bytes=0;for await(const chunk of req){bytes+=chunk.length;if(bytes>5*1024*1024)throw Object.assign(new Error('请求过大'),{status:413});chunks.push(chunk);}if(!bytes)return{};return JSON.parse(Buffer.concat(chunks).toString('utf8'));}
+async function bodyOf(req){const chunks=[];let bytes=0;for await(const chunk of req){bytes+=chunk.length;if(bytes>5*1024*1024)throw Object.assign(new Error('请求过大'),{status:413});chunks.push(chunk);}if(!bytes)return{};try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw Object.assign(new Error('请求 JSON 格式无效'),{status:400});}}
 async function handle(req,res) {
   try {
     const host=req.headers.host||'';
@@ -133,9 +133,16 @@ async function handle(req,res) {
     if(url.pathname==='/__local/models')return json(res,await api.publicConfig());
     if(url.pathname==='/__local/model/test'){
       if(req.method!=='POST')return json(res,{error:'Method not allowed'},405);
-      if(model.get().mode==='demo')return json(res,{ok:true,message:'当前为界面演示模式，没有进行模型推理。'});
-      const message=await modelCompletion(model.get(),[{role:'user',content:'只回复：连接成功'}]);
-      return json(res,{ok:true,message:message.content});
+      if(!body||typeof body!=='object'||Array.isArray(body))return json(res,{error:'模型配置应为 JSON 对象'},400);
+      const configuration=Object.keys(body).length?model.preview(body):model.get();
+      const redact=value=>configuration.apiKey?String(value).split(configuration.apiKey).join('[已隐藏]'):String(value);
+      if(configuration.mode==='demo')return json(res,{ok:true,message:'当前为界面演示模式，没有进行模型推理。'});
+      const abort=new AbortController(),onClose=()=>{if(!res.writableEnded)abort.abort();};res.once('close',onClose);
+      try{
+        const message=await modelCompletion(configuration,[{role:'user',content:'只回复：连接成功'}],undefined,abort.signal);
+        return json(res,{ok:true,message:typeof message.content==='string'?redact(message.content):'模型服务连接成功'});
+      }catch(error){if(!res.destroyed)return json(res,{error:redact(error.message)},error.status||400);}
+      finally{res.removeListener('close',onClose);}
     }
     if(url.pathname==='/__local/files'){
       if(req.method!=='GET')return json(res,{error:'Method not allowed'},405);
