@@ -1,5 +1,6 @@
 import type { Message } from '../data/agentScript'
 import type { FigmaSelectionSnapshot } from '../types/figmaWrite'
+import type { AgentConversation, ClarificationAnswer } from '../types/agentConversation'
 import type {
   AgentAttachment,
   AgentBackendKind,
@@ -13,8 +14,23 @@ export type AgentStatus = AgentStatusSnapshot
 export type AgentStreamHandlers = {
   onMeta?: (meta: { mode: string; model: string; backend?: string }) => void
   onMessage: (message: Message) => void
+  onConversation?: (conversation: AgentConversation) => void
   onError?: (message: string) => void
   signal?: AbortSignal
+}
+
+export async function getAgentConversation(id: string, signal?: AbortSignal): Promise<AgentConversation> {
+  const response = await fetch(`/api/agent/conversations/${encodeURIComponent(id)}`, { cache: 'no-store', signal })
+  if (!response.ok) throw Object.assign(new Error('无法恢复会话，请重试或开始新任务'), { status: response.status })
+  return response.json() as Promise<AgentConversation>
+}
+
+export async function cancelAgentConversation(id: string): Promise<AgentConversation> {
+  const response = await fetch(`/api/agent/conversations/${encodeURIComponent(id)}/cancel`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+  })
+  if (!response.ok) throw new Error('暂停任务失败，请重试')
+  return response.json() as Promise<AgentConversation>
 }
 
 export async function getAgentStatus(): Promise<AgentStatus> {
@@ -71,6 +87,10 @@ function parseSseChunk(
 export async function streamAgentChat(
   input: {
     message: string
+    conversationId?: string
+    requestId?: string
+    clarificationAnswer?: ClarificationAnswer
+    newTask?: boolean
     skill?: string
     selection?: FigmaSelectionSnapshot | null
     model?: string
@@ -86,6 +106,10 @@ export async function streamAgentChat(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       message: input.message,
+      conversationId: input.conversationId,
+      requestId: input.requestId ?? crypto.randomUUID(),
+      clarificationAnswer: input.clarificationAnswer,
+      newTask: input.newTask,
       skill: input.skill,
       selection: input.selection ?? undefined,
       model: input.model,
@@ -128,6 +152,13 @@ export async function streamAgentChat(
   let streamError = ''
 
   const handleEvent = (event: string, data: string) => {
+    if (event === 'conversation') {
+      try {
+        const conversation = JSON.parse(data) as AgentConversation
+        if (conversation.conversationId && Array.isArray(conversation.messages)) handlers.onConversation?.(conversation)
+      } catch { /* Ignore malformed frames without discarding the rest of the stream. */ }
+      return
+    }
     if (event === 'meta') {
       try {
         handlers.onMeta?.(JSON.parse(data) as { mode: string; model: string; backend?: string })

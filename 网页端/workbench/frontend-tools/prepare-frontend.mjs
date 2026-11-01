@@ -7,11 +7,25 @@ import layoutConfig from '../../../packages/astrix-workbench/layout.cjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const layout=layoutConfig.getLayout();
 const projectRoot = layout.webRoot;
+const publicRoot = layout.publicRoot;
 const args=process.argv.slice(2);
-if(args.length && (args.length!==2 || args[0]!=='--source-root' || !args[1])) throw new Error('Usage: node workbench/frontend-tools/prepare-frontend.mjs [--source-root /path/to/M0-AI-recovered]');
+// Existing installations already contain the sanitized vendor UI. A first-party
+// UI update does not require re-extracting its original download cache.
+if(args.length===1&&args[0]==='--refresh-local'){
+  const file=path.join(publicRoot,'index.html');
+  let current=await readFile(file,'utf8');
+  if(!current.includes('/local-runtime.js'))throw new Error('Restore the Workbench UI resources before refreshing local scripts');
+  await copyFile(path.join(here,'clarification-monitor.js'),path.join(publicRoot,'clarification-monitor.js'));
+  if(!current.includes('src="/clarification-monitor.js"')){
+    current=current.replace('</head>','  <script src="/clarification-monitor.js" defer></script>\n</head>');
+    await writeFile(file,current);
+  }
+  console.log('Refreshed the local clarification UI in the installed Workbench resources.');
+  process.exit(0);
+}
+if(args.length && (args.length!==2 || args[0]!=='--source-root' || !args[1])) throw new Error('Usage: node workbench/frontend-tools/prepare-frontend.mjs [--source-root /path/to/M0-AI-recovered | --refresh-local]');
 const recoveryRoot=path.resolve(args[1]||process.env.ASTRIX_RECOVERY_ROOT||process.env.M0_RECOVERY_ROOT||layout.recoveryRoot);
 const sourceRoot = path.join(recoveryRoot,'web-assets/cache-recovered');
-const publicRoot = layout.publicRoot;
 const manifest = JSON.parse(await readFile(path.join(sourceRoot, 'manifest.json'), 'utf8'));
 const resources = new Map();
 let extraAssets = { assets: [] };
@@ -150,7 +164,7 @@ for (const item of extraAssets.assets) {
 let html = rewrite(await readFile(path.join(sourceRoot, 'html-shell/home.static-shell.html'), 'utf8'), 'index.html');
 html = html.replace(/<!-- RECOVERED STATIC SHELL:[\s\S]*?-->/, '<!-- Recovered M0 UI, with an independently implemented localhost runtime. -->');
 html = html.replace(/<script[^>]*src=["']\/accessproxy_statics\/[^"']+["'][^>]*><\/script>/g, '');
-html = html.replace('<head>', '<head>\n  <link rel="stylesheet" href="/api-settings.css">\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>');
+html = html.replace('<head>', '<head>\n  <link rel="stylesheet" href="/api-settings.css">\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>\n  <script src="/clarification-monitor.js" defer></script>');
 html = html.replace(/<script type="module" crossorigin src="([^"]+)"><\/script>/,
   (_match, entry) => `<script type="module">await window.__m0LocalReady; await import(${JSON.stringify(entry)});</script>`);
 html = html.replace(/<title>[^<]*<\/title>/, '<title>Astrix</title>');
@@ -163,6 +177,7 @@ await copyFile(path.join(here,'branding/astrix-dock.png'),path.join(publicRoot,'
 await copyFile(path.join(here, 'local-runtime.js'), path.join(publicRoot, 'local-runtime.js'));
 for (const file of ['api-settings.js','api-settings-model.mjs','api-settings.css']) await copyFile(path.join(here,file),path.join(publicRoot,file));
 await copyFile(path.join(here, 'workflow-monitor.js'), path.join(publicRoot, 'workflow-monitor.js'));
+await copyFile(path.join(here, 'clarification-monitor.js'), path.join(publicRoot, 'clarification-monitor.js'));
 await copyFile(path.join(here, 'local-codegen.html'), path.join(publicRoot, 'codegen.html'));
 await copyFile(path.join(here, 'local-codegen.js'), path.join(publicRoot, 'codegen.js'));
 for (const file of ['figma-workspace.html','figma-workspace.js','figma-workspace.css','figma-oauth-complete.html','figma-oauth-complete.js']) await copyFile(path.join(here,file),path.join(publicRoot,file));

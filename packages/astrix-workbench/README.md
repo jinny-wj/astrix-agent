@@ -1,6 +1,6 @@
 # Astrix 工作台共享配置与验证
 
-当前版本 **0.7.7**。工作台实现已实际拆入同仓库的两端，这个目录只保存路径配置、测试、版本、文档和打包发布工具，不再是第三套应用。
+当前版本 **0.7.8**。工作台实现已实际拆入同仓库的两端，这个目录只保存路径配置、测试、版本、文档和打包发布工具，不再是第三套应用。
 
 | 目录 | 实际职责 |
 | --- | --- |
@@ -34,7 +34,7 @@ Figma 插件为客户端与网页版分别保存连接和配对，选区按连�
 
 ## API 配置
 
-首页右上角的 **API 设置** 支持 OpenAI 兼容、Claude 原生 Messages、Gemini 原生 GenerateContent，官方、第三方或本机地址及模型名称均可自定义。先测试草稿再保存，测试不改变已保存设置；更换协议或来源不会自动沿用旧 Key。详见 [API 配置](docs/API配置.md)与[本版记录](versions/v0.7.7.md)。
+首页右上角的 **API 设置** 支持 OpenAI 兼容、Claude 原生 Messages、Gemini 原生 GenerateContent，官方、第三方或本机地址及模型名称均可自定义。先测试草稿再保存，测试不改变已保存设置；更换协议或来源不会自动沿用旧 Key。详见 [API 配置](docs/API配置.md)与[协议接入记录](versions/v0.7.7.md)。
 
 ## 验证与发布
 
@@ -55,3 +55,7 @@ npm run release
 开发时客户端使用 `客户端/workbench/.local-data/` 和 `.data/<profile>/`，网页端使用 `网页端/workbench/.local-data/` 和 `.data/<profile>/`；两端不自动探测其他工程目录。安装版使用客户端自身的 Electron 用户数据目录。
 
 可用 `ASTRIX_STATE_ROOT`、`ASTRIX_DATA_DIR`、`ASTRIX_PROFILE_ROOT`、`ASTRIX_WORKSPACE` 和 `ASTRIX_DIAGNOSTICS_DIR` 显式指定位置；旧环境变量别名仍支持明确配置，不代表旧目录回退。项目、模型配置、Figma 登录和配对令牌属于用户数据，不复制进 Git 或资源附件；目录整理不能当作删除或重置这些数据的理由。
+
+## 需求澄清与续接
+
+两端保留原任务、问答与附件，缺关键信息先暂停追问，回答后继续；刷新和服务重启可恢复。未选择或配置模型时保留待运行状态。使用与边界见[需求澄清与续接](docs/需求澄清与续接.md)，[0.7.8 记录](versions/v0.7.8.md)。

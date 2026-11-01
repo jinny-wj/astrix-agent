@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.8",
+  "recordedAt": "2026-11-01",
+  "recordType": "source-release",
+  "status": "local-clarification-resume-verified",
+  "sources": [
+    {
+      "path": ".release-assets/shared-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 28354,
+      "sha256": "03157ce0c0585375729b122f0ef5acf29ddfd76ce8b7e64623130b6700f40324"
+    },
+    {
+      "path": ".release-assets/desktop-tests-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 12480,
+      "sha256": "4c4dd08a8108775f7e95fca475a4dedfdccc32a8e3f43a3556739045015a2da3"
+    },
+    {
+      "path": ".release-assets/web-tests-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 6581,
+      "sha256": "6a0343d961e8b969fe639f3c92b8385bd127502cb76aff462b6d8d04101e8091"
+    },
+    {
+      "path": ".release-assets/desktop-build-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 558,
+      "sha256": "c9ca9e93c078a3d86608e7d217737681c35888e815d7c6fd354a014092fa662a"
+    },
+    {
+      "path": ".release-assets/web-build-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 53486,
+      "sha256": "18185994571019ad0db664e54d24e051e07de57a4baede1b4ccf1d73fba6e9c3"
+    },
+    {
+      "path": ".release-assets/desktop-typecheck-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 244,
+      "sha256": "f9a5d3e1c244290b52b8db9a338be5fcda17c984b8abb261f9f8d27a471589f7"
+    },
+    {
+      "path": ".release-assets/desktop-bundle-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 869,
+      "sha256": "7de257685c77fdbf3314b86a7f9426e675e86311cc7e3fd0e9c2d614f5ec9bb3"
+    },
+    {
+      "path": ".release-assets/desktop-stage-v0.7.8.log",
+      "distribution": "local-only",
+      "bytes": 227,
+      "sha256": "75c87604cdb65164c51bde31ca79940a04db9054466b04e926e92c5ce0cac219"
+    }
+  ],
+  "validation": {
+    "shared": {
+      "nodeAndCanvas": 230,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "desktop": {
+      "tests": 133,
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed"
+    },
+    "web": {
+      "tests": 71,
+      "build": "passed"
+    },
+    "clarification": {
+      "originalTaskAndHistoryPersisted": true,
+      "attachmentsRetainedAndPassedToExecutor": true,
+      "structuredAndPlainAnswersResumeOriginalTask": true,
+      "multipleClarificationTurns": "passed",
+      "reloadAndServerRestart": "passed",
+      "preflightHasNoExecutionTools": true,
+      "invalidAssessmentFailsClosed": true,
+      "duplicateAndConcurrentRequests": "passed",
+      "changedSelectionNeedsConfirmationOrRejection": true,
+      "disconnectAndCancelDistinguished": true,
+      "figmaInstructionSeparatedFromChatHistory": true,
+      "modelUnconfiguredState": "ready; no model request"
+    },
+    "isolatedGui": {
+      "surfaces": [
+        "web",
+        "desktop-profile"
+      ],
+      "questionCardAnswerAndReload": "passed",
+      "originalRequestRetained": true,
+      "persistedMessagesAfterAnswer": 4,
+      "actualUserStateUsed": false
+    },
+    "stagedRuntime": {
+      "version": "0.7.8",
+      "fileCount": 6698,
+      "criticalHashesVerified": 6,
+      "privateStateExcluded": true
+    },
+    "modelConfiguration": {
+      "realModelConfiguredByThisWork": false,
+      "realModelInvokedByThisWork": false
+    },
+    "figma": {
+      "designWriteCommandsSent": 0,
+      "testBridge": "injected mock only"
+    }
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "limits": [
+    "Semantic clarification quality with a real model was not tested.",
+    "Execution cancellation does not undo side effects already acknowledged.",
+    "Desktop-profile browser validation does not claim packaged native application GUI verification.",
+    "Model settings and real Figma file permissions were not changed."
+  ]
+}

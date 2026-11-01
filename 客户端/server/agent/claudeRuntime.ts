@@ -2,6 +2,7 @@ import { query } from '@anthropic-ai/claude-agent-sdk'
 import { yieldSelectionContext } from './figmaSkills'
 import { skillBody } from './skills'
 import { DESIGN_SYSTEM_PROMPT, buildStudioUserPrompt } from './studioPrompt'
+import { ASSESSMENT_RULES } from './conversation'
 import type { AgentRunInput, AgentRuntime, AgentUiMessage } from './types'
 
 function makeId(prefix: string) {
@@ -129,9 +130,10 @@ export function createClaudeRuntime(options: {
         options: {
           cwd: options.cwd,
           ...(claudeModel ? { model: claudeModel } : {}),
-          settingSources: ['user'],
-          systemPrompt: DESIGN_SYSTEM_PROMPT,
-          allowedTools: ['Read', 'Grep', 'Glob', 'Bash'],
+          settingSources: input.phase === 'assess' ? [] : ['user'],
+          ...(input.phase === 'assess' ? { tools: [], mcpServers: {}, plugins: [] } : {}),
+          systemPrompt: input.phase === 'assess' ? ASSESSMENT_RULES : DESIGN_SYSTEM_PROMPT,
+          allowedTools: input.phase === 'assess' ? [] : ['Read', 'Grep', 'Glob', 'Bash'],
           disallowedTools: [
             'Write',
             'Edit',
@@ -142,7 +144,7 @@ export function createClaudeRuntime(options: {
           ],
           permissionMode: 'bypassPermissions',
           allowDangerouslySkipPermissions: true,
-          maxTurns: 6,
+          maxTurns: input.phase === 'assess' ? 1 : 6,
         },
       })
 

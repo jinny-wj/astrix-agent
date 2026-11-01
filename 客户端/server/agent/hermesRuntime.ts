@@ -22,6 +22,7 @@ export function createHermesRuntime(options: {
       backend: 'hermes-agent',
     },
     async *run(input: AgentRunInput): AsyncGenerator<AgentUiMessage> {
+      if (input.phase === 'assess') throw new Error('Hermes 当前未提供无工具需求检查，将尝试其他可用后端。')
       const { skill, refs, prompt } = buildStudioUserPrompt(input)
       if (input.emitRequestContext !== false) {
         yield {

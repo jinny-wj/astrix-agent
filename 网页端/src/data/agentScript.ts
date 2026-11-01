@@ -5,6 +5,7 @@
  *   用户气泡 → 上下文引用 → Skill 卡 → 上下文采集摘要 → 工具调用卡（含设计预览） → 批量结果
  */
 import type { VisualDocumentChanges } from '../types/visual'
+import type { ClarificationQuestion } from '../types/agentConversation'
 
 /** 上下文引用条目：一个资源位规格 */
 export type ContextRef = {
@@ -30,6 +31,13 @@ export type ResultItem = {
 
 export type Message =
   | { id: string; kind: 'user'; text: string; refs?: ContextRef[] }
+  | {
+      id: string
+      kind: 'clarification'
+      taskId: string
+      questions: ClarificationQuestion[]
+      status: 'awaiting_user'
+    }
   | {
       id: string
       kind: 'skill'

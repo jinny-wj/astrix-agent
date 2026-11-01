@@ -53,9 +53,11 @@ test('模型 API 草稿不发请求，启用后 Auto 使用配置模型，失败
   let status = 200
   globalThis.fetch = async (input, init) => {
     if (String(input) !== fixture.baseUrl + '/chat/completions') return originalFetch(input, init)
-    requests.push(JSON.parse(init.body))
+    const body = JSON.parse(init.body)
+    requests.push(body)
+    const assessment = body.messages?.some(message => /只做需求完整性检查/.test(message.content))
     return status === 200
-      ? new Response(JSON.stringify({ choices: [{ message: { content: 'mock-model-response' } }] }))
+      ? new Response(JSON.stringify({ choices: [{ message: { content: assessment ? '{"ready":true,"questions":[]}' : 'mock-model-response' } }] }))
       : new Response('private-provider-error mock-model-api-key', { status })
   }
   try {
@@ -70,6 +72,9 @@ test('模型 API 草稿不发请求，启用后 Auto 使用配置模型，失败
     assert.match(events, /"backend":"model-api"/)
     assert.match(events, /mock-model-response/)
     assert.equal(requests[0].model, fixture.model)
+    assert.equal(requests.length, 2)
+    assert.match(JSON.stringify(requests[0].messages), /只做需求完整性检查/)
+    assert.doesNotMatch(JSON.stringify(requests[1].messages), /只做需求完整性检查/)
     assert.doesNotMatch(events, /mock-model-api-key/)
 
     const snapshot = await (await originalFetch(server.origin + '/api/agent/status')).json()
@@ -80,7 +85,7 @@ test('模型 API 草稿不发请求，启用后 Auto 使用配置模型，失败
 
     const manual = await post('/api/agent/chat', { message: '只回复收到', backend: 'shell' })
     assert.match(await manual.text(), /"backend":"local-shell"/)
-    assert.equal(requests.length, 1)
+    assert.equal(requests.length, 2)
 
     status = 401
     const failed = await post('/api/agent/chat', { message: '只回复收到' })
@@ -91,7 +96,7 @@ test('模型 API 草稿不发请求，启用后 Auto 使用配置模型，失败
     server.configureModelApi(null)
     const cleared = await post('/api/agent/chat', { message: '只回复收到', backend: 'model-api' })
     assert.match(await cleared.text(), /请先在设置中填写并启用/)
-    assert.equal(requests.length, 2)
+    assert.equal(requests.length, 3)
   } finally {
     server.configureModelApi(null)
     globalThis.fetch = originalFetch

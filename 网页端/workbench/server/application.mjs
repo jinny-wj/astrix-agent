@@ -67,6 +67,7 @@ async function handle(req,res) {
     const body=['POST','PUT','PATCH','DELETE'].includes(req.method)?await bodyOf(req):{};
     diagnostics.requests.push({method:req.method,path:url.pathname});if(diagnostics.requests.length>200)diagnostics.requests.shift();
     if(req.method==='OPTIONS'){res.writeHead(204);return res.end();}
+    if(await chat.handleConversationRoute(req,res,url,body,api))return;
     if(url.pathname==='/__local/health')return json(res,{ok:true,m0Local:true,...identity,mode:model.get().mode});
     if(url.pathname==='/__local/diagnostics')return json(res,diagnostics);
     if(url.pathname==='/__local/client-error'){diagnostics.clientErrors.push({message:String(body.message||'').slice(0,1500),stack:String(body.stack||'').slice(0,5000),url:String(body.url||'').slice(0,600)});return json(res,{ok:true});}

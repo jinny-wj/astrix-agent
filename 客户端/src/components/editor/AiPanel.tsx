@@ -4,6 +4,9 @@ import { useDesktopAgentWorkspace } from '../../hooks/useDesktopAgentWorkspace'
 import { useFigmaLayerTarget } from '../../hooks/useFigmaLayerTarget'
 import { useEditor } from '../../state/editorStore'
 import type { AgentChatExtras } from '../../types/agentComposer'
+import type { AgentConversation, ClarificationAnswer } from '../../types/agentConversation'
+import { cancelAgentConversation } from '../../services/agentApi'
+import { conversationStorageKey, readConversationId, saveConversationId } from '../../services/agentConversation'
 import '../../types/desktop'
 import AiInputArea from './AiInputArea'
 import AiWelcome from './AiWelcome'
@@ -23,7 +26,7 @@ function PanelHeader({
     <div className="ai-panel-header">
       <span className="ai-panel-file-title" title={title}>{title}</span>
       <div className="ai-panel-header-actions">
-        <button title="新会话" aria-label="新会话" onClick={() => { setHistoryOpen(false); onReset() }}>
+        <button title="新任务" aria-label="新任务" onClick={() => { setHistoryOpen(false); onReset() }}>
           <img src="/assets/agent-reference/create.svg" alt="" />
         </button>
         <button title="本次会话记录" aria-label="本次会话记录" aria-expanded={historyOpen} onClick={() => setHistoryOpen(!historyOpen)}>
@@ -37,7 +40,7 @@ function PanelHeader({
         <div className="ai-panel-session" role="dialog" aria-label="本次会话记录">
           <div className="flex items-center justify-between"><strong>本次会话</strong><button onClick={() => setHistoryOpen(false)} aria-label="关闭会话记录">×</button></div>
           <p>{prompt || '当前还没有发送消息。'}</p>
-          <span>仅显示当前会话，不包含已清空的历史。</span>
+          <span>完整对话保存在本机，可在下方查看；刷新后可以继续。</span>
         </div>
       )}
     </div>
@@ -58,6 +61,7 @@ export default function AiPanel({
     agentExtras,
     startAgent,
     finishAgent,
+    pauseAgent,
     failAgent,
     retryAgent,
     resetAgent,
@@ -69,6 +73,10 @@ export default function AiPanel({
   } = useEditor()
   const [nativeTitle, setNativeTitle] = useState('')
   const [collapsed, setCollapsed] = useState(false)
+  const [storageKey] = useState(() => conversationStorageKey(window.location.href))
+  const [conversationId, setConversationId] = useState(() => readConversationId(storageKey))
+  const [conversation, setConversation] = useState<AgentConversation | null>(null)
+  const [conversationEpoch, setConversationEpoch] = useState(0)
   useEffect(() => {
     const host = window.designStudioAgentHost
     if (!host) return
@@ -85,7 +93,8 @@ export default function AiPanel({
   useDesktopAgentWorkspace({
     onStart: (prompt, skill) => sendToAgent(prompt, skill),
   })
-  const hasConversation = agentRunning || agentDone || Boolean(agentPrompt) || generationStatus === 'error'
+  const hasConversation = agentRunning || agentDone || Boolean(agentPrompt) || Boolean(conversationId) || generationStatus === 'error'
+  const serverBusy = conversation?.status === 'running' || conversation?.status === 'assessing'
 
   const sendToAgent = (text: string, skill?: string, extras?: AgentChatExtras) => {
     const resolvedSkill = skill
@@ -96,7 +105,26 @@ export default function AiPanel({
   }
 
   const beginNewConversation = () => {
+    if (conversationId) void cancelAgentConversation(conversationId).catch(() => {})
+    saveConversationId(storageKey)
+    setConversationId(undefined)
+    setConversation(null)
+    setConversationEpoch(value => value + 1)
     resetAgent()
+  }
+
+  const acceptConversation = (value: AgentConversation) => {
+    saveConversationId(storageKey, value.conversationId)
+    setConversationId(value.conversationId)
+    setConversation(value)
+  }
+
+  const answerClarification = (answer: ClarificationAnswer) => {
+    const questions = conversation?.pending?.questions ?? []
+    const text = questions.map(question => `${question.label}：${answer.answers[question.id] ?? ''}`).join('\n')
+    sendToAgent(text || '补充当前任务信息', undefined, {
+      attachments: [], contextRefs: [], instructions: [], clarificationAnswer: answer,
+    })
   }
 
   if (collapsed) return <button className="ai-panel-reopen" onClick={() => setCollapsed(false)}>打开 AI 助手</button>
@@ -116,17 +144,22 @@ export default function AiPanel({
         onReset={beginNewConversation}
         onClose={() => window.designStudioAgentHost?.hidePanel ? window.designStudioAgentHost.hidePanel() : setCollapsed(true)}
         title={nativeTitle || workspaceFileName || '未命名文件'}
-        prompt={agentPrompt}
+        prompt={conversation?.originalRequest || agentPrompt}
       />
       <div className="ai-panel-conversation scroll-clean min-h-0 flex-1 overflow-y-auto">
         {hasConversation ? (
           <ConversationFlow
+            key={conversationEpoch}
             running={agentRunning}
             prompt={agentPrompt}
             skill={agentSkill}
             selection={agentSelection}
             extras={agentExtras}
+            conversationId={conversationId}
+            onConversation={acceptConversation}
+            onAnswer={answerClarification}
             onDone={finishAgent}
+            onPause={pauseAgent}
             onFail={failAgent}
             onRetry={retryAgent}
             onArtifact={updateVisualDocument}
@@ -139,7 +172,8 @@ export default function AiPanel({
       <div className="ai-panel-composer shrink-0">
         <AiInputArea
           onSend={sendToAgent}
-          disabled={agentRunning}
+          disabled={agentRunning || serverBusy}
+          awaitingClarification={conversation?.status === 'awaiting_user'}
           layers={layerTarget.layers}
           figmaActive={Boolean(layerTarget.fileKey)}
           bridgeConnected={layerTarget.bridgeConnected}

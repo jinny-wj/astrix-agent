@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.7",
+  "currentVersion": "0.7.8",
   "recordedAt": "2026-10-26",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -252,6 +252,23 @@
       "evidence": [
         "versions/evidence/v0.7.7.json"
       ]
+    },
+    {
+      "version": "0.7.8",
+      "date": "2026-11-01",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.8",
+      "record": "versions/v0.7.8.md",
+      "evidence": [
+        "versions/evidence/v0.7.8.json"
+      ],
+      "changes": [
+        "Persist original requests, conversation history, attachments and pending clarification on both surfaces.",
+        "Pause before tools when critical inputs are missing; resume the same task after answers.",
+        "Keep model configuration unchanged and use isolated simulated services for verification."
+      ],
+      "uiFeatureChanges": true
     }
   ],
   "repository": "https://github.com/jinny-wj/astrix-agent",

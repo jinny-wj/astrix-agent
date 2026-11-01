@@ -5,6 +5,10 @@ import type { AgentRunInput, AgentRuntime, AgentUiMessage } from './types'
 async function* localOrchestrator(
   input: AgentRunInput,
 ): AsyncGenerator<AgentUiMessage> {
+  if (input.phase === 'assess') {
+    yield { id: `assessment-${Date.now()}`, kind: 'text', text: '{"ready":true,"questions":[]}' }
+    return
+  }
   const skill = pickSkill(input.message, input.skill)
   if (input.emitRequestContext !== false) {
     yield { id: `m-${Date.now()}-user`, kind: 'user', text: input.message }

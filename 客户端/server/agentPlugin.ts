@@ -7,7 +7,7 @@ import { createHermesRuntime } from './agent/hermesRuntime'
 import { createShellRuntime } from './agent/shellRuntime'
 import { createModelApiRuntime } from './agent/modelApiRuntime'
 import type { ModelApiSettings } from '../src/types/modelApi'
-import type { AgentRuntime, AgentRunInput } from './agent/types'
+import type { AgentRuntime, AgentRunInput, AgentUiMessage } from './agent/types'
 import { whichBin } from './agent/whichBin'
 import {
   sanitizeAttachment,
@@ -19,6 +19,9 @@ import {
 import { collectStatusSnapshot, getBackendProbes } from './agent/statusSnapshot'
 import { publicRuntimeError } from './agent/runtimeErrors'
 import { skillBody } from './agent/skills'
+import { createConversationStore, executionInput, parseAssessment, requiredQuestions } from './agent/conversation'
+import type { ClarificationQuestion } from './agent/conversation'
+import { confirmedFigmaInstruction } from './agent/clarificationInstructions'
 import {
   getBridgeCommandResult,
   tryEnqueueNaturalLanguageInstruction,
@@ -52,6 +55,10 @@ export type AgentPluginOptions = {
   model: string
   cwd?: string
   allowDemoFallback?: boolean
+  conversationDirectory?: string
+  bridge?: { enqueue: typeof tryEnqueueNaturalLanguageInstruction; wait: (commandId: string) => Promise<Awaited<ReturnType<typeof waitForBridgeCommand>>> }
+  /** Injectable adapter for isolated local tests; never accepted from HTTP input. */
+  getRuntimes?: (input: AgentRunInput) => AgentRuntime[] | Promise<AgentRuntime[]>
   /** Desktop main-process configuration; never accept credentials from chat requests. */
   getModelApiSettings?: () => ModelApiSettings | null
 }
@@ -297,220 +304,187 @@ async function handleChatRequest(
   request: IncomingMessage,
   response: ServerResponse,
   options: AgentPluginOptions,
+  conversations: ReturnType<typeof createConversationStore>,
 ) {
-  if (request.method === 'OPTIONS') {
-    response.statusCode = 204
-    setCorsHeaders(request, response)
-    response.end()
-    return
-  }
-
   if (request.method !== 'POST') {
     sendJson(request, response, 405, { error: 'Method Not Allowed' })
     return
   }
-
-  let body: {
-    message?: string
-    skill?: string
-    model?: string
-    source?: AgentRunInput['source']
-    selection?: unknown
-    attachments?: unknown
-    contextRefs?: unknown
-    instructions?: unknown
-    backend?: unknown
-  } = {}
+  let body: Record<string, unknown>
   try {
-    const raw = await readBody(request)
-    body = raw ? JSON.parse(raw) as typeof body : {}
+    const parsed: unknown = JSON.parse(await readBody(request) || '{}')
+    if (!isRecord(parsed)) throw new Error('object required')
+    body = parsed
   } catch {
-    sendJson(request, response, 400, { error: '请求体必须是 JSON' })
+    sendJson(request, response, 400, { error: '请求体必须是 JSON 对象' })
     return
   }
-
-  const selection = sanitizeSelection(body.selection)
   const cwd = options.cwd ?? process.cwd()
   const attachments = Array.isArray(body.attachments)
-    ? body.attachments
-      .slice(0, 8)
-      .map((item) => sanitizeAttachment(item, cwd))
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-    : []
+    ? body.attachments.slice(0, 8).map(item => sanitizeAttachment(item, cwd)).filter((item): item is NonNullable<typeof item> => item !== null) : []
   const contextRefs = Array.isArray(body.contextRefs)
-    ? body.contextRefs
-      .slice(0, 20)
-      .map(sanitizeContextItem)
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-    : []
+    ? body.contextRefs.slice(0, 20).map(sanitizeContextItem).filter((item): item is NonNullable<typeof item> => item !== null) : []
   const instructions = Array.isArray(body.instructions)
-    ? body.instructions
-      .slice(0, 12)
-      .map(sanitizeInstruction)
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-    : []
-  const preferredBackend = sanitizeBackend(body.backend)
-  const source =
-    body.source === 'figma-workspace' || body.source === 'figma-sidepanel'
-      ? body.source
-      : 'studio'
-
-  const rawMessage = typeof body.message === 'string' ? body.message.trim() : ''
-  const message = rawMessage
-    || (attachments.length > 0
-      ? `请查看我上传的 ${attachments.length} 个文件`
-      : '')
+    ? body.instructions.slice(0, 12).map(sanitizeInstruction).filter((item): item is NonNullable<typeof item> => item !== null) : []
+  const message = typeof body.message === 'string' && body.message.trim()
+    ? body.message.trim().slice(0, 40_000)
+    : body.clarificationAnswer ? '已补充澄清问题' : attachments.length ? `请查看我上传的 ${attachments.length} 个文件` : ''
   if (!message) {
     sendJson(request, response, 400, { error: 'message 不能为空' })
     return
   }
-
+  const controller = new AbortController()
+  const input: AgentRunInput = {
+    message,
+    skill: typeof body.skill === 'string' ? body.skill.slice(0, 100) : undefined,
+    model: typeof body.model === 'string' && body.model.trim() && body.model !== 'auto' ? body.model.trim().slice(0, 80) : undefined,
+    source: body.source === 'figma-workspace' || body.source === 'figma-sidepanel' ? body.source : 'studio',
+    selection: sanitizeSelection(body.selection), attachments, contextRefs, instructions,
+    backend: sanitizeBackend(body.backend), cwd, signal: controller.signal,
+  }
+  let turn: ReturnType<typeof conversations.begin>
+  try { turn = conversations.begin(body, input, controller) } catch (error) {
+    sendJson(request, response, (error as { status?: number }).status || 409, { error: error instanceof Error ? error.message : '会话无法继续' })
+    return
+  }
   response.statusCode = 200
   setCorsHeaders(request, response)
   response.setHeader('Content-Type', 'text/event-stream; charset=utf-8')
   response.setHeader('Cache-Control', 'no-cache, no-transform')
   response.setHeader('Connection', 'keep-alive')
   response.write(': connected\n\n')
-
-  const requestedModel =
-    typeof body.model === 'string' && body.model.trim() && body.model.trim() !== 'auto'
-      ? body.model.trim().slice(0, 80)
-      : undefined
-
-  const controller = new AbortController()
   request.on('aborted', () => controller.abort())
-  response.on('close', () => {
-    if (!response.writableEnded) controller.abort()
-  })
-
-  const runInput: AgentRunInput = {
-    message,
-    skill: body.skill,
-    model: requestedModel,
-    source,
-    selection,
-    attachments,
-    contextRefs,
-    instructions,
-    backend: preferredBackend,
-    cwd,
-    signal: controller.signal,
-    emitRequestContext: true,
+  response.on('close', () => { if (!response.writableEnded) controller.abort() })
+  const state = () => writeSse(response, 'conversation', conversations.snapshot(turn.record))
+  const emit = (item: AgentUiMessage) => {
+    if (item.kind === 'user') return
+    if (controller.signal.aborted) throw new Error('任务已停止，上下文已保留。')
+    conversations.remember(turn, item)
+    if (!response.writableEnded) writeSse(response, 'message', item)
   }
-
-  let figmaWrite: ReturnType<typeof tryEnqueueNaturalLanguageInstruction> = null
-  let figmaWriteError = ''
-  if (selection?.sessionId) {
-    try {
-      figmaWrite = tryEnqueueNaturalLanguageInstruction(message, selection)
-    } catch (error) {
-      figmaWriteError = error instanceof Error
-        ? error.message
-        : 'Figma 写入队列创建失败。'
-    }
+  const pause = (questions: ClarificationQuestion[]) => {
+    const item = conversations.pause(turn, questions)
+    writeSse(response, 'message', item)
+    state()
+    writeSse(response, 'done', { ok: true, status: 'awaiting_user', conversationId: turn.record.conversationId })
   }
-
-  if (figmaWrite || figmaWriteError) {
-    writeSse(response, 'meta', {
-      mode: 'local',
-      model: 'figma-bridge',
-      shell: false,
-      backend: 'figma-bridge',
-    })
-    writeSse(response, 'message', {
-      id: `user-${Date.now()}`,
-      kind: 'user',
-      text: message,
-      refs: selection?.nodes.map((node) => ({
-        name: node.name,
-        size: node.width && node.height
-          ? `${Math.round(node.width)}*${Math.round(node.height)}`
-          : node.type,
-        output: node.type,
-      })),
-    })
-    writeSse(response, 'message', {
-      id: `skill-${Date.now()}`,
-      kind: 'skill',
-      name: 'layer-edit',
-      body: skillBody('layer-edit'),
-    })
-    if (figmaWriteError) {
-      writeSse(response, 'message', {
-        id: `figma-write-error-${Date.now()}`,
-        kind: 'figma-write',
-        commandIds: [],
-        summary: 'Figma 写入未执行',
-        status: 'error',
-        detail: figmaWriteError,
-      })
-    } else if (figmaWrite) {
-      writeSse(response, 'message', {
-        id: `figma-write-${figmaWrite.commandId}`,
-        kind: 'figma-write',
-        commandIds: [figmaWrite.commandId],
-        summary: figmaWrite.summary,
-        status: 'queued',
-      })
-      const result = await waitForBridgeCommand(figmaWrite.commandId)
-      if (result) {
-        writeSse(response, 'message', {
-          id: `figma-write-${figmaWrite.commandId}`,
-          kind: 'figma-write',
-          commandIds: [figmaWrite.commandId],
-          summary: result.summary ?? figmaWrite.summary,
-          status: result.ok ? 'success' : 'error',
-          ...(result.message ? { detail: result.message } : {}),
-        })
-      }
-    }
-    writeSse(response, 'done', { ok: !figmaWriteError })
+  state()
+  if (turn.replay) {
+    writeSse(response, 'done', { ok: true, status: turn.record.status, replayed: true })
     response.end()
     return
   }
-
   try {
-    const chain = await readyRuntimeChain(options, requestedModel, preferredBackend)
-    writeSse(response, 'meta', chain[0].meta)
-    let lastError: unknown
-    for (let index = 0; index < chain.length; index += 1) {
-      const running = chain[index]
-      try {
-        if (index > 0) {
-          writeSse(response, 'message', {
-            id: `fallback-${Date.now()}`,
-            kind: 'text',
-            text: `${chain[index - 1].meta.backend} 不可用：${publicRuntimeError(lastError)}。已切换到 ${running.meta.backend}。`,
-          })
-          writeSse(response, 'meta', {
-            ...running.meta,
-            fallbackFrom: chain[index - 1].meta.backend,
-          })
+    const needed = requiredQuestions(turn)
+    if (needed.length) { pause(needed); return }
+    const runInput = executionInput(turn.record, controller.signal)
+    const exactInstruction = confirmedFigmaInstruction(turn)
+    const explicitlySelected = runInput.backend && runInput.backend !== 'shell'
+    const apiEnabled = Boolean(options.getModelApiSettings?.()?.enabled)
+    if (!exactInstruction && !options.getRuntimes && !apiEnabled && options.backend === 'auto' && !explicitlySelected) {
+      conversations.ready(turn)
+      state()
+      writeSse(response, 'done', { ok: true, status: 'ready', conversationId: turn.record.conversationId })
+      return
+    }
+    let chain: AgentRuntime[] | undefined
+    const runtimes = async () => chain ??= options.getRuntimes
+      ? await options.getRuntimes(runInput)
+      : await readyRuntimeChain(options, runInput.model, runInput.backend)
+    // Only an explicitly confirmed, parser-validated instruction bypasses model assessment.
+    if (!exactInstruction) {
+      let assessment: ReturnType<typeof parseAssessment> | undefined
+      let assessmentError: unknown
+      for (const runtime of await runtimes()) {
+        try {
+          const texts: string[] = []
+          for await (const item of runtime.run({ ...runInput, phase: 'assess', emitRequestContext: false })) {
+            controller.signal.throwIfAborted()
+            if (item.kind === 'tool' || item.kind === 'artifact' || item.kind === 'figma-write') throw new Error('需求检查阶段禁止执行工具，任务未继续。')
+            if (item.kind === 'text') texts.push(item.text)
+          }
+          for (const text of texts.reverse()) {
+            try { assessment = parseAssessment(text); break } catch (error) { assessmentError = error }
+          }
+          if (assessment) break
+          throw assessmentError || new Error('需求检查未返回结果，任务未执行。')
+        } catch (error) {
+          if (controller.signal.aborted) throw error
+          assessmentError = error
         }
-        for await (const item of running.run({
-          ...runInput,
-          emitRequestContext: index === 0,
-        })) {
-          if (response.writableEnded || controller.signal.aborted) return
-          writeSse(response, 'message', item)
-        }
-        lastError = undefined
-        break
-      } catch (error) {
-        lastError = error
-        if (index === chain.length - 1) throw error
+      }
+      if (!assessment) throw assessmentError || new Error('没有可用的需求检查后端，请先配置模型。')
+      if (!assessment.ready) { pause(assessment.questions); return }
+    }
+    controller.signal.throwIfAborted()
+    conversations.running(turn)
+    state()
+    const selection = runInput.selection
+    let figmaWrite: ReturnType<typeof tryEnqueueNaturalLanguageInstruction> = null
+    let figmaWriteError = ''
+    if (exactInstruction && selection?.sessionId) {
+      try { figmaWrite = (options.bridge?.enqueue ?? tryEnqueueNaturalLanguageInstruction)(exactInstruction, selection) } catch (error) {
+        figmaWriteError = error instanceof Error ? error.message : 'Figma 写入队列创建失败。'
       }
     }
-    if (lastError) throw lastError
-    writeSse(response, 'done', { ok: true })
+    if (figmaWrite || figmaWriteError) {
+      writeSse(response, 'meta', { mode: 'local', model: 'figma-bridge', shell: false, backend: 'figma-bridge' })
+      emit({ id: `skill-${turn.requestId}`, kind: 'skill', name: 'layer-edit', body: skillBody('layer-edit') })
+      if (figmaWriteError) {
+        emit({ id: `figma-error-${turn.requestId}`, kind: 'figma-write', commandIds: [], summary: 'Figma 写入未执行', status: 'error', detail: figmaWriteError })
+        throw new Error(figmaWriteError)
+      }
+      if (figmaWrite) {
+        emit({ id: `figma-write-${figmaWrite.commandId}`, kind: 'figma-write', commandIds: [figmaWrite.commandId], summary: figmaWrite.summary, status: 'queued' })
+        const result = await (options.bridge?.wait ?? waitForBridgeCommand)(figmaWrite.commandId)
+        controller.signal.throwIfAborted()
+        if (!result) throw new Error('尚未收到插件执行回执，请核对实际设计稿后再重试。')
+        emit({ id: `figma-write-${figmaWrite.commandId}`, kind: 'figma-write', commandIds: [figmaWrite.commandId], summary: result.summary ?? figmaWrite.summary, status: result.ok ? 'success' : 'error', ...(result.message ? { detail: result.message } : {}) })
+        if (!result.ok) throw new Error(result.message || 'Figma 插件执行失败')
+      }
+    } else {
+      let lastError: unknown
+      let completed = false
+      let anyTool = false
+      for (const runtime of await runtimes()) {
+        try {
+          writeSse(response, 'meta', runtime.meta)
+          for await (const item of runtime.run({ ...runInput, phase: 'execute', emitRequestContext: false })) {
+            if (item.kind === 'tool' || item.kind === 'artifact' || item.kind === 'figma-write') anyTool = true
+            emit(item)
+          }
+          controller.signal.throwIfAborted()
+          completed = true
+          break
+        } catch (error) {
+          lastError = error
+          // An execution may already have caused effects; switching runtimes
+          // would run the same task twice.
+          if (anyTool || controller.signal.aborted) throw error
+        }
+      }
+      if (!completed) throw lastError || new Error('没有可用的真实 Agent')
+    }
+    conversations.finish(turn, 'completed')
+    state()
+    writeSse(response, 'done', { ok: true, status: 'completed', conversationId: turn.record.conversationId })
   } catch (error) {
-    writeSse(response, 'error', { message: publicRuntimeError(error) })
+    const cancelled = turn.record.status === 'cancelled'
+    const message = cancelled ? '任务已取消。' : controller.signal.aborted ? '运行连接已中断，上下文已保留；请核对实际结果后重试。' : publicRuntimeError(error)
+    conversations.finish(turn, cancelled ? 'cancelled' : 'failed', message)
+    if (!response.writableEnded && !response.destroyed) {
+      state()
+      writeSse(response, 'error', { message })
+      writeSse(response, 'done', { ok: false, status: turn.record.status })
+    }
   } finally {
+    turn.release()
     if (!response.writableEnded) response.end()
   }
 }
 
 export function createAgentMiddleware(options: AgentPluginOptions) {
+  const conversations = createConversationStore(options.conversationDirectory ?? join(options.cwd ?? process.cwd(), 'workbench', '.local-data', 'agent-conversations'))
   return (
     request: IncomingMessage,
     response: ServerResponse,
@@ -538,6 +512,18 @@ export function createAgentMiddleware(options: AgentPluginOptions) {
     if (request.method === 'POST'
       && request.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') {
       sendJson(request, response, 415, { error: '请求必须使用 application/json' })
+      return
+    }
+
+    const conversationRoute = requestUrl.pathname.match(/^\/api\/agent\/conversations\/([^/]+)(\/cancel)?$/)
+    if (conversationRoute) {
+      try {
+        if (request.method === 'GET' && !conversationRoute[2]) sendJson(request, response, 200, conversations.get(conversationRoute[1]))
+        else if (request.method === 'POST' && conversationRoute[2]) sendJson(request, response, 200, conversations.cancel(conversationRoute[1]))
+        else sendJson(request, response, 405, { error: 'Method Not Allowed' })
+      } catch (error) {
+        sendJson(request, response, (error as { status?: number }).status || 500, { error: error instanceof Error ? error.message : '无法读取会话' })
+      }
       return
     }
 
@@ -585,7 +571,7 @@ export function createAgentMiddleware(options: AgentPluginOptions) {
     }
 
     if (requestUrl.pathname === `${AGENT_PREFIX}/chat`) {
-      void handleChatRequest(request, response, options).catch(
+      void handleChatRequest(request, response, options, conversations).catch(
         (error: unknown) => {
           if (!response.headersSent) {
             sendJson(request, response, 500, {

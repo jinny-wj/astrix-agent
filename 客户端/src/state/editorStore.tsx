@@ -54,6 +54,7 @@ type EditorValue = {
     extras?: AgentChatExtras | null,
   ) => void
   finishAgent: () => void
+  pauseAgent: () => void
   failAgent: (message: string) => void
   retryAgent: () => void
   setCanvasView: (v: CanvasView) => void
@@ -295,6 +296,14 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     clearQueuedWorkspaceDraft()
   }, [])
 
+  const pauseAgent = useCallback(() => {
+    setAgentRunning(false)
+    setAgentDone(false)
+    setAgentError('')
+    setGenerationStatus('idle')
+    clearQueuedWorkspaceDraft()
+  }, [])
+
   const failAgent = useCallback((message: string) => {
     setAgentRunning(false)
     setAgentDone(false)
@@ -350,6 +359,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         setWorkspaceMode,
         startAgent,
         finishAgent,
+        pauseAgent,
         failAgent,
         retryAgent,
         setCanvasView,

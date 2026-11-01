@@ -38,6 +38,7 @@ export type AgentChatExtras = {
   instructions: AgentInstruction[]
   backend?: AgentBackendKind
   mcpSkill?: string
+  clarificationAnswer?: import('./agentConversation').ClarificationAnswer
 }
 
 export type AgentMcpService = {

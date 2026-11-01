@@ -29,7 +29,19 @@ test('独立服务可保存项目与消息、预览文件，并停止本机模�
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
   const port = (server.address() as AddressInfo).port
   application = createWorkbenchApplication({ port, surface: 'web', instanceId: 'isolated-web-test', dataDir: path.join(temporary, 'data'), workspaceRoot: path.join(temporary, 'workspace') })
-  const model = createServer((_request, response) => {
+  const modelRequests: Array<'assess' | 'execute'> = []
+  const model = createServer(async (request, response) => {
+    let raw = ''
+    for await (const chunk of request) raw += chunk.toString()
+    const body = JSON.parse(raw) as { messages?: Array<{ role?: string; content?: string }>; tools?: unknown[] }
+    if (body.messages?.some(message => message.role === 'system' && /需求预检器/.test(message.content || ''))) {
+      modelRequests.push('assess')
+      assert.equal(body.tools?.length || 0, 0)
+      response.writeHead(200, { 'content-type': 'application/json' })
+      response.end(JSON.stringify({ choices: [{ message: { role: 'assistant', content: '{"ready":true,"questions":[]}' } }] }))
+      return
+    }
+    modelRequests.push('execute')
     response.writeHead(200, { 'content-type': 'text/event-stream' })
     response.write('data: {"choices":[{"delta":{"content":"本机测试流"}}]}\n\n')
     // Deliberately stay open until the workbench's stop endpoint aborts it.
@@ -81,6 +93,7 @@ test('独立服务可保存项目与消息、预览文件，并停止本机模�
     assert.equal(chunk.done, false)
     events += new TextDecoder().decode(chunk.value)
   }
+  assert.deepEqual(modelRequests, ['assess', 'execute'])
   assert.equal((await json('/__local/agent/stop', 'POST', { sessionId })).success, true)
   for (;;) { const chunk = await reader.read(); if (chunk.done) break; events += new TextDecoder().decode(chunk.value) }
   assert.match(events, /任务已停止/)

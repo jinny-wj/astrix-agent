@@ -23,7 +23,8 @@ test('recovered OpenCode runs real read/write tools, resumes sessions and serves
     const writing=request.model==='write-model';
     const toolName=writing?'write':'read';
     const isMain=Boolean(request.tools?.some(tool=>tool.function.name===toolName));
-    const message=isMain&&!usedTool
+    const preflight=request.messages?.[0]?.content?.includes('需求预检器');
+    const message=preflight?{role:'assistant',content:JSON.stringify({ready:true,questions:[]})}:isMain&&!usedTool
       ?{role:'assistant',content:null,tool_calls:[{id:'call-read-proof',type:'function',function:{name:toolName,arguments:JSON.stringify(writing?{filePath:'generated.txt',content:'original-write-proof'}:{filePath:'README.md'})}}]}
       :{role:'assistant',content:usedTool?'原版引擎已读取测试文件。':'本地模型测试'};
     if(request.stream){

@@ -64,6 +64,10 @@ export function createCodexRuntime(options: {
         '-C',
         options.cwd,
       ]
+      if (input.phase === 'assess') {
+        args.push('--ignore-user-config', '--config', 'mcp_servers={}', '--config', 'web_search="disabled"')
+        for (const feature of ['shell_tool', 'unified_exec', 'apps', 'plugins', 'hooks', 'multi_agent', 'browser_use', 'browser_use_external', 'computer_use', 'image_generation']) args.push('--disable', feature)
+      }
       const model = input.model || options.model
       if (model && model !== 'auto' && model !== 'haiku') {
         args.push('-m', model)

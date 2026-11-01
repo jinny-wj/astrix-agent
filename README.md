@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.7](https://img.shields.io/badge/Workbench-v0.7.7-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.7.md)
+[![Workbench v0.7.8](https://img.shields.io/badge/Workbench-v0.7.8-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.8.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -68,6 +68,8 @@
 
 提供一键美化、资源位延展、人物战报、视觉稿生成、批量任务及 Loop / Hermes 等入口。它们用于组织需求、技能和执行上下文，**不是所有模型与生成服务都已内置、免费或开箱即用**。
 
+需求缺少关键信息时，助手会先暂停并追问；补充后继续原任务。原需求、回答和附件保存在本机，刷新后可以恢复。未配置模型时保留待执行状态。详见[需求澄清与续接](packages/astrix-workbench/docs/需求澄清与续接.md)。
+
 真实对话由本机配置的 Agent 后端执行。素材生成还取决于对应技能、模型服务、授权、网络及额度；普通图层属性编辑不等于 AI 图片生成、换人或换脸。
 
 ## 客户端与网页版
@@ -105,7 +107,7 @@ cd astrix-agent
 
 ### 3. 准备工作台运行资源
 
-公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得对应 0.7.7 资源并在仓库根目录还原。资源采用两端目录布局，下载与当前版本匹配的资源后再启动。
+公开 Git 保存源码；生成前端与恢复的原生组件需按[运行资源说明](packages/astrix-workbench/docs/GitHub运行包.md)取得已发布的运行资源并在仓库根目录还原。现有 0.7.7 资源可继续配合本次源码使用，还原后运行 `node 网页端/workbench/frontend-tools/prepare-frontend.mjs --refresh-local` 更新澄清界面脚本。运行资源采用两端目录布局。
 
 ### 4. 启动 macOS 客户端
 

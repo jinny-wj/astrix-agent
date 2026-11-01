@@ -35,6 +35,7 @@ export type AgentUiMessage =
       preview?: boolean
     }
   | { id: string; kind: 'text'; text: string }
+  | { id: string; kind: 'clarification'; taskId: string; questions: Array<{ id: string; label: string; required: true; options?: string[] }>; status: 'awaiting_user' }
   | { id: string; kind: 'result'; title: string; items: ResultItem[] }
   | {
       id: string
@@ -62,6 +63,8 @@ export type AgentRuntimeMeta = {
 
 export type AgentRunInput = {
   message: string
+  history?: Array<{ role: 'user' | 'assistant'; content: string }>
+  phase?: 'assess' | 'execute'
   skill?: string
   model?: string
   signal?: AbortSignal

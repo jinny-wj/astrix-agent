@@ -121,6 +121,7 @@ export default function AiInputArea({
   onDismissLayer,
   figmaActive = false,
   bridgeConnected = false,
+  awaitingClarification = false,
 }: {
   onSend?: (text: string, skill?: string, extras?: AgentChatExtras) => void
   disabled?: boolean
@@ -128,6 +129,7 @@ export default function AiInputArea({
   onDismissLayer?: (id: string) => void
   figmaActive?: boolean
   bridgeConnected?: boolean
+  awaitingClarification?: boolean
 }) {
   const { figmaDocument, visualDocument, workspaceFileName, selectNode, agentPrompt } = useEditor()
   const [value, setValue] = useState('')
@@ -163,7 +165,9 @@ export default function AiInputArea({
     }
   }), [])
   const activeLayer = layers[0]
-  const placeholder = layers.length
+  const placeholder = awaitingClarification
+    ? '补充上方问题，我会接着原任务继续…'
+    : layers.length
     ? `修改${layers.length === 1 ? `「${layers[0].name}」` : `这 ${layers.length} 个图层`}，例如：改成红色、右移 20px…`
     : '输入你想要的需求，引用一个skill帮你完成'
 
