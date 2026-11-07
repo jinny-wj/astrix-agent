@@ -13,7 +13,18 @@ export function switchApiProvider(draft,provider) {
   return {...draft,provider,baseUrl:!baseUrl||knownDefaults.has(baseUrl.replace(/\/+$/,''))?apiProviders[provider].baseUrl:baseUrl,apiKey:'',clearKey:false};
 }
 export function publicApiConfig(value={}) {
-  return {mode:value.mode==='compatible'?'compatible':'demo',provider:providerOf(value.provider),baseUrl:typeof value.baseUrl==='string'?value.baseUrl:'',model:typeof value.model==='string'?value.model:'',hasKey:value.hasKey===true};
+  return {mode:['compatible','codex'].includes(value.mode)?value.mode:'demo',provider:providerOf(value.provider),baseUrl:typeof value.baseUrl==='string'?value.baseUrl:'',model:typeof value.model==='string'?value.model:'',codexModel:typeof value.codexModel==='string'?value.codexModel:'',hasKey:value.hasKey===true};
+}
+export function publicCodexStatus(value={}) {
+  const installed=value.installed===true,authenticated=value.authenticated===true;
+  const authMethod=['chatgpt','api-key','unknown','none'].includes(value.authMethod)?value.authMethod:'unknown';
+  const ready=value.ready===true&&installed&&authenticated&&authMethod==='chatgpt';
+  const message=!installed?'未找到 Codex CLI。安装后，在终端运行 codex login 完成登录。'
+    :authMethod==='api-key'?'本机 Codex 当前使用 API 登录。请在终端切换为 ChatGPT 登录，再重新检测。'
+    :!authenticated?'已找到 Codex CLI，但尚未确认有效登录。请在终端运行 codex login，再重新检测。'
+    :ready?'已检测到 ChatGPT 登录。运行时使用该账号可用的 Codex 额度。'
+    :'Codex 登录方式或可用状态尚未确认，请重新检测；需要时在终端运行 codex login。';
+  return {installed,authenticated,authMethod,ready,message};
 }
 export function endpointOrigin(value) {try{return new URL(String(value).trim()).origin;}catch{return null;}}
 export function credentialState(saved,draft) {
@@ -24,6 +35,13 @@ export function credentialState(saved,draft) {
   return endpointOrigin(saved.baseUrl)===endpointOrigin(draft.baseUrl)?'keep':'new-origin';
 }
 export function apiSubmission(saved,draft,{test=false}={}) {
+  if(draft.connection==='codex'||draft.mode==='codex') {
+    if(draft.codexModel!==undefined&&typeof draft.codexModel!=='string')throw Error('Codex 模型名应为文本。');
+    const codexModel=String(draft.codexModel||'').trim();
+    if(codexModel.length>200||/[\u0000-\u001f\u007f]/.test(codexModel))throw Error('Codex 模型名格式无效。');
+    // Switching the connection never overwrites or clears the saved API draft.
+    return {mode:'codex',codexModel};
+  }
   const provider=draft.provider===undefined?providerOf(saved.provider):draft.provider;
   if(!Object.hasOwn(apiProviders,provider))throw Error('请选择支持的 API 协议。');
   const baseUrl=String(draft.baseUrl||'').trim(),model=String(draft.model||'').trim(),apiKey=String(draft.apiKey||'').trim();

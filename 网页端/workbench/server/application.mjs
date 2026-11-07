@@ -6,6 +6,7 @@ import layoutConfig from '../../../packages/astrix-workbench/layout.cjs';
 const {getLayout,getStatePaths}=layoutConfig;
 import {createM0Api} from './m0-api.mjs';
 import {createModelConfig,modelCompletion} from './model.mjs';
+import {getCodexCliStatus} from './codex-cli.mjs';
 import {createFiles} from './files.mjs';
 import {createChatService} from './chat.mjs';
 import {handleSkills} from './skills.mjs';
@@ -131,6 +132,12 @@ async function handle(req,res) {
       if(!['GET','PUT'].includes(req.method))return json(res,{error:'Method not allowed'},405);
       return json(res,req.method==='GET'?model.public():model.set(body));
     }
+    if(url.pathname==='/__local/codex/status'){
+      if(req.method!=='GET')return json(res,{error:'Method not allowed'},405);
+      const abort=new AbortController(),onClose=()=>{if(!res.writableEnded)abort.abort();};res.once('close',onClose);
+      try{return json(res,await (options.codexStatus||getCodexCliStatus)({signal:abort.signal}));}
+      finally{res.removeListener('close',onClose);}
+    }
     if(url.pathname==='/__local/models')return json(res,await api.publicConfig());
     if(url.pathname==='/__local/model/test'){
       if(req.method!=='POST')return json(res,{error:'Method not allowed'},405);
@@ -140,7 +147,7 @@ async function handle(req,res) {
       if(configuration.mode==='demo')return json(res,{ok:true,message:'当前为界面演示模式，没有进行模型推理。'});
       const abort=new AbortController(),onClose=()=>{if(!res.writableEnded)abort.abort();};res.once('close',onClose);
       try{
-        const message=await modelCompletion(configuration,[{role:'user',content:'只回复：连接成功'}],undefined,abort.signal);
+        const message=await (options.modelCompletion||modelCompletion)(configuration,[{role:'user',content:'只回复：连接成功'}],undefined,abort.signal);
         return json(res,{ok:true,message:typeof message.content==='string'?redact(message.content):'模型服务连接成功'});
       }catch(error){if(!res.destroyed)return json(res,{error:redact(error.message)},error.status||400);}
       finally{res.removeListener('close',onClose);}

@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.8](https://img.shields.io/badge/Workbench-v0.7.8-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.8.md)
+[![Workbench v0.7.9](https://img.shields.io/badge/Workbench-v0.7.9-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.9.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -68,7 +68,7 @@
 
 提供一键美化、资源位延展、人物战报、视觉稿生成、批量任务及 Loop / Hermes 等入口。它们用于组织需求、技能和执行上下文，**不是所有模型与生成服务都已内置、免费或开箱即用**。
 
-需求缺少关键信息时，助手会先暂停并追问；补充后继续原任务。原需求、回答和附件保存在本机，刷新后可以恢复。未配置模型时保留待执行状态。详见[需求澄清与续接](packages/astrix-workbench/docs/需求澄清与续接.md)。
+需求缺少关键信息时，助手会先暂停并追问；补充后继续原任务。原需求、回答和附件保存在本机，刷新后可以恢复。尚未选择可用模型连接时保留待执行状态。详见[需求澄清与续接](packages/astrix-workbench/docs/需求澄清与续接.md)。
 
 真实对话由本机配置的 Agent 后端执行。素材生成还取决于对应技能、模型服务、授权、网络及额度；普通图层属性编辑不等于 AI 图片生成、换人或换脸。
 
@@ -80,7 +80,7 @@
 | Figma 与 AI 面板 | 官方 Figma 与工作台在同一窗口 | 官方 Figma 在浏览器打开，与工作台配对 |
 | 浏览器扩展 | 不需要 | 原设计界面的侧栏流程可加载本地扩展 |
 | 图层写入 | 需要目标文件中的 Plugin Bridge | 同样需要 Plugin Bridge |
-| 本地 AI 后端 | 本地设置可配置模型与多 Agent | 同源服务提供相同配置与工作流 |
+| 本地 AI 后端 | 本机 Codex / 自定义 API 与多 Agent 工作流 | 本地同源服务提供相同连接选项与工作流 |
 | 代码与文件 | 原 KSCode、PTY 终端、扩展宿主与 Open VSX | 本地服务支持的浏览器文件编辑与 HTML 预览 |
 | 当前打包状态 | Apple Silicon 本机调试包 | 开发及构建预览均带完整本地服务 |
 
@@ -94,7 +94,7 @@
 - pnpm 10 与 Git。
 - 客户端打包配置要求 macOS 13 或更新版本；本机打包命令默认面向 Apple Silicon。
 - 如需使用真实 Figma 文件，请准备有相应文件访问权限的 Figma 账户。
-- 如需 AI 对话，请另行准备可用的本机 Agent 后端。
+- 如需 AI 对话，请准备已登录 ChatGPT 的本机 Codex CLI，或可用的自定义模型 API。
 
 ### 2. 获取代码
 
@@ -133,7 +133,7 @@ pnpm dev
 
 完整客户端优先使用 4317，遇到旧服务占用时会选择独立端口；网页版使用 5273。两端默认分别保存状态，避免同时写同一份配置。原客户端设计模式也使用 5273，与网页版同开时需先核对端口。
 
-客户端与网页版可以同时运行：分别在两端目录执行上述启动命令，网页版访问 [本地工作台](http://127.0.0.1:5273/)。首页底部提供项目与会话、Figma 工作区、代码工具、多 Agent 和技能入口；客户端的 Code 页面另有原生编辑器、终端与扩展。模型尚未配置时使用演示模式，真实 Figma 修改需要在目标文件配对 Plugin Bridge。
+客户端与网页版可以同时运行：分别在两端目录执行上述启动命令，网页版访问 [本地工作台](http://127.0.0.1:5273/)。首页底部提供项目与会话、Figma 工作区、代码工具、多 Agent 和技能入口；客户端的 Code 页面另有原生编辑器、终端与扩展。尚未选择可用模型连接时使用演示模式，真实 Figma 修改需要在目标文件配对 Plugin Bridge。
 
 ## 工作台已接入两端
 
@@ -149,9 +149,14 @@ pnpm dev
 
 历史标签保留，新的提交标题统一使用 Astrix。逐版源码、验证与资源记录见[版本总表](packages/astrix-workbench/versions/index.json)与[变更记录](packages/astrix-workbench/CHANGELOG.md)；运行资源只在受限草稿中分发。本地状态使用各端的工作台数据目录，迁移备份不上传；数据位置见[工作台指南](packages/astrix-workbench/README.md)。
 
-## 配置模型 API
+## 选择模型连接
 
-首页右上角的 **API 设置** 可选择 OpenAI 兼容、Claude 原生 Messages 或 Gemini 原生 GenerateContent：地址与模型名自由填写，支持官方、第三方和本机服务。可先测试当前填写的配置，再决定是否保存并用于对话；两端分别保存各自配置，切换协议或来源不沿用旧 Key。详见 [API 配置说明](packages/astrix-workbench/docs/API配置.md)。
+客户端与网页端首页右上角打开 **模型连接**，选择：
+
+- **本机 Codex**：使用运行本地服务的电脑上，已通过 ChatGPT 账号登录的 Codex CLI。无需 API Key；模型留空沿用本机 Codex 已配置的模型，未配置时使用 CLI 默认，也可指定模型后保存。只读取模型名称，其余用户配置与 API 路由不会沿用。状态检查不发起推理，点击测试或发送任务才会使用账号额度。
+- **自定义 API**：支持 OpenAI 兼容、Claude 原生 Messages 或 Gemini 原生 GenerateContent；官方、第三方和本机服务的地址与模型名均可填写。先测试草稿，再保存用于对话。
+
+两端分别保存选择；切到 Codex 会保留已有 API 设置。登录、额度或调用失败时会直接提示，不会自动切换 API。详见[本机 Codex 与 API](packages/astrix-workbench/docs/本机Codex与API.md)和 [API 配置说明](packages/astrix-workbench/docs/API配置.md)。
 
 ## 连接 Figma
 
@@ -221,7 +226,9 @@ pnpm dev
 
 ## 配置 AI 助手
 
-默认工作台先以演示模式运行界面。在“本地设置”中配置可用模型服务后，可使用本地助手或恢复的 OpenCode，以及规划、执行与复核的多 Agent 工作流。模型配置不随源码和资源包分发。
+默认工作台先以演示模式运行界面。通过首页“模型连接”选择本机 Codex 或自定义 API 后，可使用现有需求澄清、Agent Loop、工具调用，以及规划、执行与复核的多 Agent 工作流。“本地设置”保留执行引擎与写权限等高级选项；模型设置和 Codex 登录状态不随源码和资源包分发。
+
+本机 Codex 路径传递文字需求、历史消息和工具结果，不直接把图片附件交给 CLI；Figma 读取、插件配对和写权限仍按原流程检查，修改成功必须取得真实插件回执。
 
 原设计界面默认优先使用本机 Codex CLI，并提供 Claude Code / Hermes 等后端路径。以下环境配置说明适用于原设计界面；安装应用不代表这些后端已经安装或登录，也不包含第三方服务额度。
 

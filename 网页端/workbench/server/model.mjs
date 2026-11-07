@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {nativeModelCompletion} from './model-providers.mjs';
+import {codexModelCompletion} from './codex-cli.mjs';
 
 export function normalizeModelBaseUrl(value,provider='openai') {
   if(!['openai','anthropic','gemini'].includes(provider))throw new Error('未知 API 协议');
@@ -23,7 +24,7 @@ export function modelCompletionUrl(baseUrl) {
 
 export function createModelConfig(dataDir) {
   const file = path.join(dataDir, 'model.json');
-  const defaults = { mode: 'demo', provider: 'openai', engine: 'local', workflow: 'single', baseUrl: 'http://127.0.0.1:11434/v1', model: '', apiKey: '', allowWriteTools: false, allowFigmaWriteTools: false };
+  const defaults = { mode: 'demo', provider: 'openai', engine: 'local', workflow: 'single', baseUrl: 'http://127.0.0.1:11434/v1', model: '', codexModel: '', apiKey: '', allowWriteTools: false, allowFigmaWriteTools: false };
   let config = {...defaults};
   try { config = {...config, ...JSON.parse(fs.readFileSync(file, 'utf8'))}; } catch {}
   const visible=value=>({...Object.fromEntries(Object.keys(defaults).filter(key=>key!=='apiKey').map(key=>[key,value[key]])),hasKey:Boolean(value.apiKey)});
@@ -31,12 +32,17 @@ export function createModelConfig(dataDir) {
     if(!next||typeof next!=='object'||Array.isArray(next))throw new Error('模型配置应为 JSON 对象');
     const merged={...config};
     for(const key of Object.keys(defaults))if(key!=='apiKey'&&next[key]!==undefined)merged[key]=next[key];
-    if(!['demo','compatible'].includes(merged.mode))throw new Error('未知模型模式');
+    if(!['demo','compatible','codex'].includes(merged.mode))throw new Error('未知模型模式');
     if(!['local','original-opencode'].includes(merged.engine))throw new Error('未知执行引擎');
     if(!['single','multi'].includes(merged.workflow))throw new Error('未知工作流模式');
     if(typeof merged.model!=='string'||next.apiKey!==undefined&&typeof next.apiKey!=='string')throw new Error('模型名和密钥应为文本');
+    if(typeof merged.codexModel!=='string'||merged.codexModel.length>128||merged.codexModel.trim()&&!/^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$/.test(merged.codexModel.trim()))throw new Error('Codex 模型名称无效，留空可使用 Codex 默认模型');
+    merged.codexModel=merged.codexModel.trim();
     if(next.clearKey!==undefined&&typeof next.clearKey!=='boolean')throw new Error('clearKey 应为布尔值');
     for(const key of ['allowWriteTools','allowFigmaWriteTools'])if(next[key]!==undefined&&typeof next[key]!=='boolean')throw new Error('工具写权限应为布尔值');
+    // Selecting local Codex does not depend on, rewrite or remove saved API
+    // endpoints and credentials. They remain available when switching back.
+    if(merged.mode==='codex'&&!['provider','baseUrl','apiKey','clearKey'].some(key=>Object.hasOwn(next,key)))return merged;
     merged.baseUrl=normalizeModelBaseUrl(merged.baseUrl,merged.provider);
     let previousOrigin;try{previousOrigin=new URL(normalizeModelBaseUrl(config.baseUrl,config.provider)).origin;}catch{}
     const replacement=next.apiKey?.trim();
@@ -62,6 +68,7 @@ export function createModelConfig(dataDir) {
 }
 
 export async function modelCompletion(config, messages, tools, signal, onDelta) {
+  if(config.mode==='codex')return codexModelCompletion(config,messages,tools,signal,onDelta);
   if (!config.model) throw new Error('请先在本地设置页填写模型名称');
   const provider=config.provider||'openai';
   if(provider==='anthropic'||provider==='gemini')return nativeModelCompletion(config,messages,tools,signal,onDelta);

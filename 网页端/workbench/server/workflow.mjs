@@ -119,13 +119,14 @@ export function createWorkflowService({getModelConfig,getWorkspace,dataDir,files
     signal?.throwIfAborted();
     if(active.has(sessionId))throw new Error('该会话已有正在执行的多 Agent 任务');
     const configuration={...await getModelConfig()};
+    if(configuration.mode==='codex')configuration.engine='local';
     const allowTaskWrite=Boolean(configuration.allowWriteTools||figmaScope&&!figmaScope.readOnly);
     const captured=fs.realpathSync(workspace||await getWorkspace());
     const limitSteps=bounded(configuration.workflowMaxSteps,24,4,40);
     const maxTasks=Math.min(bounded(configuration.workflowMaxTasks,4,1,6),limitSteps-3);
     const maxParallel=bounded(configuration.workflowMaxParallel,2,1,3);
     const nativeAllocation=Math.max(1,Math.floor(limitSteps/(maxTasks+3)));
-    const run={runId:randomUUID(),sessionId,workspace:captured,prompt:clip(prompt,2000),title:clip(prompt.split('\n')[0],100),status:'running',engine:configuration.engine==='original-opencode'?'original-opencode':'local-compatible',scheduler:'local-workflow',businessGraphReused:false,startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),steps:[],plan:null,outputs:[],review:null,result:'',limits:{maxParallel,maxTasks,maxSteps:limitSteps,nativeStepsPerAgent:nativeAllocation},budget:{usedSteps:0,agentCalls:0,kind:configuration.engine==='original-opencode'?'reserved-engine-steps':'model-requests'},promptSources:prompts.evidence};
+    const run={runId:randomUUID(),sessionId,workspace:captured,prompt:clip(prompt,2000),title:clip(prompt.split('\n')[0],100),status:'running',engine:configuration.mode==='codex'?'codex-cli':configuration.engine==='original-opencode'?'original-opencode':'local-compatible',scheduler:'local-workflow',businessGraphReused:false,startedAt:new Date().toISOString(),updatedAt:new Date().toISOString(),steps:[],plan:null,outputs:[],review:null,result:'',limits:{maxParallel,maxTasks,maxSteps:limitSteps,nativeStepsPerAgent:nativeAllocation},budget:{usedSteps:0,agentCalls:0,kind:configuration.engine==='original-opencode'?'reserved-engine-steps':'model-requests'},promptSources:prompts.evidence};
     const internal=new AbortController();active.set(sessionId,internal);
     const combined=signal?AbortSignal.any([signal,internal.signal]):internal.signal;
     let primaryFailure;const runningStages=new Set();

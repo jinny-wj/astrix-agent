@@ -1,11 +1,13 @@
 import type {
   AgentAttachment,
+  AgentBackendKind,
   AgentInstruction,
 } from '../types/agentComposer'
 
 const INSTRUCTION_KEY = 'design-studio:agent-instructions'
 const INSTRUCTION_ACTIVE_KEY = 'design-studio:agent-instruction-active'
 const BACKEND_KEY = 'design-studio:agent-backend'
+export const AGENT_BACKEND_CHANGED = 'astrix:agent-backend-change'
 
 export const INSTRUCTION_PRESETS: AgentInstruction[] = [
   {
@@ -78,24 +80,26 @@ export function writeActiveInstructionIds(ids: string[]) {
   localStorage.setItem(INSTRUCTION_ACTIVE_KEY, JSON.stringify(ids))
 }
 
-export function readPreferredBackend() {
-  try {
-    const value = sessionStorage.getItem(BACKEND_KEY)
-    if (value === 'codex' || value === 'claude' || value === 'hermes' || value === 'shell') {
-      return value
-    }
-  } catch {
-    // ignore
+export function readPreferredBackend(): AgentBackendKind | undefined {
+  // The session override also works when persistent storage is unavailable.
+  for (const kind of ['sessionStorage', 'localStorage'] as const) {
+    try {
+      const value = globalThis[kind]?.getItem(BACKEND_KEY)
+      if (value === 'codex' || value === 'claude' || value === 'hermes' || value === 'shell') return value
+    } catch { /* This surface may block browser storage. */ }
   }
   return undefined
 }
 
-export function writePreferredBackend(id: string | undefined) {
-  try {
-    if (!id) sessionStorage.removeItem(BACKEND_KEY)
-    else sessionStorage.setItem(BACKEND_KEY, id)
-  } catch {
-    // ignore
+export function writePreferredBackend(id: AgentBackendKind | undefined) {
+  for (const kind of ['sessionStorage', 'localStorage'] as const) {
+    try {
+      if (!id) globalThis[kind]?.removeItem(BACKEND_KEY)
+      else globalThis[kind]?.setItem(BACKEND_KEY, id)
+    } catch { /* The current UI can still use its in-memory selection. */ }
+  }
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+    window.dispatchEvent(new Event(AGENT_BACKEND_CHANGED))
   }
 }
 

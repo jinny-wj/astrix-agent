@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { getCodexCliStatus } from '../../../网页端/workbench/server/codex-cli.mjs'
 import { basename } from 'node:path'
 import { readCodexMcpServers } from './composer'
 import type { AgentRuntimeMeta } from './types'
@@ -54,13 +55,13 @@ async function probeCodex(path: string | null): Promise<BackendProbe> {
   if (!path) {
     return { installed: false, authenticated: false, path, detail: '未安装 Codex CLI' }
   }
-  const result = await runCommand(path, ['login', 'status'])
-  const authenticated = result.code === 0 && /logged in/i.test(result.output)
+  const status = await getCodexCliStatus({ bin: path })
   return {
-    installed: true,
-    authenticated,
+    installed: status.installed,
+    // An API-key login does not provide the subscription path selected here.
+    authenticated: status.ready,
     path,
-    detail: authenticated ? '已安装并登录' : '已安装，但未登录或登录已过期',
+    detail: status.message,
   }
 }
 

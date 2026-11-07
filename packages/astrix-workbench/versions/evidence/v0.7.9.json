@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.9",
+  "recordedAt": "2026-11-07",
+  "recordType": "source-release",
+  "status": "local-implementation-verified-real-chatgpt-model-access-blocked",
+  "sources": [
+    {
+      "date": "2026-11-07",
+      "cwd": "packages/astrix-workbench",
+      "command": "npm test",
+      "result": "252 node tests; host policy 18; marketplace 3; navigation 3; generators and canvas scripts passed"
+    },
+    {
+      "date": "2026-11-07",
+      "cwd": "客户端",
+      "command": "npm test",
+      "result": "141 passed"
+    },
+    {
+      "date": "2026-11-07",
+      "cwd": "网页端",
+      "command": "npm test",
+      "result": "80 passed"
+    },
+    {
+      "date": "2026-11-07",
+      "cwd": "客户端",
+      "command": "npm run build; npm run desktop:typecheck; npm run desktop:bundle; npm run desktop:prepare:resources",
+      "result": "passed"
+    },
+    {
+      "date": "2026-11-07",
+      "cwd": "网页端",
+      "command": "npm run build",
+      "result": "passed"
+    }
+  ],
+  "validation": {
+    "shared": {
+      "nodeAndCanvas": 252,
+      "figmaHostPolicy": 18,
+      "marketplacePolicy": 3,
+      "localNavigationPolicy": 3,
+      "generators": "passed",
+      "canvasIntegration": "passed"
+    },
+    "desktop": {
+      "tests": 141,
+      "build": "passed",
+      "typecheck": "passed",
+      "bundle": "passed",
+      "resourceStage": "passed (6701 files; native graph and callback checks passed)"
+    },
+    "web": {
+      "tests": 80,
+      "build": "passed"
+    },
+    "connectionDialog": {
+      "isolatedTestsPassed": 17,
+      "actualUserStateUsed": false,
+      "readOnlyStatusDoesNotInfer": true,
+      "inferenceRequiresExplicitTest": true,
+      "codexSavePayload": [
+        "mode",
+        "codexModel"
+      ],
+      "customApiDraftRetained": true,
+      "apiCredentialsNotSentInCodexRequests": true,
+      "closeAndEscapeAbortPendingRequests": true,
+      "duplicateTestBlocked": true
+    },
+    "isolatedGui": {
+      "surfaces": [
+        "web",
+        "desktop-profile"
+      ],
+      "codexAndApiChoicesVisible": true,
+      "chatgptStatusDisplayed": true,
+      "apiProviderAddressAndModelDraftRetained": true,
+      "realApiKeyEntered": false,
+      "actualUserStateChanged": false,
+      "desktopProfileSaveAndReopenPassed": true,
+      "advancedSettingsCodexStatusPassed": true
+    },
+    "localCodexStatus": {
+      "installed": true,
+      "authenticated": true,
+      "authMethod": "chatgpt",
+      "ready": true,
+      "inferenceInvokedByStatusCheck": false
+    },
+    "realInference": {
+      "status": "blocked-by-chatgpt-model-access",
+      "successfulResponseVerified": false,
+      "cliConfiguredModelIdentifierResolved": true,
+      "onlyModelIdentifierReused": true,
+      "userConfigurationAndLoginChanged": false,
+      "chatgptAuthenticatedRequestsReturned": "model_not_found",
+      "automaticModelReplacement": false,
+      "automaticApiFallback": false,
+      "note": "Authenticated requests using the CLI default, catalog candidates and the locally configured model were rejected. No successful model response is claimed."
+    },
+    "figma": {
+      "designWriteCommandsSent": 0,
+      "existingPairingAndPermissionsChanged": false
+    }
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "publication": {
+    "status": "awaiting-github-target-confirmation",
+    "remoteCommitAndTagVerified": false,
+    "githubReleaseVerified": false
+  },
+  "limits": [
+    "A ChatGPT-authenticated CLI status is not proof of a successful model inference.",
+    "Real ChatGPT-authenticated inference remains unavailable for the tested account/model combination; model_not_found is surfaced without changing models or API billing routes.",
+    "The native CLI adapter passes text context only; binary image, audio and video attachments are not sent for understanding.",
+    "CLI authentication, model access and quota failures do not silently switch to an API connection.",
+    "Desktop-profile browser verification is not verification of a packaged native application GUI.",
+    "No real Figma design write was performed, and cancellation cannot undo completed external effects.",
+    "Application pnpm locks have no root package version field and remain unchanged because dependencies did not change."
+  ]
+}

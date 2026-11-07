@@ -4,7 +4,8 @@ import { yieldSelectionContext } from './figmaSkills'
 import { skillBody } from './skills'
 import { buildStudioUserPrompt } from './studioPrompt'
 import type { AgentRunInput, AgentRuntime, AgentUiMessage } from './types'
-import { childEnv } from './whichBin'
+import { codexChildEnv, getCodexCliStatus, isCodexModelUnavailable, resolveCodexModel } from '../../../网页端/workbench/server/codex-cli.mjs'
+import type { CodexCliStatus } from '../../../网页端/workbench/server/codex-cli.mjs'
 
 function makeId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -28,6 +29,8 @@ export function createCodexRuntime(options: {
   bin: string
   model: string
   cwd: string
+  probeStatus?: (options: { bin: string; signal?: AbortSignal }) => Promise<CodexCliStatus>
+  probeModel?: (options: { bin: string; signal?: AbortSignal; model?: string }) => Promise<string>
 }): AgentRuntime {
   return {
     meta: {
@@ -37,6 +40,16 @@ export function createCodexRuntime(options: {
       backend: 'codex-cli',
     },
     async *run(input: AgentRunInput): AsyncGenerator<AgentUiMessage> {
+      input.signal?.throwIfAborted()
+      const status = await (options.probeStatus ?? getCodexCliStatus)({ bin: options.bin, signal: input.signal })
+      if (!status.ready) throw new Error(status.message)
+      // Reuse only the local model identifier. Provider, API routes and all
+      // other user configuration remain ignored by this ChatGPT-only process.
+      const model = await (options.probeModel ?? resolveCodexModel)({
+        bin: options.bin, signal: input.signal,
+        model: options.model && !['auto', 'haiku'].includes(options.model) ? options.model : '',
+      })
+      input.signal?.throwIfAborted()
       const { skill, refs, prompt } = buildStudioUserPrompt(input)
       if (input.emitRequestContext !== false) {
         yield {
@@ -56,6 +69,9 @@ export function createCodexRuntime(options: {
 
       const args = [
         'exec',
+        '--ignore-user-config',
+        '--config', 'model_provider="openai"',
+        '--config', 'forced_login_method="chatgpt"',
         '--ephemeral',
         '--json',
         '--skip-git-repo-check',
@@ -65,38 +81,56 @@ export function createCodexRuntime(options: {
         options.cwd,
       ]
       if (input.phase === 'assess') {
-        args.push('--ignore-user-config', '--config', 'mcp_servers={}', '--config', 'web_search="disabled"')
+        args.push('--config', 'mcp_servers={}', '--config', 'web_search="disabled"')
         for (const feature of ['shell_tool', 'unified_exec', 'apps', 'plugins', 'hooks', 'multi_agent', 'browser_use', 'browser_use_external', 'computer_use', 'image_generation']) args.push('--disable', feature)
       }
-      const model = input.model || options.model
-      if (model && model !== 'auto' && model !== 'haiku') {
+      // Generic/API model selector IDs are never used to choose Codex's model.
+      if (model) {
         args.push('-m', model)
       }
       args.push('-')
 
       const child = spawn(options.bin, args, {
         cwd: options.cwd,
-        env: childEnv(),
+        env: codexChildEnv(),
         stdio: ['pipe', 'pipe', 'pipe'],
       })
-      child.stdin.write(prompt)
-      child.stdin.end()
-
-      const onAbort = () => {
-        if (!child.killed) child.kill('SIGTERM')
-      }
-      input.signal?.addEventListener('abort', onAbort, { once: true })
-
-      const stderrChunks: string[] = []
-      child.stderr.on('data', (chunk: Buffer) => {
-        stderrChunks.push(chunk.toString('utf8'))
+      // Register process completion before consuming stdout: a fast process can
+      // close before readline's async iterator has drained its last event.
+      let processError: Error | undefined
+      let timedOut = false
+      let outputBytes = 0
+      let stderr = ''
+      let terminationTimer: ReturnType<typeof setTimeout> | undefined
+      const exited = new Promise<number>((resolve) => {
+        child.once('error', () => { processError = new Error('无法启动本机 Codex，请检查 CLI 安装。'); resolve(1) })
+        child.once('close', code => resolve(code ?? 1))
       })
+      const stop = () => {
+        if (!child.pid || child.exitCode !== null || child.signalCode !== null) return
+        child.kill('SIGTERM')
+        if (!terminationTimer) {
+          terminationTimer = setTimeout(() => {
+            if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL')
+          }, 1000)
+          terminationTimer.unref()
+        }
+      }
+      const timeout = setTimeout(() => { timedOut = true; stop() }, 180_000)
+      const onAbort = stop
+      input.signal?.addEventListener('abort', onAbort, { once: true })
+      if (input.signal?.aborted) stop()
+      child.stdin.on('error', () => { /* Process failure is handled by exited. */ })
+      child.stderr.on('data', (chunk: Buffer) => { stderr = (stderr + chunk.toString('utf8')).slice(-8000) })
+      child.stdin.end(prompt)
 
       const lines = createInterface({ input: child.stdout })
       let emittedResponse = false
       try {
         for await (const line of lines) {
           if (input.signal?.aborted) break
+          outputBytes += Buffer.byteLength(line, 'utf8')
+          if (outputBytes > 4 * 1024 * 1024) throw new Error('Codex 本轮输出过长，请缩小任务后重试。')
           const trimmed = line.trim()
           if (!trimmed.startsWith('{')) continue
           let parsed: unknown
@@ -153,31 +187,39 @@ export function createCodexRuntime(options: {
             const message = typeof event.message === 'string'
               ? event.message
               : 'Codex 执行失败'
-            throw new Error(message)
+            throw new Error(publicCodexFailure(message))
           }
           if (event.type === 'turn.failed') {
             const error = asRecord(event.error)
-            throw new Error(
-              typeof error?.message === 'string' ? error.message : 'Codex 本轮失败',
-            )
+            throw new Error(publicCodexFailure(typeof error?.message === 'string' ? error.message : ''))
           }
         }
+        const exitCode = await exited
+        input.signal?.throwIfAborted()
+        if (timedOut) throw new Error('本机 Codex 请求超时，请稍后重试。')
+        if (processError) throw processError
+        if (exitCode !== 0) throw new Error(publicCodexFailure(stderr))
+        if (!emittedResponse) throw new Error('Codex 未返回可用内容')
+      } catch (error) {
+        stop()
+        await exited
+        throw error
       } finally {
         input.signal?.removeEventListener('abort', onAbort)
+        clearTimeout(timeout)
         lines.close()
-      }
-
-      const exitCode: number = await new Promise((resolve, reject) => {
-        child.once('error', reject)
-        child.once('close', (code) => resolve(code ?? 1))
-      })
-      if (exitCode !== 0 && !input.signal?.aborted) {
-        const detail = stderrChunks.join('').trim().slice(0, 400)
-        throw new Error(detail || `Codex 退出码 ${exitCode}`)
-      }
-      if (!input.signal?.aborted && !emittedResponse) {
-        throw new Error('Codex 未返回可用内容')
+        // Also stop the child if the consumer closes this async generator early.
+        stop()
+        await exited
+        if (terminationTimer) clearTimeout(terminationTimer)
       }
     },
   }
+}
+
+function publicCodexFailure(detail: string): string {
+  if (/usage limit|quota|rate.?limit|exhausted/i.test(detail)) return '本机 Codex 账号额度暂不可用，请查看 Codex 用量后重试；不会自动改用 API。'
+  if (/login|logged in|auth|credential|unauthorized|401/i.test(detail)) return '本机 Codex 登录不可用，请在终端运行 codex login，使用 ChatGPT 账号登录。'
+  if (isCodexModelUnavailable(detail)) return '当前 ChatGPT 账号无法使用此 Codex 模型。请在工作台 AI 连接中指定账号可用的 Codex 模型，或检查账号权限；不会自动使用其他模型或 API。'
+  return '本机 Codex 执行失败，请检查 CLI 登录与当前账号可用性后重试。'
 }

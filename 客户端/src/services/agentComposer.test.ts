@@ -1,27 +1,57 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { readPreferredBackend, writePreferredBackend } from './agentComposer.ts'
+import { AGENT_BACKEND_CHANGED, readPreferredBackend, writePreferredBackend } from './agentComposer.ts'
+
+function stores(t: test.TestContext) {
+  const session = new Map<string, string>()
+  const local = new Map<string, string>()
+  for (const [name, values] of [['sessionStorage', session], ['localStorage', local]] as const) {
+    const previous = Object.getOwnPropertyDescriptor(globalThis, name)
+    Object.defineProperty(globalThis, name, {
+      configurable: true,
+      value: {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => values.set(key, value),
+        removeItem: (key: string) => values.delete(key),
+      },
+    })
+    t.after(() => {
+      if (previous) Object.defineProperty(globalThis, name, previous)
+      else Reflect.deleteProperty(globalThis, name)
+    })
+  }
+  return { session, local }
+}
 
 test('手动 API 选择在输入区重建后保留，自动选择清除偏好且兼容本机 Agent', t => {
-  const previous = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
-  const values = new Map<string, string>()
-  Object.defineProperty(globalThis, 'sessionStorage', {
-    configurable: true,
-    value: {
-      getItem: (key: string) => values.get(key) ?? null,
-      setItem: (key: string, value: string) => values.set(key, value),
-      removeItem: (key: string) => values.delete(key),
-    },
-  })
-  t.after(() => {
-    if (previous) Object.defineProperty(globalThis, 'sessionStorage', previous)
-    else Reflect.deleteProperty(globalThis, 'sessionStorage')
-  })
+  const { session, local } = stores(t)
   writePreferredBackend('model-api')
   assert.equal(readPreferredBackend(), 'model-api')
   writePreferredBackend('codex')
   assert.equal(readPreferredBackend(), 'codex')
   writePreferredBackend(undefined)
   assert.equal(readPreferredBackend(), undefined)
-  assert.equal(values.size, 0)
+  assert.equal(session.size, 0)
+  assert.equal(local.size, 0)
+})
+
+test('关闭会话后从持久存储恢复本机选择，设置变更通知已打开的输入区', t => {
+  const { session, local } = stores(t)
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'window')
+  const events = new EventTarget()
+  Object.defineProperty(globalThis, 'window', { configurable: true, value: events })
+  t.after(() => {
+    if (previous) Object.defineProperty(globalThis, 'window', previous)
+    else Reflect.deleteProperty(globalThis, 'window')
+  })
+  let refreshed: string | undefined
+  events.addEventListener(AGENT_BACKEND_CHANGED, () => { refreshed = readPreferredBackend() })
+  writePreferredBackend('codex')
+  assert.equal(refreshed, 'codex')
+  session.clear()
+  assert.equal(readPreferredBackend(), 'codex')
+  assert.deepEqual([...local.values()], ['codex'])
+  writePreferredBackend(undefined)
+  assert.equal(refreshed, undefined)
+  assert.equal(readPreferredBackend(), undefined)
 })

@@ -186,9 +186,10 @@ export function createM0Api({ dataDir, workspaceRoot, port = 4317, getModelConfi
   }
   async function modelData() {
     const config = await getModelConfig() || {};
-    const configured = Boolean(config.model && (config.baseUrl || config.baseURL) && config.mode !== 'demo');
-    const modelId = config.model || 'local-demo';
-    const label = configured ? modelId : '本地演示 · 无模型推理';
+    const codex = config.mode === 'codex';
+    const configured = codex || Boolean(config.model && (config.baseUrl || config.baseURL) && config.mode !== 'demo');
+    const modelId = codex ? config.codexModel || 'codex-auto' : config.model || 'local-demo';
+    const label = codex ? '本机 Codex · '+(config.codexModel || '自动模型') : configured ? modelId : '本地演示 · 无模型推理';
     const model = { id: modelId, name: label, status: 'active', family: configured ? 'custom' : 'demo', attachment: false, reasoning: false, toolcall: configured, limit: { context: 32000, output: 4096 }, cost: { input: 0, output: 0 }, modalities: { input: ['text'], output: ['text'] } };
     // The recovered selector filters these provider ids; this id is a compatibility namespace only.
     return { all: [{ id: 'wanqing', name: '本地配置的模型', source: 'local-reconstruction', models: { [modelId]: model } }], connected: ['wanqing'], default: { wanqing: modelId }, configured, modelId, label };
@@ -198,8 +199,8 @@ export function createM0Api({ dataDir, workspaceRoot, port = 4317, getModelConfi
     return { models: [{ model_id: `wanqing/${models.modelId}`, name: models.label, display_name: models.label, enable: true, multimodal: false }], localAdapter: true };
   }
   async function executionStatus() {
-    const original=(await getModelConfig())?.engine==='original-opencode';
-    return {originalEngine:original,adapter:original?'original-opencode':'local-reconstruction',executionMode:original?'per-run-cli':'local-adapter'};
+    const config=await getModelConfig(),codex=config?.mode==='codex',original=!codex&&config?.engine==='original-opencode';
+    return {originalEngine:original,adapter:codex?'codex-cli':original?'original-opencode':'local-reconstruction',executionMode:codex?'per-request-cli':original?'per-run-cli':'local-adapter'};
   }
   async function opencodeClientCall(method, params = {}) {
     const id = params?.path?.id || params?.path?.sessionID || params?.path?.sessionId || params?.sessionID || params?.sessionId;

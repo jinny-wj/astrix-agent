@@ -4,6 +4,7 @@ import { startFigmaOAuth } from '../services/figmaAuth'
 import { importFigmaFile, importFigmaFileWithOAuth } from '../services/figmaApi'
 import { saveFigmaLibraryConfig } from '../services/figmaLibrary'
 import { loadStudioHealth, type StudioHealth } from '../services/studioHealth'
+import { ModelApiSettings } from './ModelApiSettings'
 
 function StatusRow({
   ok,
@@ -148,6 +149,8 @@ export function StudioSettingsDialog({
             <X size={18} />
           </button>
         </div>
+
+        <ModelApiSettings />
 
         <div className="mt-4 space-y-2.5">
           <StatusRow

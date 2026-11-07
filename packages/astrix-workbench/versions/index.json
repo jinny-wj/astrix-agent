@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.8",
-  "recordedAt": "2026-10-26",
+  "currentVersion": "0.7.9",
+  "recordedAt": "2026-11-07",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
     "sourceTagPrefix": "m0/v",
@@ -267,6 +267,23 @@
         "Persist original requests, conversation history, attachments and pending clarification on both surfaces.",
         "Pause before tools when critical inputs are missing; resume the same task after answers.",
         "Keep model configuration unchanged and use isolated simulated services for verification."
+      ],
+      "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.9",
+      "date": "2026-11-07",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.9",
+      "record": "versions/v0.7.9.md",
+      "evidence": [
+        "versions/evidence/v0.7.9.json"
+      ],
+      "changes": [
+        "Select local ChatGPT-authenticated Codex CLI or custom API on both Workbench home surfaces.",
+        "Separate read-only CLI status detection, explicit inference testing and configuration saving; retain API settings without silent fallback.",
+        "Reuse existing clarification, tool dispatch and result handling with text-only CLI context; preserve Figma permissions and pairing."
       ],
       "uiFeatureChanges": true
     }

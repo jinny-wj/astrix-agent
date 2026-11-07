@@ -11,6 +11,7 @@ import {
   type TargetedLayer,
 } from '../../services/figmaLayer'
 import {
+  AGENT_BACKEND_CHANGED,
   emojiPalette,
   filesToUploadPayload,
   readActiveInstructionIds,
@@ -148,6 +149,15 @@ export default function AiInputArea({
   const [preferredBackend, setPreferredBackend] = useState<AgentBackendKind | undefined>(
     () => readPreferredBackend(),
   )
+  useEffect(() => {
+    const syncBackend = () => setPreferredBackend(readPreferredBackend())
+    window.addEventListener(AGENT_BACKEND_CHANGED, syncBackend)
+    window.addEventListener('storage', syncBackend)
+    return () => {
+      window.removeEventListener(AGENT_BACKEND_CHANGED, syncBackend)
+      window.removeEventListener('storage', syncBackend)
+    }
+  }, [])
   const [status, setStatus] = useState<AgentStatusSnapshot | null>(null)
   const [recentFiles, setRecentFiles] = useState<AgentContextItem[]>([])
   const [uploadError, setUploadError] = useState('')

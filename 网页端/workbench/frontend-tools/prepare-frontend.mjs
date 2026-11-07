@@ -16,11 +16,12 @@ if(args.length===1&&args[0]==='--refresh-local'){
   let current=await readFile(file,'utf8');
   if(!current.includes('/local-runtime.js'))throw new Error('Restore the Workbench UI resources before refreshing local scripts');
   await copyFile(path.join(here,'clarification-monitor.js'),path.join(publicRoot,'clarification-monitor.js'));
+  for(const name of ['api-settings.js','api-settings-model.mjs','api-settings.css'])await copyFile(path.join(here,name),path.join(publicRoot,name));
   if(!current.includes('src="/clarification-monitor.js"')){
     current=current.replace('</head>','  <script src="/clarification-monitor.js" defer></script>\n</head>');
     await writeFile(file,current);
   }
-  console.log('Refreshed the local clarification UI in the installed Workbench resources.');
+  console.log('Refreshed model connection and clarification UI in the installed Workbench resources.');
   process.exit(0);
 }
 if(args.length && (args.length!==2 || args[0]!=='--source-root' || !args[1])) throw new Error('Usage: node workbench/frontend-tools/prepare-frontend.mjs [--source-root /path/to/M0-AI-recovered | --refresh-local]');

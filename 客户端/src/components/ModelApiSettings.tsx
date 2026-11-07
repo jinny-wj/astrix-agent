@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { readSelectedModel } from '../config/models'
+import { getAgentStatus } from '../services/agentApi'
+import { AGENT_BACKEND_CHANGED, readPreferredBackend, writePreferredBackend } from '../services/agentComposer'
+import type { AgentBackendKind } from '../types/agentComposer'
 import {
   clearModelApiSettings,
   getModelApiSettings,
@@ -39,6 +41,9 @@ function validBaseUrl(value: string): boolean {
 
 export function ModelApiSettings() {
   const desktopAvailable = hasDesktopModelApiSettings()
+  const [preferredBackend, setPreferredBackend] = useState<AgentBackendKind | undefined>(() => readPreferredBackend())
+  const [codex, setCodex] = useState<{ online: boolean; detail: string } | null>(null)
+  const [checkingCodex, setCheckingCodex] = useState(false)
   const [settings, setSettings] = useState(EMPTY_SETTINGS)
   const [provider, setProvider] = useState<ModelApiProvider>('openai')
   const [baseUrl, setBaseUrl] = useState('')
@@ -84,6 +89,31 @@ export function ModelApiSettings() {
     }
   }, [desktopAvailable])
 
+  const refreshCodex = async () => {
+    setCheckingCodex(true)
+    try {
+      const status = await getAgentStatus()
+      if (mountedRef.current) setCodex(status.servers.find(server => server.id === 'codex') ?? { online: false, detail: '未检测到可用的本机 Codex。' })
+    } catch {
+      if (mountedRef.current) setCodex({ online: false, detail: '无法读取本机 Codex 状态，请检查本地服务后重试。' })
+    } finally { if (mountedRef.current) setCheckingCodex(false) }
+  }
+  useEffect(() => {
+    const syncBackend = () => setPreferredBackend(readPreferredBackend())
+    window.addEventListener(AGENT_BACKEND_CHANGED, syncBackend)
+    void refreshCodex()
+    return () => window.removeEventListener(AGENT_BACKEND_CHANGED, syncBackend)
+  }, [])
+
+  const chooseConnection = (backend: 'codex' | 'model-api') => {
+    writePreferredBackend(backend)
+    setPreferredBackend(backend)
+    setTested(false)
+    setFeedback({ text: backend === 'codex'
+      ? '已选择本机 Codex。后续设计对话使用本机 ChatGPT 登录，不自动回退到 API。'
+      : '已选择自定义 API。请保存并启用下方配置后开始对话。', error: false })
+  }
+
   const complete = validBaseUrl(baseUrl) && Boolean(model.trim())
   const retainSavedKey = settings.hasApiKey && provider === (settings.provider ?? 'openai') && origin(baseUrl) === origin(settings.baseUrl)
   const disabled = !desktopAvailable || !loaded || pending !== null
@@ -126,11 +156,13 @@ export function ModelApiSettings() {
         if (!mountedRef.current) return
         applySettings(next)
         setLoaded(true)
+        if (action === 'save' && next.enabled) { writePreferredBackend('model-api'); setPreferredBackend('model-api') }
+        else if (action === 'clear' && readPreferredBackend() === 'model-api') { writePreferredBackend(undefined); setPreferredBackend(undefined) }
         setFeedback({
           text: action === 'clear'
             ? '配置已清除，Auto 将沿用本机 Agent。'
             : next.enabled
-              ? `配置已保存并启用。模型选 Auto、服务器选自动选择时使用此配置。连接尚未测试。${readSelectedModel().id !== 'auto' ? '请将模型切换为 Auto 以使用此配置。' : ''}`
+              ? '配置已保存并启用，后续设计对话使用此 API。连接尚未测试。'
               : '配置草稿已保存；稍后可继续填写并启用。保存不会测试连接。',
           error: false,
         })
@@ -159,18 +191,31 @@ export function ModelApiSettings() {
   return (
     <section className="mt-5 rounded-[14px] border border-[#e2e8f2] bg-[#f8faff] p-4" aria-labelledby="model-api-heading" aria-busy={pending !== null}>
       <div className="flex items-center justify-between gap-3">
-        <h3 id="model-api-heading" className="text-[14px] font-semibold text-[#2a2f38]">AI 模型 API</h3>
+        <h3 id="model-api-heading" className="text-[14px] font-semibold text-[#2a2f38]">AI 连接</h3>
         {loaded ? (
           <span className="rounded-full bg-white px-2 py-0.5 text-[11px] text-[#6b7382]">
-            {settings.enabled ? '已启用' : settings.configured ? '已保存 · 未启用' : '待配置'}
+            {preferredBackend === 'codex' ? '本机 Codex' : preferredBackend === 'model-api' ? '自定义 API' : settings.enabled ? 'API 已启用' : '选择连接方式'}
           </span>
         ) : null}
       </div>
-      <p className="mt-1.5 text-[12px] leading-5 text-[#6b7382]">
-        支持 OpenAI 兼容接口、Claude 原生 Messages 与 Gemini 原生 GenerateContent，可连接官方、第三方或本机服务。
-        启用后，Auto 使用此 API 和模型；手动选定的 Agent 优先。未启用时，Auto 沿用本机 Agent。
-        此入口用于文字对话；图像生成等功能仍使用对应工作流。
-      </p>
+      <p className="mt-1.5 text-[12px] leading-5 text-[#6b7382]">选择本机已登录的 Codex，或配置官方、第三方、本机 API 服务。两种方式独立保存。</p>
+      <div className="mt-3 grid grid-cols-2 gap-2" role="group" aria-label="AI 连接方式">
+        <button type="button" disabled={pending !== null} aria-pressed={preferredBackend === 'codex'} onClick={() => chooseConnection('codex')} className={`rounded-[10px] border p-3 text-left disabled:opacity-50 ${preferredBackend === 'codex' ? 'border-[#777dda] bg-[#eeedff]' : 'border-[#dfe5ee] bg-white'}`}>
+          <strong className="block text-[13px] text-[#39425a]">本机 Codex</strong><span className="mt-1 block text-[11.5px] text-[#7c8495]">使用 ChatGPT 登录额度</span>
+        </button>
+        <button type="button" disabled={pending !== null} aria-pressed={preferredBackend === 'model-api'} onClick={() => chooseConnection('model-api')} className={`rounded-[10px] border p-3 text-left disabled:opacity-50 ${preferredBackend === 'model-api' ? 'border-[#777dda] bg-[#eeedff]' : 'border-[#dfe5ee] bg-white'}`}>
+          <strong className="block text-[13px] text-[#39425a]">自定义 API</strong><span className="mt-1 block text-[11.5px] text-[#7c8495]">按服务方的 API 规则计费</span>
+        </button>
+      </div>
+      {preferredBackend === 'codex' ? (
+        <div className="mt-3 rounded-[10px] border border-[#e1e4f0] bg-white p-3">
+          <p className="text-[12.5px] font-medium text-[#454d69]" role="status">{checkingCodex ? '正在检测本机登录…' : codex?.detail ?? '等待检测本机 Codex。'}</p>
+          <p className="mt-1.5 text-[12px] leading-5 text-[#7c8495]">无需 API Key，使用本机 Codex 默认模型。请在终端运行 <code>codex login</code> 并选择 ChatGPT 登录；额度按该账号限制使用。</p>
+          <p className="mt-1 text-[11.5px] leading-5 text-[#8a92a1]">检测安装和登录不发起模型请求；开始对话后会消耗账号额度。API 配置会保留。</p>
+          <button type="button" onClick={() => void refreshCodex()} disabled={checkingCodex} className={`mt-3 ${secondaryButtonClass}`}>{checkingCodex ? '检测中…' : '重新检测登录'}</button>
+        </div>
+      ) : <>
+      <p className="mt-3 text-[12px] leading-5 text-[#6b7382]">支持 OpenAI 兼容、Claude 原生 Messages 与 Gemini 原生 GenerateContent。此入口用于文字对话；图像生成仍使用对应工作流。</p>
       {!desktopAvailable ? (
         <p className="mt-3 text-[12px] leading-5 text-[#916319]" role="status">请在 Astrix 客户端中配置。</p>
       ) : (
@@ -277,6 +322,7 @@ export function ModelApiSettings() {
           </div>
         </form>
       )}
+      </>}
       {pending === 'load' ? <p className="mt-3 text-[12px] text-[#7d8695]" role="status">正在读取配置…</p> : null}
       {feedback ? (
         <p className={`mt-3 text-[12px] leading-5 ${feedback.error ? 'text-[#b54725]' : tested ? 'text-[#16845b]' : 'text-[#53657d]'}`} role={feedback.error ? 'alert' : 'status'}>

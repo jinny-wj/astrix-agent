@@ -1,7 +1,7 @@
 # Design Studio WJ Agent
 
 In-app Agent default: **Codex CLI** (`codex exec --json`).
-Fallback: Claude Code SDK, then Hermes. The local demo shell is opt-in only.
+Auto backend mode retains the Claude Code SDK, then Hermes fallback policy. An explicit local Codex selection uses only ChatGPT-authenticated Codex quota; authentication, quota or execution failure must not fall back to an API or another CLI. API-key CLI authentication is not a ChatGPT quota connection. The local demo shell is opt-in only.
 
 ## Skills
 

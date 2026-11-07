@@ -65,7 +65,7 @@ export function createChatService({getModelConfig,files,getWorkspace,dataDir,get
     let figmaScope;
     if(options.figmaContext){const integration=getFigmaIntegration?.();if(!integration)throw new Error('真实 Figma 桥接服务尚未初始化');figmaScope=await createFigmaAgentScope({...integration,projectId:options.projectId,context:options.figmaContext,allowWrite:Boolean(config.allowFigmaWriteTools),signal});}
     if(options.workflow==='multi'||config.workflow==='multi')return (await getWorkflow()).respond({prompt,history,onTool,signal,...options,figmaScope});
-    if(config.engine==='original-opencode'){
+    if(config.mode!=='codex'&&config.engine==='original-opencode'){
       if(!original)throw new Error('原版引擎未初始化，请重新启动本地服务');
       const mcp=figmaScope?await createFigmaMcpGateway(figmaScope,{signal}):null;
       try{return await original.run({config,prompt,history,onTool,signal,...options,...(mcp?{mcpConfig:mcp.config,agentPrompt:figmaScope.prompt}: {})});}finally{await mcp?.close();}

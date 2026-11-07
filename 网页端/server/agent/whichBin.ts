@@ -1,6 +1,6 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { existsSync } from 'node:fs'
+import { accessSync, constants, statSync } from 'node:fs'
 
 export function whichBin(name: string) {
   const home = homedir()
@@ -13,7 +13,15 @@ export function whichBin(name: string) {
   const pathDirs = (process.env.PATH ?? '').split(':').filter(Boolean)
   for (const dir of [...extras, ...pathDirs]) {
     const candidate = join(dir, name)
-    if (existsSync(candidate)) return candidate
+    try { if (statSync(candidate).isFile()) { accessSync(candidate, constants.X_OK); return candidate } } catch { /* Try the next installation location. */ }
+  }
+  if (name === 'codex') {
+    for (const appRoot of ['/Applications/Codex.app', join(home, 'Applications', 'Codex.app')]) {
+      for (const suffix of ['Contents/Resources/codex', 'Contents/Resources/bin/codex']) {
+        const candidate = join(appRoot, suffix)
+        try { if (statSync(candidate).isFile()) { accessSync(candidate, constants.X_OK); return candidate } } catch { /* Try the next installation location. */ }
+      }
+    }
   }
   return null
 }

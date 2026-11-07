@@ -171,7 +171,7 @@ function createRuntime(
   if (kind === 'codex') {
     const bin = whichBin('codex')
     if (!bin) return null
-    return createCodexRuntime({ bin, model: resolvedModel, cwd })
+    return createCodexRuntime({ bin, model: '', cwd })
   }
   if (kind === 'hermes') {
     const bin = whichBin('hermes')
@@ -188,7 +188,7 @@ function createRuntime(
   }
 }
 
-function createUnavailableRuntime(): AgentRuntime {
+function createUnavailableRuntime(message = '没有可用的真实 Agent。请先登录 Codex、Claude 或 Hermes。'): AgentRuntime {
   return {
     meta: {
       mode: 'local',
@@ -197,7 +197,7 @@ function createUnavailableRuntime(): AgentRuntime {
       backend: 'unavailable',
     },
     async *run() {
-      throw new Error('没有可用的真实 Agent。请先登录 Codex、Claude 或 Hermes。')
+      throw new Error(message)
     },
   }
 }
@@ -209,6 +209,10 @@ function runtimeChain(
 ): AgentRuntime[] {
   if (process.env.AGENT_SHELL_ONLY === '1' || options.backend === 'shell' || preferred === 'shell') {
     return [createShellRuntime()]
+  }
+  if (preferred === 'codex' || !preferred && options.backend === 'codex') {
+    const runtime = createRuntime('codex', options)
+    return runtime ? [runtime] : [createUnavailableRuntime('未找到本机 Codex CLI，请安装并使用 ChatGPT 账号登录后重试。')]
   }
   let order: Array<'codex' | 'claude' | 'hermes' | 'shell'> =
     options.backend === 'codex'
