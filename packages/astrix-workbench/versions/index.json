@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.12",
+  "currentVersion": "0.7.13",
   "recordedAt": "2026-11-08",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -335,6 +335,23 @@
         "Show current same-origin Figma OAuth session status beside the existing Connect Figma home action.",
         "Refresh status on initial load, authorization return, focus, visibility restoration and polling on both Workbench surfaces.",
         "Keep API Configuration separate and preserve the existing OAuth start flow; distinguish authorization from Plugin Bridge pairing and design file access."
+      ],
+      "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.13",
+      "date": "2026-11-08",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.13",
+      "record": "versions/v0.7.13.md",
+      "evidence": [
+        "versions/evidence/v0.7.13.json"
+      ],
+      "changes": [
+        "Remove the local Figma placeholder copy and its three project/workspace guidance actions from the generated home interface.",
+        "Remove the click handler used only by the retired placeholder actions.",
+        "Preserve other error feedback, the separate Figma OAuth and API Configuration home buttons, and current connection status."
       ],
       "uiFeatureChanges": true
     }

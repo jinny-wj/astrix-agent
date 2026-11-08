@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.13",
+  "recordedAt": "2026-11-08",
+  "recordType": "source-release",
+  "status": "local-validated-awaiting-publication-confirmation",
+  "sources": [
+    {
+      "cwd": "packages/astrix-workbench",
+      "command": "npm test",
+      "result": "259 Node tests; host policy 18, marketplace 3, navigation 3; generator/canvas scripts passed"
+    },
+    {
+      "cwd": "客户端",
+      "command": "npm test; npm run build",
+      "result": "141 tests and build passed"
+    },
+    {
+      "cwd": "网页端",
+      "command": "npm test; npm run build",
+      "result": "79 tests and build passed"
+    },
+    {
+      "cwd": "网页端",
+      "command": "node --experimental-strip-types --test server/recoveredHomeUi.test.ts",
+      "result": "1 existing test updated; passed; removed obsolete placeholder click test"
+    }
+  ],
+  "scope": {
+    "surfaces": [
+      "web",
+      "desktop"
+    ],
+    "removedLocalPlaceholder": "project-required Figma connection and unavailable enterprise-list guidance",
+    "removedPlaceholderActions": [
+      "创建本地项目",
+      "选择已有项目",
+      "打开真实 Figma 工作区"
+    ],
+    "placeholderBranchOutput": "empty Vue comment",
+    "deadClickHandlerRemoval": "placeholder actions only",
+    "existingTopConnectionActionsRequired": true,
+    "existingOAuthStatusRequired": true,
+    "otherErrorFeedbackRequired": true,
+    "existingVersionTagsMoved": false
+  },
+  "validation": {
+    "allNodeTests": 503,
+    "placeholderRemovalTests": "updated existing recovered-home check passed",
+    "generatedFrontendCheck": "installed vendor home was migrated to an empty comment, syntax checked and refreshed twice without further change",
+    "webHomeLayout": "shared prepared frontend omits the placeholder; production build passed",
+    "desktopHomeLayout": "real restarted client showed no placeholder text or any of its three actions",
+    "topConnectionActionsPreserved": true,
+    "oauthStatusPreserved": "real native homepage still displayed its existing connected account status",
+    "otherErrorFeedbackPreserved": true,
+    "applicationBuilds": {
+      "desktop": "passed",
+      "web": "passed"
+    },
+    "newAccountAccessGranted": false,
+    "modelConfigurationChanged": false
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "accountIdentifiersIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "publication": {
+    "status": "awaiting-github-target-confirmation",
+    "remoteCommitAndTagVerified": false,
+    "githubReleaseVerified": false
+  },
+  "limits": [
+    "The change is limited to one local placeholder branch and its dedicated action handler.",
+    "The top Figma OAuth action, API Configuration action, session status and other error feedback remain required.",
+    "GitHub upload and publication require confirmation for this version.",
+    "Application pnpm locks have no root package version field and remain unchanged because dependencies did not change."
+  ]
+}

@@ -17,11 +17,34 @@ if(args.length===1&&args[0]==='--refresh-local'){
   if(!current.includes('/local-runtime.js'))throw new Error('Restore the Workbench UI resources before refreshing local scripts');
   await copyFile(path.join(here,'clarification-monitor.js'),path.join(publicRoot,'clarification-monitor.js'));
   for(const name of ['api-settings.js','api-settings-model.mjs','api-settings.css','home-connections.js','local-runtime.js'])await copyFile(path.join(here,name),path.join(publicRoot,name));
+  // Existing installations can discard the retired authored section without
+  // downloading or restoring the original vendor cache again.
+  const assets=path.join(publicRoot,'vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets');
+  for(const name of await readdir(assets)){
+    if(!/^home-.*\.js$/.test(name))continue;
+    const target=path.join(assets,name),source=await readFile(target,'utf8');
+    const marker=source.indexOf('"data-m0-local-figma-entry"');
+    if(marker<0)continue;
+    const start=source.lastIndexOf('(openBlock(),createElementBlock("section",',marker);
+    if(start<0||marker-start>256)throw new Error('Retired Figma home section changed; review before removing it.');
+    let depth=0,quote='',escaped=false,end=-1;
+    for(let i=start;i<Math.min(source.length,start+8192);i++){
+      const char=source[i];
+      if(quote){if(escaped)escaped=false;else if(char==='\\')escaped=true;else if(char===quote)quote='';continue;}
+      if(char==='"'||char==="'"||char==='`'){quote=char;continue;}
+      if(char==='(')depth++;
+      else if(char===')'&&--depth===0){end=i+1;break;}
+    }
+    if(end<0)throw new Error('Retired Figma home section is incomplete; existing resources were kept.');
+    const updated=source.slice(0,start)+'createCommentVNode("",!0)'+source.slice(end);
+    if(updated.includes('"data-m0-local-figma-entry"'))throw new Error('Unexpected duplicate retired Figma home section.');
+    await writeFile(target,updated);
+  }
   if(!current.includes('src="/clarification-monitor.js"')){
     current=current.replace('</head>','  <script src="/clarification-monitor.js" defer></script>\n</head>');
     await writeFile(file,current);
   }
-  console.log('Refreshed Figma/model connections and clarification UI in the installed Workbench resources.');
+  console.log('Refreshed local UI and removed the retired Figma home placeholder.');
   process.exit(0);
 }
 if(args.length && (args.length!==2 || args[0]!=='--source-root' || !args[1])) throw new Error('Usage: node workbench/frontend-tools/prepare-frontend.mjs [--source-root /path/to/M0-AI-recovered | --refresh-local]');
@@ -107,17 +130,16 @@ function rewrite(text, name) {
     if (count !== 4) throw new Error('Recovered material-icon cleanup changed; expected four optional cleanup calls');
     patches.push({ file: name, purpose: 'Guard four calls to absent optional material/skill icon cleanup functions so leaving home does not throw.', matchCount: count });
     // This warning belongs to the old corporate background-canvas login flow.
-    // Keep its authorization failure truthful; offer the explicit local flow.
+    // Suppress only this unavailable legacy feature. Keep genuine errors.
     const warning='(openBlock(),createBlock(be,{key:0,status:"warning",subtitle:unref(te)},{extra:withCtx(()=>[createVNode(ce,{type:"primary",onClick:unref(V)},{default:withCtx(()=>[...s[127]||(s[127]=[createTextVNode("重新获取",-1)])]),_:1},8,["onClick"])]),_:1},8,["subtitle"]))';
     const warningMatch='!unref(T)&&unref(te)?'+warning;
     if(text.split(warningMatch).length!==2)throw new Error('Recovered Figma home warning changed');
-    const entry='(openBlock(),createElementBlock("section",{key:0,"data-m0-local-figma-entry":"",style:"padding:24px;text-align:center;color:#697180"},[createBaseVNode("strong",{style:"display:block;font-size:16px;color:#394559"},"选择项目后连接真实 Figma"),createBaseVNode("p",null,"在本地项目的 Design 中打开官方 Figma，并配对目标文件的 Plugin Bridge。原企业后台列表未接入。"),createBaseVNode("button",{type:"button","data-m0-create-figma-project":"",style:"padding:8px 14px;border:0;border-radius:6px;background:#0d99ff;color:white;cursor:pointer"},"创建本地项目"),createBaseVNode("a",{href:"/__local/projects",style:"margin-left:16px;color:#435edf"},"选择已有项目"),createBaseVNode("a",{href:"/figma-workspace.html",style:"margin-left:16px;color:#435edf"},"打开真实 Figma 工作区")]))';
-    text=text.replace(warningMatch,'!unref(T)&&unref(te)?(window.__M0_LOCAL_RUNTIME__&&unref(te)==="Figma 后台画布需要在桌面端使用")?'+entry+':'+warning);
+    text=text.replace(warningMatch,'!unref(T)&&unref(te)?(window.__M0_LOCAL_RUNTIME__&&unref(te)==="Figma 后台画布需要在桌面端使用")?createCommentVNode("",!0):'+warning);
     const manual=/createBaseVNode\("a",\{class:"workspace-manual-link",href:"https:\/\/docs\.corp\.kuaishou\.com\/[^"\s]+",target:"_blank",rel:"noopener noreferrer"\}," 资产库使用手册 ",-1\)/g;
     const manualMatches=[...text.matchAll(manual)];
     if(manualMatches.length!==1)throw new Error('Recovered asset-library help entry changed');
     text=text.replace(manual,'createCommentVNode("Local asset-library manual unavailable",!0)');
-    patches.push({file:name,purpose:'Replace only the unsupported corporate background-Figma warning with explicit local project/Figma links; remove its retry and the unavailable corporate asset-library manual. Keep original SSO authorization unchanged.',matchCount:2});
+    patches.push({file:name,purpose:'Omit the retired local Figma home placeholder and unavailable corporate manual; preserve unrelated warnings and original SSO authorization.',matchCount:2});
   }
   if (name.endsWith('/assets/index-v2-BGt4TMzj.js')) {
     const editorComponent = 'Np=Ze({__name:"index",setup(n){';

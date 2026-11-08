@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.12](https://img.shields.io/badge/Workbench-v0.7.12-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.12.md)
+[![Workbench v0.7.13](https://img.shields.io/badge/Workbench-v0.7.13-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.13.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
