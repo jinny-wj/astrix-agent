@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.11",
+  "currentVersion": "0.7.12",
   "recordedAt": "2026-11-08",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -318,6 +318,23 @@
         "Keep a separate API Configuration home button beside Connect Figma on both Workbench surfaces.",
         "Open the existing model connection dialog from API Configuration, preserving local Codex and custom API choices.",
         "Leave the existing Figma OAuth flow unchanged and retain the immutable 0.7.10 version record and tag."
+      ],
+      "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.12",
+      "date": "2026-11-08",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.12",
+      "record": "versions/v0.7.12.md",
+      "evidence": [
+        "versions/evidence/v0.7.12.json"
+      ],
+      "changes": [
+        "Show current same-origin Figma OAuth session status beside the existing Connect Figma home action.",
+        "Refresh status on initial load, authorization return, focus, visibility restoration and polling on both Workbench surfaces.",
+        "Keep API Configuration separate and preserve the existing OAuth start flow; distinguish authorization from Plugin Bridge pairing and design file access."
       ],
       "uiFeatureChanges": true
     }

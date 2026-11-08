@@ -183,10 +183,13 @@ test('model errors are precise and never silently substitute a model or switch b
 test('a timed out or cancelled process is stopped and its temporary directory is removed',async t=>{
   let f=await fixture(t,{mode:'hang',timeoutMs:150});
   await assert.rejects(f.gateway.complete({},messages),failure=>failure.code==='CODEX_TIMEOUT');
-  let call=(await f.events()).find(value=>value.phase==='exec');await assert.rejects(fs.access(call.cwd));
+  // A busy host can time out Node before the fixture writes its exec trace.
+  // Both early startup cancellation and a running fixture must clean up.
+  let call=(await f.events()).find(value=>value.phase==='exec');if(call)await assert.rejects(fs.access(call.cwd));
+  assert.deepEqual((await fs.readdir(f.directory)).filter(name=>name.startsWith('astrix-codex-')),[]);
   f=await fixture(t,{mode:'hang'});const controller=new AbortController();
   const promise=f.gateway.complete({},messages,undefined,controller.signal);const rejection=assert.rejects(promise,failure=>failure.name==='AbortError');
-  for(let attempt=0;attempt<100;attempt++){if((await f.events()).some(value=>value.phase==='exec'))break;await delay(10);}
+  for(let attempt=0;attempt<300;attempt++){if((await f.events()).some(value=>value.phase==='exec'))break;await delay(10);}
   controller.abort();await rejection;call=(await f.events()).find(value=>value.phase==='exec');assert.ok(call);await assert.rejects(fs.access(call.cwd));
   const before=await f.events();const already=new AbortController();already.abort();await assert.rejects(f.gateway.complete({},messages,undefined,already.signal),failure=>failure.name==='AbortError');assert.deepEqual(await f.events(),before);
 });

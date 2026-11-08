@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.12",
+  "recordedAt": "2026-11-08",
+  "recordType": "source-release",
+  "status": "local-validated-awaiting-publication-confirmation",
+  "sources": [
+    {
+      "cwd": "packages/astrix-workbench",
+      "command": "npm test",
+      "result": "259 Node tests, 18 host policy tests, 3 marketplace tests, 3 navigation tests and generator/canvas scripts passed"
+    },
+    {
+      "cwd": ".",
+      "command": "node --test packages/astrix-workbench/test/home-connections.test.mjs packages/astrix-workbench/test/figma-oauth.test.mjs 网页端/workbench/frontend-tools/api-settings.test.mjs",
+      "result": "31 passed after final controller change"
+    },
+    {
+      "cwd": "客户端",
+      "command": "npm test; npm run build",
+      "result": "141 tests and build passed"
+    },
+    {
+      "cwd": "网页端",
+      "command": "npm test; npm run build",
+      "result": "80 tests and build passed"
+    }
+  ],
+  "scope": {
+    "surfaces": [
+      "web",
+      "desktop"
+    ],
+    "homeStatusSource": "same-origin Figma OAuth session",
+    "homeStatusRefreshTriggers": [
+      "initial load",
+      "authorization return",
+      "window focus",
+      "visibility restoration",
+      "polling"
+    ],
+    "authorizedStatusPattern": "已连接 · 账号名",
+    "unauthorizedAndReadErrorsMustBeShown": true,
+    "existingConnectFigmaButtonRequired": true,
+    "apiConfigurationRemainsSeparate": true,
+    "oauthFlowChangeRequested": false,
+    "existingVersionTagsMoved": false
+  },
+  "validation": {
+    "homeSessionStatusTests": 7,
+    "webHomeStatusFeedback": "authored homepage controller tests passed; web build passed",
+    "desktopHomeStatusFeedback": "real native homepage displayed the already-authorized account after a normal restart",
+    "refreshTriggers": "initial, focus, visible, polling, page resume and stale-response tests passed",
+    "unauthorizedAndFailureFeedback": "strict session booleans, server failure, synchronous request failure, recovery and expiry checked",
+    "apiConfigurationIndependent": true,
+    "existingOAuthFlowPreserved": true,
+    "applicationBuilds": {
+      "desktop": "passed",
+      "web": "passed"
+    },
+    "oauthAndModelTargetedTests": 31,
+    "oauthBackendOrCallbackFilesChanged": false,
+    "newAccountAuthorizationGranted": false,
+    "allNodeTests": 504,
+    "resourceStaging": "passed; source-only checks and native graph verification passed",
+    "existingTimeoutFixture": "startup can time out before writing a trace; cleanup is still asserted, and active cancellation waits for process readiness"
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "accountIdentifiersIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "publication": {
+    "status": "awaiting-github-target-confirmation",
+    "remoteCommitAndTagVerified": false,
+    "githubReleaseVerified": false
+  },
+  "limits": [
+    "The displayed account-name text is a UI pattern only; no actual account identity or session state is recorded here.",
+    "OAuth session status is separate from design-file access, Plugin Bridge pairing and successful document writes.",
+    "GitHub upload and publication require confirmation for this version.",
+    "Application pnpm locks have no root package version field and remain unchanged because dependencies did not change."
+  ]
+}
