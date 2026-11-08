@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.11",
+  "recordedAt": "2026-11-08",
+  "recordType": "source-release",
+  "status": "local-validated-authorized-for-publication",
+  "sources": [
+    {
+      "cwd": "packages/astrix-workbench",
+      "command": "npm test",
+      "result": "255 Node tests, 18 host policy tests, 3 marketplace tests, 3 navigation tests and generator/canvas scripts passed"
+    },
+    {
+      "cwd": "客户端",
+      "command": "npm test; npm run build",
+      "result": "141 tests and build passed"
+    },
+    {
+      "cwd": "网页端",
+      "command": "npm test; npm run build",
+      "result": "80 tests and build passed"
+    },
+    {
+      "cwd": ".",
+      "command": "node --test packages/astrix-workbench/test/home-connections.test.mjs packages/astrix-workbench/test/figma-oauth.test.mjs 网页端/workbench/frontend-tools/api-settings.test.mjs",
+      "result": "27 passed"
+    }
+  ],
+  "scope": {
+    "surfaces": [
+      "web",
+      "desktop"
+    ],
+    "apiHomeAction": "API 配置",
+    "apiDialog": "existing model connection dialog with local Codex and custom API choices",
+    "figmaHomeAction": "连接 Figma",
+    "separateHomeActionsRequired": true,
+    "oauthFlowChangeRequested": false,
+    "existingVersionTagsMoved": false
+  },
+  "validation": {
+    "allNodeTests": 500,
+    "targetedHomeOAuthAndModelTests": 27,
+    "webHomeLayout": "shared homepage entry rendered and checked by authored dialog tests; web production build passed",
+    "desktopHomeLayout": "native client restarted and both independent buttons observed",
+    "existingModelDialogPreserved": "clicked API 配置 in the running native client; local Codex, custom API and protocol/address/model fields remained available",
+    "existingOAuthRoutePreserved": true,
+    "oauthBackendFilesChanged": false,
+    "applicationBuilds": {
+      "desktop": "passed",
+      "web": "passed"
+    },
+    "modelConfigurationSavedByThisWork": false,
+    "modelInferenceRequestedByThisWork": false,
+    "newAccountAccessGrantedByThisWork": false
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "publication": {
+    "status": "authorized-awaiting-publication",
+    "targetRepository": "jinny-wj/astrix-agent",
+    "targetVisibility": "public",
+    "authorizedScope": "source, annotated version tag and source-only GitHub Release",
+    "publicInstallerAuthorized": false,
+    "remoteCommitAndTagVerified": false,
+    "githubReleaseVerified": false
+  },
+  "limits": [
+    "API Configuration opens the existing model connection dialog and does not replace the separate Figma OAuth action.",
+    "Version 0.7.10 records and its already-created tag remain immutable.",
+    "Application pnpm locks have no root package version field and remain unchanged because dependencies did not change."
+  ]
+}

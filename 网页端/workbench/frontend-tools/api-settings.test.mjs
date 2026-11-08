@@ -103,9 +103,10 @@ function dialogHarness(initial,{status,respond}={}) {
     test:async()=>{item('test').onclick();await settle();}};
 }
 
-test('opening saved Codex mode checks login only, and the explicit test is the sole inference request',async()=>{
+test('API configuration button opens both connection choices, checks Codex login only, and infers only on explicit test',async()=>{
   const h=dialogHarness({mode:'codex',codexModel:'',provider:'gemini',baseUrl:'https://saved.example/native',model:'api-only',hasKey:true});
-  await h.api.open();await h.settle();
+  const entry=h.document.getElementById('astrix-api-entry');assert.equal(entry['aria-label'],'API 配置');entry.onclick();await h.settle();
+  assert.equal(h.item('dialog').open,true);assert.ok(h.item('connection-codex'));assert.ok(h.item('connection-api'));
   assert.deepEqual(h.calls.map(call=>call.url),['/__local/model','/__local/codex/status']);
   assert.equal(h.item('codex-panel').hidden,false);assert.equal(h.item('api-panel').hidden,true);assert.equal(h.item('codex-model').value,'');
   assert.match(h.item('codex-status').textContent,/ChatGPT/);assert.match(h.item('footnote').textContent,/少量 Codex 额度/);

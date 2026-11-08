@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.10](https://img.shields.io/badge/Workbench-v0.7.10-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.10.md)
+[![Workbench v0.7.11](https://img.shields.io/badge/Workbench-v0.7.11-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.11.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -151,7 +151,7 @@ pnpm dev
 
 ## 选择模型连接
 
-客户端与网页端首页右上角打开 **模型连接**，选择：
+客户端与网页端首页顶部保留独立的 **API 配置** 按钮。点击打开原有模型连接面板，选择：
 
 - **本机 Codex**：使用运行本地服务的电脑上，已通过 ChatGPT 账号登录的 Codex CLI。无需 API Key；模型留空沿用本机 Codex 已配置的模型，未配置时使用 CLI 默认，也可指定模型后保存。只读取模型名称，其余用户配置与 API 路由不会沿用。状态检查不发起推理，点击测试或发送任务才会使用账号额度。
 - **自定义 API**：支持 OpenAI 兼容、Claude 原生 Messages 或 Gemini 原生 GenerateContent；官方、第三方和本机服务的地址与模型名均可填写。先测试草稿，再保存用于对话。
@@ -162,7 +162,7 @@ pnpm dev
 
 ### 默认工作台连接
 
-首页顶部的 **连接 Figma** 始终用于 Figma OAuth 授权，与 **模型连接** 独立。客户端沿用系统浏览器授权并接回本机会话；网页端使用本端回调。
+首页顶部的 **连接 Figma** 始终用于 Figma OAuth 授权，与 **API 配置** 按钮并列且独立。客户端沿用系统浏览器授权并接回本机会话；网页端使用本端回调。
 
 在 Design 中打开真实 Figma 文件。客户端使用隔离的官方 Figma 登录会话；网页版在浏览器打开官方页面。随后在工作台生成配对码，在目标文件运行 **Astrix Figma Bridge** 并完成配对。只有插件的实际回执才能证明图层修改成功。详细步骤见[工作台指南](packages/astrix-workbench/README.md)。
 
@@ -228,7 +228,7 @@ pnpm dev
 
 ## 配置 AI 助手
 
-默认工作台先以演示模式运行界面。通过首页“模型连接”选择本机 Codex 或自定义 API 后，可使用现有需求澄清、Agent Loop、工具调用，以及规划、执行与复核的多 Agent 工作流。“本地设置”保留执行引擎与写权限等高级选项；模型设置和 Codex 登录状态不随源码和资源包分发。
+默认工作台先以演示模式运行界面。通过首页“API 配置”打开模型连接面板，选择本机 Codex 或自定义 API 后，可使用现有需求澄清、Agent Loop、工具调用，以及规划、执行与复核的多 Agent 工作流。“本地设置”保留执行引擎与写权限等高级选项；模型设置和 Codex 登录状态不随源码和资源包分发。
 
 本机 Codex 路径传递文字需求、历史消息和工具结果，不直接把图片附件交给 CLI；Figma 读取、插件配对和写权限仍按原流程检查，修改成功必须取得真实插件回执。
 

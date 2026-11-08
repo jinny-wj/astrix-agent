@@ -1,6 +1,6 @@
 # 自定义模型 API 配置
 
-客户端和网页版的默认首页右上角都有 **模型连接**。选择 **自定义 API**，输入服务地址、模型名称和 API Key 后，可以测试当前填写的配置，再保存并决定是否用于后续对话。若希望使用本机已登录 ChatGPT 的 Codex 额度，改选 **本机 Codex**，步骤见[本机 Codex 与 API](本机Codex与API.md)。
+客户端和网页版的默认首页右上角都有独立的 **API 配置** 按钮。选择 **自定义 API**，输入服务地址、模型名称和 API Key 后，可以测试当前填写的配置，再保存并决定是否用于后续对话。若希望使用本机已登录 ChatGPT 的 Codex 额度，改选 **本机 Codex**，步骤见[本机 Codex 与 API](本机Codex与API.md)。
 
 在 **API 协议** 中选择 **OpenAI 兼容 Chat Completions、Claude 原生 Messages、Gemini 原生 GenerateContent**。服务来源不设域名白名单，官方、第三方代理和本机服务均可使用；选择与服务实际提供的接口一致的协议，模型名称由对应服务决定。
 

@@ -7,7 +7,7 @@
 
 ## Workbench integration
 
-- Keep the homepage “连接 Figma” button independent from model settings. It must open the existing Figma OAuth flow, including each surface's callback and the desktop browser handoff; never replace it with model configuration or a workspace/plugin entry.
+- Keep the homepage “连接 Figma” and “API 配置” buttons visible and independent. Figma must open the existing OAuth flow, including each surface's callback and the desktop browser handoff; never replace it with model configuration or a workspace/plugin entry. API configuration must keep both local Codex and custom API choices.
 - Workbench implementation lives in `网页端/workbench/` (browser UI and local services) and `客户端/workbench/` (Electron, native editor, terminal and guards). `packages/astrix-workbench/` contains shared paths, tests and version records only; do not recreate a third application or probe an old standalone directory.
 - Update both application package versions/locks and the shared package/lock, changelog and version catalog together. Preserve original Astrix desktop/web capabilities and all existing version tags.
 - Keep annotated `m0/vX.Y.Z` source tags and documentation-only `m0/history/vX.Y.Z` imports immutable. Public source Releases use `--latest=false`; generated resources and recovered native components remain in restricted draft assets `m0-runtime/vX.Y.Z`.
