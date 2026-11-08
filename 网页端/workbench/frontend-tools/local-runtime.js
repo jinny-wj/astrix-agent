@@ -183,6 +183,7 @@
   addEventListener('DOMContentLoaded', () => {
     void import('/api-settings.js').then(({installApiSettings})=>installApiSettings({request:nativeFetch})).catch(()=>report('API 设置面板未能加载','','/api-settings.js'));
     void import('/home-connections.js').then(({installHomeFigmaConnection})=>installHomeFigmaConnection()).catch(()=>report('Figma 授权入口未能加载','','/home-connections.js'));
+    void import('/home-figma-catalog.js').then(({installHomeFigmaCatalog})=>installHomeFigmaCatalog({request:nativeFetch})).catch(()=>report('Figma 设计稿列表未能加载','','/home-figma-catalog.js'));
     const links = document.createElement('nav');
     links.setAttribute('aria-label', '本地恢复功能');
     links.style.cssText = 'position:fixed;right:18px;bottom:12px;z-index:2147483640;display:flex;gap:12px;font:12px -apple-system,sans-serif;background:rgba(255,255,255,.94);border:1px solid #e3e6ed;border-radius:7px;padding:7px 11px;box-shadow:0 2px 8px #1520480a';

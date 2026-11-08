@@ -6,6 +6,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
 import type { Plugin, ResolvedConfig } from 'vite'
+import { getFigmaOAuthMiddlewareForServer } from '../workbench/server/figma-oauth.mjs'
+import type { FigmaCatalogCandidate } from '../workbench/server/figma-oauth.mjs'
 // Keep the shared CommonJS layout outside Vite's bundled ESM configuration.
 const require = createRequire(import.meta.url)
 const { getLayout } = require(fileURLToPath(new URL('../../packages/astrix-workbench/layout.cjs', import.meta.url))) as typeof import('../../packages/astrix-workbench/layout.cjs')
@@ -14,6 +16,8 @@ type Application = {
   handle: (request: IncomingMessage, response: ServerResponse) => Promise<void>
   handleUpgrade: (request: IncomingMessage, socket: Socket) => boolean
   close: () => Promise<void>
+  setFigmaCatalogResolver: (resolve: (request: IncomingMessage, response: ServerResponse, url: string) => Promise<unknown>) => void
+  getFigmaCatalogCandidates: () => FigmaCatalogCandidate[]
 }
 
 const legacyDocuments = ['/design.html', '/design', '/editor', '/creating', '/workspace', '/agent']
@@ -51,7 +55,7 @@ async function assertPrepared(publicRoot: string) {
   }
 }
 
-export function workbenchPlugin(): Plugin {
+export function workbenchPlugin(options: { dataDir?: string; workspaceRoot?: string } = {}): Plugin {
   const layout = getLayout()
   let config: ResolvedConfig
   let application: Application | undefined
@@ -64,8 +68,17 @@ export function workbenchPlugin(): Plugin {
     application = module.createWorkbenchApplication({
       port, surface: 'web', publicRoot,
       instanceId: process.env.ASTRIX_INSTANCE_ID || randomUUID(),
+      ...(options.dataDir ? { dataDir: options.dataDir } : {}),
+      ...(options.workspaceRoot ? { workspaceRoot: options.workspaceRoot } : {}),
     }) as Application
     const active = application
+    // Use the exact OAuth instance that already owns this Vite server's cookies
+    // and encrypted sessions. Never construct a second authentication store.
+    const figmaOAuth = getFigmaOAuthMiddlewareForServer(httpServer)
+    if (figmaOAuth) {
+      figmaOAuth.setCatalogCandidates(active.getFigmaCatalogCandidates)
+      active.setFigmaCatalogResolver((request, response, url) => figmaOAuth.resolveCatalogFile(request, response, url))
+    }
     middleware.use((request, response, next) => {
       const url = new URL(request.url || '/', 'http://127.0.0.1')
       if (isLegacyDocument(url.pathname)) {

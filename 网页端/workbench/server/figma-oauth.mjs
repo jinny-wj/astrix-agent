@@ -22,6 +22,8 @@ const SAFE_PROJECT_ID = /^\d{5,32}$/;
 const MAX_SYNC_FILES = 60;
 const SYNC_METADATA_BATCH = 10;
 const SESSION_STORAGE_AAD = Buffer.from('design-studio:figma-oauth-sessions:v1');
+const oauthServerHandlers = new WeakMap();
+export function getFigmaOAuthMiddlewareForServer(server) { return server && oauthServerHandlers.get(server) || null; }
 const CORE_OAUTH_SCOPES = [
     'current_user:read',
     'file_content:read',
@@ -31,6 +33,8 @@ function oauthScopes() {
     return CORE_OAUTH_SCOPES;
 }
 export function createFigmaOAuthMiddleware(options) {
+    let catalogCandidates = options.getCatalogCandidates;
+    const catalogBackoff = new Map();
     const namespace = options.cookieNamespace?.trim() ?? '';
     if (namespace && !/^[A-Za-z0-9_-]{1,80}$/.test(namespace)) {
         throw new Error('Invalid Figma OAuth cookie namespace.');
@@ -1591,6 +1595,203 @@ export function createFigmaOAuthMiddleware(options) {
             errors,
         });
     }
+
+    // The catalog stores discovery URLs, never tokens or trusted cached file
+    // names. Every returned card is verified with this request's OAuth account.
+    function catalogURL(value) {
+        let url;
+        try { url = new URL(typeof value === 'string' ? value.trim() : ''); } catch {}
+        const match = url?.pathname.match(/^\/(design|file|board|slides|proto|draw|make)\/([A-Za-z0-9_-]{1,128})(?:\/|$)/);
+        if (!url || url.protocol !== 'https:' || !['www.figma.com','figma.com'].includes(url.hostname) || url.username || url.password || url.port || value.length > 4096 || !match)
+            throw new ApiError({status:400,code:'INVALID_FIGMA_URL',message:'请输入官方 Figma 文件链接。'});
+        const canonical=new URL(`https://www.figma.com/${match[1]}/${match[2]}`);
+        for(const key of ['node-id','page-id','mode','viewport','scaling','content-scaling','hide-ui']) {
+            const value=url.searchParams.get(key);
+            if(value!==null&&value.length<=300&&!/[\u0000-\u001f\u007f]/.test(value))canonical.searchParams.set(key,value);
+        }
+        return {key:match[2],url:canonical.href};
+    }
+    function catalogSource(value) {
+        let url;
+        try { url = new URL(typeof value === 'string' ? value.trim() : ''); } catch {}
+        const folder = url?.pathname.match(/\/(?:project|folder)\/(\d{5,32})(?:\/|$)/);
+        const team = url?.pathname.match(/\/team\/(\d{5,32})(?:\/|$)/);
+        if (!url || url.protocol !== 'https:' || !['www.figma.com','figma.com'].includes(url.hostname) || url.username || url.password || url.port || value.length > 4096 || !folder && !team)
+            throw new ApiError({status:400,code:'INVALID_FIGMA_SOURCE',message:'请输入官方 Figma 团队或文件夹链接。'});
+        const kind=folder?'folder':'team', id=(folder||team)[1];
+        return {kind,id,url:kind==='folder'?`https://www.figma.com/project/${id}`:`https://www.figma.com/files/team/${id}`};
+    }
+    function catalogPath(accountId) {
+        return resolveDesignStudioDataPath('figma-catalog/'+createHash('sha256').update(accountId).digest('hex')+'.json');
+    }
+    function readCatalog(accountId) {
+        try {
+            const value=JSON.parse(readFileSync(catalogPath(accountId),'utf8'));
+            if(value.version!==1||value.accountId!==accountId)throw Error('Invalid catalog');
+            return {files:(Array.isArray(value.files)?value.files:[]).slice(0,MAX_SYNC_FILES).flatMap(item=>{try{return [{...catalogURL(item.url),source:['workspace','team'].includes(item.source)?item.source:'saved'}];}catch{return [];}}),
+                sources:(Array.isArray(value.sources)?value.sources:[]).slice(0,20).flatMap(item=>{try{return [catalogSource(item.url)];}catch{return [];}})};
+        } catch { return {files:[],sources:[]}; }
+    }
+    function writeCatalog(accountId,record) {
+        const file=catalogPath(accountId), temporary=file+'.'+process.pid+'.'+randomUrlSafe(6)+'.tmp';
+        mkdirSync(dirname(file),{recursive:true,mode:0o700});
+        writeFileSync(temporary,JSON.stringify({version:1,accountId,...record})+'\n',{encoding:'utf8',flag:'wx',mode:0o600});
+        renameSync(temporary,file);
+    }
+    function assertCatalogOrigin(request) {
+        if(!options.allowedOrigin)return;
+        const expected=new URL(options.allowedOrigin);
+        if(request.headers.host!==expected.host||request.headers.origin&&request.headers.origin!==expected.origin)
+            throw new ApiError({status:403,code:'CATALOG_ORIGIN_DENIED',message:'Figma 目录仅允许当前应用访问。'});
+    }
+    async function catalogContext(request,response) {
+        assertCatalogOrigin(request);
+        const {sessionId,session}=await authenticatedSession(request,response,options,secureCookies);
+        return {sessionId,accountId:String(session.user.id),account:{id:String(session.user.id),name:session.user.handle}};
+    }
+    function assertCatalogLive(context,response) {
+        const current=sessions.get(context.sessionId);
+        if(!current||String(current.user.id)!==context.accountId) {
+            response.setHeader('Set-Cookie',clearedSessionCookie(secureCookies));
+            throw new ApiError({status:401,code:'FIGMA_AUTH_REQUIRED',message:'Figma 会话已结束，请重新授权。'});
+        }
+    }
+    function catalogFailure(error) {
+        const status=error instanceof ApiError?error.status:502;
+        const messages={400:'Figma 文件链接无效。',401:'Figma 授权已失效，请重新连接账号。',403:'当前账号或授权无法读取此 Figma 资源。',404:'Figma 资源不存在或当前账号不可访问。',429:'Figma 请求达到频率限制，请稍后重试。'};
+        return new ApiError({status,code:error instanceof ApiError?error.code:'FIGMA_CATALOG_UNAVAILABLE',message:messages[status]||'暂时无法读取 Figma 文件，请稍后重试。',
+            retryAfterSeconds:error instanceof ApiError?error.retryAfterSeconds:undefined,invalidatesSession:error instanceof ApiError&&error.invalidatesSession});
+    }
+    async function catalogFetch(context,response,pathname) {
+        const remaining=Math.ceil(((catalogBackoff.get(context.accountId)||0)-Date.now())/1000);
+        if(remaining>0)throw new ApiError({status:429,code:'FIGMA_RATE_LIMITED',message:'Figma 请求达到频率限制，请稍后重试。',retryAfterSeconds:remaining});
+        try { return await fetchFigmaJson(options,context.sessionId,new URL(pathname,FIGMA_API_ORIGIN),'文件目录'); }
+        catch(error) {
+            invalidateSessionForError(error,context.sessionId,response,secureCookies,options);
+            if(error.status===429)catalogBackoff.set(context.accountId,Date.now()+Math.max(1,error.retryAfterSeconds||60)*1000);
+            throw catalogFailure(error);
+        }
+    }
+    async function verifiedCatalogFile(context,response,value,source='saved') {
+        const candidate=catalogURL(value);
+        const metadata=normalizeFileMetadata(candidate.key,await catalogFetch(context,response,`/v1/files/${encodeURIComponent(candidate.key)}/meta`));
+        assertCatalogLive(context,response);
+        // The URL is canonical and not copied from untrusted metadata fields.
+        return {...metadata,url:candidate.url,accountId:context.accountId,source};
+    }
+    function saveCatalogFiles(accountId,files) {
+        const current=readCatalog(accountId),byKey=new Map(current.files.map(file=>[file.key,file]));
+        for(const file of files){byKey.delete(file.key);byKey.set(file.key,{key:file.key,url:file.url,source:file.source});}
+        writeCatalog(accountId,{...current,files:[...byKey.values()].slice(-MAX_SYNC_FILES)});
+    }
+    async function resolveCatalogFile(request,response,value) {
+        const context=await catalogContext(request,response);
+        const file=await verifiedCatalogFile(context,response,value);
+        saveCatalogFiles(context.accountId,[file]);
+        return {accountId:context.accountId,file};
+    }
+    function catalogError(error,extra={}) {
+        const safe=catalogFailure(error);
+        return {...extra,status:safe.status,error:safe.code,message:safe.message,...(safe.retryAfterSeconds===undefined?{}:{retryAfterSeconds:safe.retryAfterSeconds}),
+            ...(/^(team|folder):/.test(extra.source||'')&&safe.status===403?{action:'reauthorize-library',documentationUrl:'https://developers.figma.com/docs/rest-api/folders-endpoints/',message:'团队文件列表需要 folders:read（旧接口为 projects:read）以及支持该接口的 OAuth 应用。当前授权未增加此权限。'}:{})};
+    }
+    async function sourcePayload(context,response,source,operation) {
+        const v2=source.kind==='team'?`/v2/teams/${source.id}/folders`:`/v2/folders/${source.id}/${operation}`;
+        try{return await catalogFetch(context,response,v2);}
+        catch(error){
+            // A pre-existing projects:read grant may still use the v1 API.
+            // Authentication and rate-limit failures never trigger another API.
+            if(error.status!==403||operation==='folders'&&source.kind!=='team')throw error;
+            return catalogFetch(context,response,source.kind==='team'?`/v1/teams/${source.id}/projects`:`/v1/projects/${source.id}/files`);
+        }
+    }
+    async function sourceCandidates(context,response,sources,errors) {
+        const files=[],queue=[...sources],visited=new Set();let folders=0,truncated=false;
+        while(queue.length&&files.length<MAX_SYNC_FILES&&folders<40) {
+            const source=queue.shift(),identity=source.kind+':'+source.id;
+            if(visited.has(identity))continue;visited.add(identity);folders++;
+            try {
+                const payload=await sourcePayload(context,response,source,source.kind==='team'?'folders':'files');
+                if(source.kind==='team') {
+                    const children=payload.folders||payload.projects;
+                    if(!Array.isArray(children))throw Error('Invalid folders');
+                    for(const folder of children) {
+                        if(queue.length+folders>=40){truncated=true;break;}
+                        if(SAFE_PROJECT_ID.test(String(folder?.id||'')))queue.push({kind:'folder',id:String(folder.id),url:`https://www.figma.com/project/${folder.id}`});
+                    }
+                } else {
+                    if(!Array.isArray(payload.files))throw Error('Invalid files');
+                    for(const file of payload.files) {
+                        if(files.length>=MAX_SYNC_FILES)break;
+                        if(/^[A-Za-z0-9_-]{1,128}$/.test(String(file?.key||'')))files.push({url:'https://www.figma.com/design/'+file.key,source:'team'});
+                    }
+                    try {
+                        const children=await sourcePayload(context,response,source,'folders');
+                        if(!Array.isArray(children.folders))throw Error('Invalid subfolders');
+                        for(const folder of children.folders) {
+                            if(queue.length+folders>=40){truncated=true;break;}
+                            if(SAFE_PROJECT_ID.test(String(folder?.id||'')))queue.push({kind:'folder',id:String(folder.id),url:`https://www.figma.com/project/${folder.id}`});
+                        }
+                    }catch(error){if(error.invalidatesSession||error.status===401)throw error;errors.push(catalogError(error,{source:identity}));if(error.status===429)return {files,truncated:true};}
+                }
+            }catch(error){if(error.invalidatesSession||error.status===401)throw error;errors.push(catalogError(error,{source:identity}));if(error.status===429)break;}
+        }
+        return {files:files.slice(0,MAX_SYNC_FILES),truncated:truncated||queue.length>0||files.length>=MAX_SYNC_FILES};
+    }
+    async function handleCatalogRequest(request,response,requestUrl) {
+        const context=await catalogContext(request,response),stored=readCatalog(context.accountId),errors=[];
+        const sources=[...stored.sources];
+        for(const id of readConfiguredTeamIds(options))if(!sources.some(source=>source.kind==='team'&&source.id===id))sources.push({kind:'team',id,url:`https://www.figma.com/files/team/${id}`});
+        let candidates=[...stored.files],truncated=false;
+        if(catalogCandidates)try {
+            const discovered=await catalogCandidates({accountId:context.accountId});
+            for(const item of Array.isArray(discovered)?discovered.slice(0,MAX_SYNC_FILES*2):[]) {
+                if(item?.accountId!==undefined&&String(item.accountId)!==context.accountId)continue;
+                try{candidates.push({...catalogURL(item.url),source:'workspace',...(item.projectId===undefined?{}:{projectId:item.projectId})});}catch{}
+            }
+        }catch{errors.push(catalogError(null,{source:'workspace'}));}
+        if(requestUrl.searchParams.get('team')==='1') {
+            const discovered=await sourceCandidates(context,response,sources,errors);candidates.push(...discovered.files);truncated=discovered.truncated;
+        }
+        const byKey=new Map();
+        for(const file of candidates) {
+            const key=file.key||catalogURL(file.url).key,existing=byKey.get(key);
+            if(!existing)byKey.set(key,file);
+            else if(existing.projectId===undefined&&file.projectId!==undefined)existing.projectId=file.projectId;
+        }
+        const unique=[...byKey.values()];
+        truncated ||= unique.length>MAX_SYNC_FILES;
+        const files=[];
+        for(const candidate of unique.slice(0,MAX_SYNC_FILES)) {
+            if(response.destroyed)return;
+            if(errors.some(error=>error.status===429)){truncated=true;break;}
+            try {
+                const file=await verifiedCatalogFile(context,response,candidate.url,candidate.source);
+                if(candidate.projectId!==undefined)file.projectId=candidate.projectId;
+                files.push(file);
+            }catch(error){if(error.invalidatesSession||error.status===401)throw error;errors.push(catalogError(error,candidate.source==='workspace'?{source:'workspace'}:{key:candidate.key||catalogURL(candidate.url).key}));if(error.status===429){truncated=true;break;}}
+        }
+        assertCatalogLive(context,response);
+        if(files.length)saveCatalogFiles(context.accountId,files);
+        const retry=errors.find(error=>error.status===429&&error.retryAfterSeconds);
+        if(retry)response.setHeader('Retry-After',String(retry.retryAfterSeconds));
+        sendJson(response,errors.length?207:200,{account:context.account,files,partial:errors.length>0||truncated,errors,truncated,sources,
+            team:{configured:sources.length>0,enabled:requestUrl.searchParams.get('team')==='1'},discovery:'known-files'});
+    }
+    async function handleCatalogFiles(request,response) {
+        if(!/^application\/json(?:\s*;|$)/i.test(request.headers['content-type']||''))throw new ApiError({status:415,code:'JSON_REQUIRED',message:'请使用 JSON 提交 Figma 文件链接。'});
+        const context=await catalogContext(request,response),body=await readJsonBody(request);
+        const file=await verifiedCatalogFile(context,response,body?.url);
+        saveCatalogFiles(context.accountId,[file]);
+        sendJson(response,201,{account:context.account,file});
+    }
+    async function handleCatalogSource(request,response) {
+        if(!/^application\/json(?:\s*;|$)/i.test(request.headers['content-type']||''))throw new ApiError({status:415,code:'JSON_REQUIRED',message:'请使用 JSON 提交 Figma 团队链接。'});
+        const context=await catalogContext(request,response),body=await readJsonBody(request),source=catalogSource(body?.url),stored=readCatalog(context.accountId);
+        if(!stored.sources.some(item=>item.kind===source.kind&&item.id===source.id))stored.sources.push(source);
+        if(stored.sources.length>20)throw new ApiError({status:400,code:'CATALOG_SOURCE_LIMIT',message:'最多保存 20 个 Figma 团队或文件夹。'});
+        writeCatalog(context.accountId,stored);sendJson(response,201,{account:context.account,source});
+    }
     function teamIdFromProjectsPath(pathname) {
         const match = pathname.match(new RegExp(`^${AUTH_PREFIX}/teams/([^/]+)/projects$`));
         const teamId = match?.[1] ?? '';
@@ -1795,6 +1996,9 @@ export function createFigmaOAuthMiddleware(options) {
     async function handleOAuthRequest(request, response, requestUrl, options, secureCookies) {
         removeExpiredState(options);
         const { pathname } = requestUrl;
+        if (request.method === 'GET' && pathname === `${AUTH_PREFIX}/catalog`) { await handleCatalogRequest(request,response,requestUrl); return; }
+        if (request.method === 'POST' && pathname === `${AUTH_PREFIX}/catalog/files`) { await handleCatalogFiles(request,response); return; }
+        if (request.method === 'POST' && pathname === `${AUTH_PREFIX}/catalog/sources`) { await handleCatalogSource(request,response); return; }
         if (request.method === 'GET' && pathname === `${AUTH_PREFIX}/handoff`) {
             // The claim cookie stays in the initiating app; it is never in the browser URL.
             const id = parseCookies(request).get(HANDOFF_COOKIE);
@@ -1898,14 +2102,18 @@ export function createFigmaOAuthMiddleware(options) {
             await handleProjectFilesRequest(request, response, requestUrl, options, secureCookies);
             return;
         }
-        const knownPath = pathname === `${AUTH_PREFIX}/session`
+        const knownPath = pathname === `${AUTH_PREFIX}/catalog`
+            || pathname === `${AUTH_PREFIX}/catalog/files`
+            || pathname === `${AUTH_PREFIX}/catalog/sources`
+            || pathname === `${AUTH_PREFIX}/session`
             || pathname === `${AUTH_PREFIX}/start`
             || pathname === `${AUTH_PREFIX}/callback`
             || pathname === `${AUTH_PREFIX}/file-metadata`
             || pathname === `${AUTH_PREFIX}/library/config`
             || pathname.startsWith(`${AUTH_PREFIX}/files/`);
         if (knownPath) {
-            response.setHeader('Allow', 'GET, DELETE');
+            response.setHeader('Allow', pathname === `${AUTH_PREFIX}/catalog` ? 'GET'
+                : pathname === `${AUTH_PREFIX}/catalog/files` || pathname === `${AUTH_PREFIX}/catalog/sources` ? 'POST' : 'GET, DELETE');
             throw new ApiError({
                 status: 405,
                 code: 'METHOD_NOT_ALLOWED',
@@ -1921,7 +2129,7 @@ export function createFigmaOAuthMiddleware(options) {
     restorePendingFlows();
     restoreSessions(options);
     const secureCookies = options.redirectUri.startsWith('https://');
-    return (request, response, next) => {
+    const middleware = (request, response, next) => {
         if (!request.url) {
             next();
             return;
@@ -1952,15 +2160,21 @@ export function createFigmaOAuthMiddleware(options) {
                 sendApiError(response, error);
         });
     };
+    middleware.resolveCatalogFile = resolveCatalogFile;
+    middleware.getCatalogContext = async (request,response) => { const context=await catalogContext(request,response); return {accountId:context.accountId,user:context.account}; };
+    middleware.setCatalogCandidates = callback => { if(callback!==undefined&&typeof callback!=='function')throw Error('Invalid catalog candidates callback'); catalogCandidates=callback; };
+    return middleware;
 }
 export function figmaOAuthPlugin(options) {
     const middleware = createFigmaOAuthMiddleware(options);
     return {
         name: 'design-studio-figma-oauth',
         configureServer(server) {
+            if(server.httpServer)oauthServerHandlers.set(server.httpServer,middleware);
             server.middlewares.use(middleware);
         },
         configurePreviewServer(server) {
+            if(server.httpServer)oauthServerHandlers.set(server.httpServer,middleware);
             server.middlewares.use(middleware);
         },
     };

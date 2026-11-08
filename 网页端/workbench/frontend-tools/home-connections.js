@@ -57,6 +57,7 @@ export function installHomeFigmaConnection({request=window.fetch.bind(window)}={
         session={configured:value.configured,authenticated:value.authenticated,user:typeof value.user?.name==='string'?{name:value.user.name}:null};
         if(session.authenticated)pendingUntil=0;
         failed=false;renderAccount();
+        if(typeof window.dispatchEvent==='function'&&typeof CustomEvent==='function')window.dispatchEvent(new CustomEvent('astrix-figma-session',{detail:{configured:value.configured,authenticated:value.authenticated,accountId:['string','number'].includes(typeof value.user?.id)?String(value.user.id):null}}));
       }catch{
         if(active&&!controller.signal.aborted){failed=true;renderAccount();}
       }finally{if(requestController===controller){requestController=null;flight=null;}}

@@ -10,7 +10,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { OriginalEditorManager, registerOriginalEditorSchemes } = require('./original-editor.cjs');
 const { navigateAndWait } = require('./local-navigation.cjs');
-const { FigmaHostManager, isTrustedLocalMainFrame } = require('./figma-host.cjs');
+const { FigmaHostManager, isTrustedLocalMainFrame, allowsFigmaThumbnailRequest } = require('./figma-host.cjs');
 const {isOAuthStartURL,createOAuthWindow}=require('./figma-oauth-window.cjs');
 
 const {getLayout,getStatePaths}=require('../../../packages/astrix-workbench/layout.cjs');
@@ -306,7 +306,7 @@ async function createWindow() {
   isolatedSession.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
   isolatedSession.setPermissionCheckHandler(() => false);
   isolatedSession.webRequest.onBeforeRequest((details, callback) => {
-    const allowed = isLocalURL(details.url) || /^(data:|blob:|devtools:)/.test(details.url);
+    const allowed = isLocalURL(details.url) || /^(data:|blob:|devtools:)/.test(details.url) || allowsFigmaThumbnailRequest(details);
     callback({ cancel: !allowed });
   });
   mainWindow = new BrowserWindow({

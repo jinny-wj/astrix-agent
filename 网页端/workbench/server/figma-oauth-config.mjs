@@ -27,7 +27,7 @@ export function readFigmaOAuthConfig({applicationRoot,port,environment=process.e
   return {clientId,clientSecret,redirectUri,teamIds:String(values.FIGMA_TEAM_IDS||'').split(/[,\s]+/).filter(Boolean)};
 }
 
-export function createWorkbenchFigmaOAuth({applicationRoot,port,dataDir,surface,environment}={}) {
+export function createWorkbenchFigmaOAuth({applicationRoot,port,dataDir,surface,environment,getCatalogCandidates}={}) {
   return createFigmaOAuthMiddleware({
     ...readFigmaOAuthConfig({applicationRoot,port,environment}),
     dataDirectory:path.join(dataDir,'figma-oauth'),
@@ -35,5 +35,6 @@ export function createWorkbenchFigmaOAuth({applicationRoot,port,dataDir,surface,
     accountPickerByDefault:surface!=='desktop',
     unconfiguredStartPage:surface==='desktop',
     allowedOrigin:`http://127.0.0.1:${port}`,
+    getCatalogCandidates,
   });
 }

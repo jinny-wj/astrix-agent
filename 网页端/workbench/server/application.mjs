@@ -14,6 +14,7 @@ import {createPreview} from './preview.mjs';
 import {createCanvasService} from './canvas.mjs';
 import {createFigmaBridge} from './figma-bridge.mjs';
 import {createFigmaWorkspace} from './figma-workspace.mjs';
+import {createFigmaCatalogOpen,figmaCatalogLaunchURL} from './figma-catalog-open.mjs';
 import {createCanvasCollaboration} from './canvas-collaboration.mjs';
 import {renderPrototype,PROTOTYPE_CSP} from './design-prototype.mjs';
 import {createDesignCloud} from './design-cloud.mjs';
@@ -43,6 +44,12 @@ const preview=createPreview({getWorkspace:()=>api?.state.workspace||workspaceRoo
 const canvas=createCanvasService({api,getWorkspace:()=>api.state.workspace||workspaceRoot});
 figmaBridge=createFigmaBridge({dataDir,port,resolveProject:projectId=>api.findProject(projectId)});
 figmaWorkspace=createFigmaWorkspace({api,canvas,bridge:figmaBridge,port,dataDir});
+let resolveFigmaCatalogFile=options.resolveFigmaCatalogFile;
+const figmaCatalogOpen=createFigmaCatalogOpen({api,workspace:figmaWorkspace,resolveFile:(...args)=>{
+  if(typeof resolveFigmaCatalogFile!=='function')throw Object.assign(new Error('Figma 文件连接尚未就绪，请刷新后重试'),{status:503});
+  return resolveFigmaCatalogFile(...args);
+}});
+const setFigmaCatalogResolver=resolver=>{if(typeof resolver!=='function')throw new TypeError('Figma catalog resolver must be a function');resolveFigmaCatalogFile=resolver;};
 const collaboration=createCanvasCollaboration({dataDir,resolveWorkspace:canvas.target,readCanvas:canvas.read,transactCanvas:canvas.transact,subscribeCanvas:canvas.subscribe,staticDir:path.join(publicRoot,'local-canvas')});
 const designCloud=createDesignCloud({dataDir,resolveWorkspace:canvas.target,readCanvas:canvas.read,saveCanvas:canvas.save});
 const diagnostics={startedAt:new Date().toISOString(),clientErrors:[],unhandled:[],requests:[]};
@@ -64,7 +71,7 @@ async function handle(req,res) {
     if(req.headers.origin && req.headers.origin!==`http://${host}`)return json(res,{error:'Cross-origin requests are disabled'},403);
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
     // Recovered assets can run scripts, but their original remote service endpoints stay disconnected.
-    res.setHeader('Content-Security-Policy',"default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ws://127.0.0.1:"+port+" ws://localhost:"+port+"; frame-src 'self' blob:; object-src 'none'");
+    res.setHeader('Content-Security-Policy',"default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://figma.com https://*.figma.com; font-src 'self' data:; connect-src 'self' ws://127.0.0.1:"+port+" ws://localhost:"+port+"; frame-src 'self' blob:; object-src 'none'");
     const body=['POST','PUT','PATCH','DELETE'].includes(req.method)?await bodyOf(req):{};
     diagnostics.requests.push({method:req.method,path:url.pathname});if(diagnostics.requests.length>200)diagnostics.requests.shift();
     if(req.method==='OPTIONS'){res.writeHead(204);return res.end();}
@@ -73,6 +80,18 @@ async function handle(req,res) {
     if(url.pathname==='/__local/diagnostics')return json(res,diagnostics);
     if(url.pathname==='/__local/client-error'){diagnostics.clientErrors.push({message:String(body.message||'').slice(0,1500),stack:String(body.stack||'').slice(0,5000),url:String(body.url||'').slice(0,600)});return json(res,{ok:true});}
     if(url.pathname==='/__local/settings')return html(res,settingsPage());
+    if(url.pathname==='/__local/figma/catalog/launch'){
+      if(req.method!=='GET')return json(res,{error:'Method not allowed'},405);
+      if(url.searchParams.getAll('url').length!==1||[...url.searchParams.keys()].some(key=>key!=='url'))return json(res,{error:'请选择具体的 Figma 设计文件'},400);
+      // A synchronous, same-origin popup can pass the browser gesture gate.
+      // This is only an official-file redirect: no OAuth read, proxy or mutation.
+      const target=figmaCatalogLaunchURL(url.searchParams.get('url'));
+      res.writeHead(302,{'Location':target,'Cache-Control':'no-store'});return res.end();
+    }
+    if(url.pathname==='/__local/figma/catalog/open'){
+      if(req.method!=='POST')return json(res,{error:'Method not allowed'},405);
+      return json(res,await figmaCatalogOpen.open(req,res,body));
+    }
     if(url.pathname==='/__local/figma/workspace'){
       if(!['GET','PUT'].includes(req.method))return json(res,{error:'Method not allowed'},405);
       return json(res,req.method==='GET'?await figmaWorkspace.get(url.searchParams.get('projectId')):await figmaWorkspace.set(url.searchParams.get('projectId'),body));
@@ -208,7 +227,7 @@ async function handle(req,res) {
     }
     if(!path.extname(url.pathname)&&!url.pathname.startsWith('/api')&&!url.pathname.startsWith('/rest')&&!url.pathname.startsWith('/devops-api'))return html(res,await fsp.readFile(path.join(publicDir,'index.html'),'utf8'));
     diagnostics.unhandled.push({method:req.method,path:url.pathname});return json(res,{error:'本地版本尚未实现此接口',path:url.pathname},404);
-  }catch(error){if(!res.headersSent)json(res,{error:error.message},error.status||400);else res.end();}
+  }catch(error){if(res.destroyed||res.writableEnded)return;if(!res.headersSent)json(res,{error:error.message},error.status||400);else res.end();}
 }
 function handleUpgrade(req,socket) {
   // Vite owns its HMR subprotocol. Unrelated upgrade paths pass through.
@@ -242,5 +261,5 @@ function handleUpgrade(req,socket) {
 }
 let closed=false;
 async function close(){if(closed)return;closed=true;for(const response of events)response.end();for(const socket of cliSockets)socket.destroy();figmaBridge.close();await chat.close?.();await collaboration.close();}
-return {handle,handleUpgrade,close,api,model,chat,identity,paths:{dataDir,workspaceRoot,publicRoot},port};
+return {handle,handleUpgrade,close,api,model,chat,identity,paths:{dataDir,workspaceRoot,publicRoot},port,setFigmaCatalogResolver,getFigmaCatalogCandidates:figmaCatalogOpen.candidates};
 }

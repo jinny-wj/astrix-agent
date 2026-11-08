@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.13](https://img.shields.io/badge/Workbench-v0.7.13-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.13.md)
+[![Workbench v0.7.14](https://img.shields.io/badge/Workbench-v0.7.14-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.14.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -165,6 +165,10 @@ pnpm dev
 首页顶部的 **连接 Figma** 始终用于 Figma OAuth 授权，与 **API 配置** 按钮并列且独立。客户端沿用系统浏览器授权并接回本机会话；网页端使用本端回调。
 
 首页会读取本端 OAuth 会话，在按钮旁显示“已连接 · 账号名”、未授权或状态读取失败等实际结果。首次打开、授权返回、重新聚焦或恢复可见时刷新，并定期检查；授权连接状态不代表已打开设计稿或已完成 Plugin Bridge 配对。
+
+首页的 **Figma 设计稿** 使用当前账号向 Figma 校验真实文件，展示文件名、缩略图和修改时间。已绑定文件会自动成为读取来源；也可添加官方设计稿链接。点击卡片会绑定或复用对应本地项目并进入 Design 工作区，保留 Agent、代码编辑器和终端。文件读取失败会显示实际原因，不使用示例设计稿补位。
+
+团队或文件夹链接可用作额外同步来源。Figma REST 没有按账号枚举全部文件的接口，团队来源还受应用类型和目录只读权限限制；未授予目录权限时不会把空列表显示为同步成功，也不会自动扩大授权。具体使用与限制见 [Figma 文件列表](packages/astrix-workbench/docs/Figma文件列表.md)。
 
 在 Design 中打开真实 Figma 文件。客户端使用隔离的官方 Figma 登录会话；网页版在浏览器打开官方页面。随后在工作台生成配对码，在目标文件运行 **Astrix Figma Bridge** 并完成配对。只有插件的实际回执才能证明图层修改成功。详细步骤见[工作台指南](packages/astrix-workbench/README.md)。
 

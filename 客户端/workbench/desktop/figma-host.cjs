@@ -18,6 +18,14 @@ function privateHost(host) {
   return false;
 }
 function publicHTTPS(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&!privateHost(u.hostname)?u:null;}catch{return null;}}
+// Only previews in the local Workbench renderer use this exception. It does
+// not grant remote scripts, XHR, frames or the native Figma view new access.
+function allowsFigmaThumbnailRequest(details){
+  if(details?.resourceType!=='image'||typeof details.url!=='string')return false;
+  const u=publicHTTPS(details.url),authority=/^https:\/\/([^/?#]+)/i.exec(details.url)?.[1];
+  // Inspect the original authority as URL normalizes an explicit :443 away.
+  return Boolean(u&&authority&&!/[:@\\]/.test(authority)&&/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*figma\.com$/.test(u.hostname));
+}
 function isFigmaNavigation(value){const u=publicHTTPS(value);return Boolean(u&&(u.hostname==='figma.new'||u.hostname==='figma.com'||u.hostname.endsWith('.figma.com')));}
 function normalizeFigmaURL(value){const u=publicHTTPS(value);if(!u||!['figma.new','figma.com','www.figma.com'].includes(u.hostname))throw new Error('请使用官方 Figma HTTPS 文件或首页链接');if(u.hostname==='figma.new'){if(u.pathname!=='/')throw new Error('figma.new 链接无效');}else if(!/^\/(?:$|(?:design|file|proto|board|slides|draw|make|files)(?:\/|$))/.test(u.pathname))throw new Error('请使用 Figma 文件、项目首页或 figma.new 链接');return u.href;}
 function allowsRemoteRequest(value){try{const u=new URL(value);if(['data:','blob:'].includes(u.protocol))return true;return ['https:','wss:'].includes(u.protocol)&&!u.username&&!u.password&&!u.port&&!privateHost(u.hostname);}catch{return false;}}
@@ -106,4 +114,4 @@ class FigmaHostManager {
   }
   dispose(){if(this.disposed)return;this.disposed=true;this.visible=false;for(const popup of this.authWindows){try{popup.destroy();}catch{}}this.authWindows.clear();if(this.download)this.session?.removeListener('will-download',this.download);if(this.view){try{this.window.contentView.removeChildView(this.view);}catch{}if(!this.view.webContents.isDestroyed())this.view.webContents.close({waitForBeforeUnload:false});this.view=null;}this.window.removeListener('resize',this.resize);this.ownerContents.removeListener('did-start-navigation',this.navigation);this.ownerContents.removeListener('did-navigate',this.navigated);}
 }
-module.exports={FigmaHostManager,PARTITION,DEFAULT_URL,WEB_PREFERENCES,normalizeFigmaURL,isFigmaNavigation,allowsRemoteRequest,bridgeEndpoint,allowsBridgeRequest,allowsBridgeHeaders,contextFromURL,normalizeBounds,normalizeProjectId,permitsGesturePermission,isTrustedLocalMainFrame};
+module.exports={FigmaHostManager,PARTITION,DEFAULT_URL,WEB_PREFERENCES,normalizeFigmaURL,isFigmaNavigation,allowsRemoteRequest,allowsFigmaThumbnailRequest,bridgeEndpoint,allowsBridgeRequest,allowsBridgeHeaders,contextFromURL,normalizeBounds,normalizeProjectId,permitsGesturePermission,isTrustedLocalMainFrame};

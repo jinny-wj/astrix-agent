@@ -8,7 +8,7 @@ export function normalizeFigmaWorkspaceURL(value){
   let url;try{url=new URL(value.trim());}catch{throw fail('请输入完整的 https://www.figma.com/design/… 文件链接');}
   if(url.protocol!=='https:'||url.username||url.password||url.port||!['www.figma.com','figma.com','figma.new'].includes(url.hostname))throw fail('只支持 Figma 官方 HTTPS 链接');
   if(url.hostname==='figma.new')return {url:'https://figma.new/',fileKey:null};
-  const segments=url.pathname.split('/').filter(Boolean),isFile=['design','file','board','slides','proto'].includes(segments[0]);
+  const segments=url.pathname.split('/').filter(Boolean),isFile=['design','file','board','slides','proto','draw','make'].includes(segments[0]);
   if(isFile&&!/^[a-zA-Z0-9_-]{1,128}$/.test(segments[1]||''))throw fail('Figma 文件标识无效');
   if(!isFile&&!['/','/files','/files/'].includes(url.pathname))throw fail('请使用 Figma 文件链接或文件首页');
   url.hostname='www.figma.com';url.hash='';

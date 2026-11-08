@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.14",
+  "recordedAt": "2026-11-08",
+  "recordType": "source-release",
+  "status": "local-validated-with-selected-file-access-limit-awaiting-publication-confirmation",
+  "sources": [
+    {
+      "cwd": "packages/astrix-workbench",
+      "command": "npm test",
+      "result": "296 Node tests; host policy 20, marketplace 3, navigation 3; generator/canvas scripts passed"
+    },
+    {
+      "cwd": "客户端",
+      "command": "npm test; npm run build",
+      "result": "141 tests passed; final build passed"
+    },
+    {
+      "cwd": "网页端",
+      "command": "npm test; npm run build",
+      "result": "81 tests passed; final build passed"
+    }
+  ],
+  "scope": {
+    "surfaces": [
+      "desktop",
+      "web"
+    ],
+    "catalogSources": [
+      "account-saved file URLs",
+      "verified local workspace bindings",
+      "explicit team/folder sources"
+    ],
+    "serverRevalidatesEveryReturnedFile": true,
+    "accountPartitionedPersistence": true,
+    "realMetadataRequiredForCards": true,
+    "noSeededFiles": true,
+    "sourceEnumerationOptIn": true,
+    "scopeExpansionPerformed": false,
+    "existingFigmaAndApiHomeButtonsPreserved": true,
+    "modelConfigurationChanged": false
+  },
+  "validation": {
+    "allNodeTests": 544,
+    "catalogServerTests": 8,
+    "openAndLaunchTests": 10,
+    "frontendCatalogTests": 19,
+    "viteDevAndPreviewIntegrationTests": 2,
+    "accountIsolation": true,
+    "permissionRevocationExcludesCards": true,
+    "unauthorizedResponseClearsSession": true,
+    "rateLimitStopsFurtherRequests": true,
+    "nodeAndPageLocationPreserved": true,
+    "webPopupBeforeAsyncRequest": true,
+    "desktopNativeHostChain": "live real card opened the matching official file URL; independent Figma editor login required",
+    "productionBuilds": {
+      "desktop": "passed",
+      "web": "passed"
+    },
+    "privateStaging": {
+      "version": "0.7.14",
+      "privateDataIncluded": false,
+      "authoredFrontendHashesMatch": true
+    },
+    "realDesktop": {
+      "oauthAccountAuthenticated": true,
+      "sameReadOnlyGrantRefreshed": true,
+      "metadataHttpStatus": 403,
+      "metadataError": "Permission denied",
+      "contentReadHttpStatus": 403,
+      "contentReadError": "Request denied",
+      "originalFigmaWebReadOnlyViewVerified": true,
+      "successfulRealCatalogReadVerified": true,
+      "successfulRealCardOpenVerified": true,
+      "nativeOpenedBoundFileURL": true,
+      "nativeOfficialEditorLoginRequired": true,
+      "selectedRestrictedFileApiStillDenied": true,
+      "nativeCardOpenMeaning": "bound real official URL opened in the embedded host; editor login required",
+      "successfulEmbeddedCanvasViewVerified": false
+    },
+    "webBrowser": {
+      "homeCatalogMounted": true,
+      "independentSessionUnauthenticated": "isolated QA browser only",
+      "nonFigmaLinkRejected": true,
+      "unauthorizedAddRejected": true,
+      "fabricatedCardsDisplayed": false,
+      "existingUserSessionAuthenticated": true,
+      "successfulRealCatalogReadVerified": true,
+      "realThumbnailLoaded": true,
+      "thumbnailOrigin": "s3-alpha.figma.com",
+      "thumbnailNaturalWidth": 800,
+      "realCardOpenedOfficialFile": true,
+      "realCardBoundLocalDesignWorkspace": true,
+      "officialFigmaEditorViewed": true
+    },
+    "canceledServerOpenDoesNotSwitchWorkspace": true,
+    "canceledAddDoesNotReportSuccess": true,
+    "thumbnailPolicy": "Only HTTPS Figma official images added to native filter and CSP; other remote resource types remain blocked"
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "accountIdentifiersIncluded": false,
+    "fileIdentifiersIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "publication": {
+    "status": "awaiting-github-target-confirmation",
+    "remoteCommitAndTagVerified": false,
+    "githubReleaseVerified": false
+  },
+  "limits": [
+    "The Figma REST API does not enumerate all files for an authenticated user or discover team IDs automatically.",
+    "Team/folder listing requires supplied sources, applicable read scopes and an eligible OAuth app; the current grant was not expanded.",
+    "The selected real file is viewable in the official Figma UI, but both metadata and content API reads return HTTP 403. This remains unresolved.",
+    "A different, accessible real file passed live catalog reading and card opening on both surfaces. The selected restricted file still returns HTTP 403.",
+    "OAuth, file access, official editor login and Plugin Bridge pairing remain independent states.",
+    "No model configuration or design document writes were performed.",
+    "Application pnpm locks have no root application version and dependencies did not change.",
+    "GitHub upload and publication require confirmation for this version.",
+    "The native official Figma editor uses an independent login session; the user must sign in normally once to view protected files inside the client."
+  ]
+}

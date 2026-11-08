@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "0.7.13",
+  "currentVersion": "0.7.14",
   "recordedAt": "2026-11-08",
   "historyPolicy": {
     "documentationOnlyTagPrefix": "m0/history/v",
@@ -352,6 +352,23 @@
         "Remove the local Figma placeholder copy and its three project/workspace guidance actions from the generated home interface.",
         "Remove the click handler used only by the retired placeholder actions.",
         "Preserve other error feedback, the separate Figma OAuth and API Configuration home buttons, and current connection status."
+      ],
+      "uiFeatureChanges": true
+    },
+    {
+      "version": "0.7.14",
+      "date": "2026-11-08",
+      "recordType": "source-release",
+      "sourceSnapshotAvailable": true,
+      "tag": "m0/v0.7.14",
+      "record": "versions/v0.7.14.md",
+      "evidence": [
+        "versions/evidence/v0.7.14.json"
+      ],
+      "changes": [
+        "List real Figma files verified against the active OAuth account, including metadata and thumbnails.",
+        "Persist account-isolated file and team/folder sources; report permission and rate-limit failures without seeded examples.",
+        "Open selected verified files through the existing real Design workspace on desktop and web."
       ],
       "uiFeatureChanges": true
     }

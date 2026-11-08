@@ -2,6 +2,8 @@ import { readFile, writeFile, mkdir, copyFile, readdir, cp } from 'node:fs/promi
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { rebrandWorkbench } from './branding.mjs';
+import {patchDesignEntry} from './design-entry.mjs';
+import {patchHomeFigmaCatalog} from './home-catalog-patch.mjs';
 import layoutConfig from '../../../packages/astrix-workbench/layout.cjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -16,15 +18,20 @@ if(args.length===1&&args[0]==='--refresh-local'){
   let current=await readFile(file,'utf8');
   if(!current.includes('/local-runtime.js'))throw new Error('Restore the Workbench UI resources before refreshing local scripts');
   await copyFile(path.join(here,'clarification-monitor.js'),path.join(publicRoot,'clarification-monitor.js'));
-  for(const name of ['api-settings.js','api-settings-model.mjs','api-settings.css','home-connections.js','local-runtime.js'])await copyFile(path.join(here,name),path.join(publicRoot,name));
+  for(const name of ['api-settings.js','api-settings-model.mjs','api-settings.css','home-connections.js','local-runtime.js','home-figma-catalog.js','figma-catalog-model.mjs','home-figma-catalog.css'])await copyFile(path.join(here,name),path.join(publicRoot,name));
   // Existing installations can discard the retired authored section without
   // downloading or restoring the original vendor cache again.
   const assets=path.join(publicRoot,'vendor/s2-12205.kwimgs.com/kos/proj-gis/Z2lz/kos/nlav12205/workbench/assets');
   for(const name of await readdir(assets)){
+    if(name==='index-v2-BGt4TMzj.js'){
+      const target=path.join(assets,name),source=await readFile(target,'utf8'),updated=patchDesignEntry(source);
+      if(updated!==source)await writeFile(target,updated);
+      continue;
+    }
     if(!/^home-.*\.js$/.test(name))continue;
-    const target=path.join(assets,name),source=await readFile(target,'utf8');
+    const target=path.join(assets,name),source=await readFile(target,'utf8');let updated=source;
     const marker=source.indexOf('"data-m0-local-figma-entry"');
-    if(marker<0)continue;
+    if(marker>=0){
     const start=source.lastIndexOf('(openBlock(),createElementBlock("section",',marker);
     if(start<0||marker-start>256)throw new Error('Retired Figma home section changed; review before removing it.');
     let depth=0,quote='',escaped=false,end=-1;
@@ -36,15 +43,18 @@ if(args.length===1&&args[0]==='--refresh-local'){
       else if(char===')'&&--depth===0){end=i+1;break;}
     }
     if(end<0)throw new Error('Retired Figma home section is incomplete; existing resources were kept.');
-    const updated=source.slice(0,start)+'createCommentVNode("",!0)'+source.slice(end);
+    updated=source.slice(0,start)+'createCommentVNode("",!0)'+source.slice(end);
     if(updated.includes('"data-m0-local-figma-entry"'))throw new Error('Unexpected duplicate retired Figma home section.');
-    await writeFile(target,updated);
+    }
+    if(name==='home-Dq22ywRR.js')updated=patchHomeFigmaCatalog(updated);
+    if(updated!==source)await writeFile(target,updated);
   }
   if(!current.includes('src="/clarification-monitor.js"')){
     current=current.replace('</head>','  <script src="/clarification-monitor.js" defer></script>\n</head>');
-    await writeFile(file,current);
   }
-  console.log('Refreshed local UI and removed the retired Figma home placeholder.');
+  if(!current.includes('href="/home-figma-catalog.css"'))current=current.replace('</head>','  <link rel="stylesheet" href="/home-figma-catalog.css">\n</head>');
+  await writeFile(file,current);
+  console.log('Refreshed local UI, installed the real Figma catalog and removed the retired placeholder.');
   process.exit(0);
 }
 if(args.length && (args.length!==2 || args[0]!=='--source-root' || !args[1])) throw new Error('Usage: node workbench/frontend-tools/prepare-frontend.mjs [--source-root /path/to/M0-AI-recovered | --refresh-local]');
@@ -139,6 +149,8 @@ function rewrite(text, name) {
     const manualMatches=[...text.matchAll(manual)];
     if(manualMatches.length!==1)throw new Error('Recovered asset-library help entry changed');
     text=text.replace(manual,'createCommentVNode("Local asset-library manual unavailable",!0)');
+    text=patchHomeFigmaCatalog(text);
+    patches.push({file:name,purpose:'Mount the first-party real Figma catalog in local mode without rendering the recovered enterprise recent-file list.',matchCount:1});
     patches.push({file:name,purpose:'Omit the retired local Figma home placeholder and unavailable corporate manual; preserve unrelated warnings and original SSO authorization.',matchCount:2});
   }
   if (name.endsWith('/assets/index-v2-BGt4TMzj.js')) {
@@ -148,7 +160,7 @@ function rewrite(text, name) {
     const localMode = 'j.value===Zn.Code||d.query.homeEntryMode==="code"&&d.query.autoOpenFigma!=="true"';
     const localModeCount = text.split(localMode).length - 1;
     if (localModeCount !== 2) throw new Error('Recovered channel selection changed');
-    text = text.replaceAll(localMode, '(window.__M0_LOCAL_RUNTIME__&&localStorage.getItem("M0Mode")==="code")||' + localMode);
+    text = patchDesignEntry(text);
     const demoImport = 'e&&H.handleChangeCurFigma("SRpV5DSpKq0Pto75dP4IyO")';
     if (!text.includes(demoImport)) throw new Error('Recovered automatic Figma demo import changed');
     text = text.replace(demoImport, '!window.__M0_LOCAL_RUNTIME__&&' + demoImport);
@@ -187,7 +199,7 @@ for (const item of extraAssets.assets) {
 let html = rewrite(await readFile(path.join(sourceRoot, 'html-shell/home.static-shell.html'), 'utf8'), 'index.html');
 html = html.replace(/<!-- RECOVERED STATIC SHELL:[\s\S]*?-->/, '<!-- Recovered M0 UI, with an independently implemented localhost runtime. -->');
 html = html.replace(/<script[^>]*src=["']\/accessproxy_statics\/[^"']+["'][^>]*><\/script>/g, '');
-html = html.replace('<head>', '<head>\n  <link rel="stylesheet" href="/api-settings.css">\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>\n  <script src="/clarification-monitor.js" defer></script>');
+html = html.replace('<head>', '<head>\n  <link rel="stylesheet" href="/api-settings.css">\n  <link rel="stylesheet" href="/home-figma-catalog.css">\n  <script src="/local-runtime.js"></script>\n  <script src="/workflow-monitor.js" defer></script>\n  <script src="/clarification-monitor.js" defer></script>');
 html = html.replace(/<script type="module" crossorigin src="([^"]+)"><\/script>/,
   (_match, entry) => `<script type="module">await window.__m0LocalReady; await import(${JSON.stringify(entry)});</script>`);
 html = html.replace(/<title>[^<]*<\/title>/, '<title>Astrix</title>');
@@ -198,7 +210,7 @@ await mkdir(path.join(publicRoot,'branding'),{recursive:true});
 await copyFile(path.join(here,'branding/astrix-logo-v1.png'),path.join(publicRoot,'branding/astrix-logo-v1.png'));
 await copyFile(path.join(here,'branding/astrix-dock.png'),path.join(publicRoot,'branding/astrix-dock.png'));
 await copyFile(path.join(here, 'local-runtime.js'), path.join(publicRoot, 'local-runtime.js'));
-for (const file of ['api-settings.js','api-settings-model.mjs','api-settings.css','home-connections.js']) await copyFile(path.join(here,file),path.join(publicRoot,file));
+for (const file of ['api-settings.js','api-settings-model.mjs','api-settings.css','home-connections.js','home-figma-catalog.js','figma-catalog-model.mjs','home-figma-catalog.css']) await copyFile(path.join(here,file),path.join(publicRoot,file));
 await copyFile(path.join(here, 'workflow-monitor.js'), path.join(publicRoot, 'workflow-monitor.js'));
 await copyFile(path.join(here, 'clarification-monitor.js'), path.join(publicRoot, 'clarification-monitor.js'));
 await copyFile(path.join(here, 'local-codegen.html'), path.join(publicRoot, 'codegen.html'));
