@@ -12,7 +12,7 @@
 [![Web Browser](https://img.shields.io/badge/Web-Browser-2563EB?style=flat-square&logo=googlechrome&logoColor=white)](网页端/README.md)
 [![Figma Plugin Bridge](https://img.shields.io/badge/Figma-Plugin_Bridge-A259FF?style=flat-square&logo=figma&logoColor=white)](客户端/figma-plugin-bridge/README.md)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#快速开始)
-[![Workbench v0.7.9](https://img.shields.io/badge/Workbench-v0.7.9-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.9.md)
+[![Workbench v0.7.10](https://img.shields.io/badge/Workbench-v0.7.10-4F46E5?style=flat-square)](packages/astrix-workbench/versions/v0.7.10.md)
 [![Status In Development](https://img.shields.io/badge/Status-In_Development-F59E0B?style=flat-square)](#构建与验证)
 
 **[macOS 客户端](客户端/README.md) · [网页版](网页端/README.md) · [工作台指南](packages/astrix-workbench/README.md)**
@@ -161,6 +161,8 @@ pnpm dev
 ## 连接 Figma
 
 ### 默认工作台连接
+
+首页顶部的 **连接 Figma** 始终用于 Figma OAuth 授权，与 **模型连接** 独立。客户端沿用系统浏览器授权并接回本机会话；网页端使用本端回调。
 
 在 Design 中打开真实 Figma 文件。客户端使用隔离的官方 Figma 登录会话；网页版在浏览器打开官方页面。随后在工作台生成配对码，在目标文件运行 **Astrix Figma Bridge** 并完成配对。只有插件的实际回执才能证明图层修改成功。详细步骤见[工作台指南](packages/astrix-workbench/README.md)。
 

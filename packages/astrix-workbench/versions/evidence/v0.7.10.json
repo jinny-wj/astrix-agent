@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "version": "0.7.10",
+  "recordedAt": "2026-11-08",
+  "recordType": "source-release",
+  "status": "local-validated",
+  "sources": [
+    {
+      "cwd": "packages/astrix-workbench",
+      "command": "npm test",
+      "result": "255 Node tests; host policy 18; marketplace 3; navigation 3; generators and canvas scripts passed"
+    },
+    {
+      "cwd": "客户端",
+      "command": "npm test; npm run build; npm run desktop:prepare:resources",
+      "result": "141 tests and build passed; resource staging verified separately"
+    },
+    {
+      "cwd": "网页端",
+      "command": "npm test; npm run build",
+      "result": "80 tests and build passed"
+    },
+    {
+      "cwd": ".",
+      "command": "node --test packages/astrix-workbench/test/home-connections.test.mjs packages/astrix-workbench/test/figma-oauth.test.mjs 网页端/workbench/frontend-tools/api-settings.test.mjs",
+      "result": "27 passed after the final layout adjustment"
+    }
+  ],
+  "scope": {
+    "surfaces": [
+      "web",
+      "desktop"
+    ],
+    "homeAction": "separate Connect Figma button beside model connection and Design / Code",
+    "existingOAuthStartPath": "/api/auth/figma/start",
+    "returnTo": "/figma-oauth-complete.html",
+    "desktopOAuthParameter": "handoff=1",
+    "webOAuthParameter": "direct=1",
+    "oauthBackendChangeRequested": false,
+    "oauthScopeChangeRequested": false,
+    "oauthCallbackChangeRequested": false,
+    "pluginBridgeProtocolChangeRequested": false
+  },
+  "validation": {
+    "homeConnectionTests": 3,
+    "oauthAndModelTargetedTests": 27,
+    "allNodeTests": 500,
+    "webHomeLayout": "desktop width and 390px width passed; buttons do not overlap mode switch",
+    "desktopHomeLayout": "running native client refreshed; Connect Figma and model button observed in native accessibility tree",
+    "existingOAuthRouteSelection": {
+      "httpStatus": 302,
+      "officialAuthorizationEndpoint": true,
+      "pkce": "S256",
+      "desktopCallbackPort": 4317,
+      "scope": [
+        "current_user:read",
+        "file_content:read",
+        "file_metadata:read"
+      ],
+      "browserReachedOfficialFigmaLogin": true
+    },
+    "modelConnectionPreserved": true,
+    "applicationBuilds": {
+      "desktop": "passed",
+      "web": "passed"
+    },
+    "oauthBackendFilesChanged": false,
+    "accountAccessGrantedByThisWork": false,
+    "figmaDesignWrites": 0
+  },
+  "privacy": {
+    "credentialsIncluded": false,
+    "personalSessionDataIncluded": false,
+    "rawReceiptsOrScreenshotsIncluded": false,
+    "absoluteUserPathsIncluded": false
+  },
+  "publication": {
+    "status": "awaiting-github-target-confirmation",
+    "remoteCommitAndTagVerified": false,
+    "githubReleaseVerified": false
+  },
+  "limits": [
+    "An OAuth entry point is not proof of account authorization, file access, Plugin Bridge pairing or a successful design write.",
+    "Application pnpm locks have no root package version field and remain unchanged because dependencies did not change.",
+    "The real browser check stopped at official Figma login; no account authorization, file-read or design-write success is claimed by this UI repair."
+  ]
+}
